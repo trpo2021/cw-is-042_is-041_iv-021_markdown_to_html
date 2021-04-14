@@ -4,11 +4,11 @@ int main(int argc, char **argv)
 {
     if (strcmp("-f", argv[1]) == 0 && strcmp("-f", argv[3]) == 0)
     {
-        func_1(argv[2], argv[4]);
+        func_1(read_file(argv[2]), create_out_file(argv[4]));
     }
     else if (strcmp("-d", argv[1]) == 0 && strcmp("-f", argv[3] == 0))
     {
-        func_2(stdin, argv[4]);
+        func_2(stdin, create_out_file(argv[4]));
     }
     else if (strcmp("-d", argv[1]) == 0 && strcmp("-d", argv[3]) == 0)
     {
@@ -18,4 +18,6 @@ int main(int argc, char **argv)
     {
         printf("Usage:\n\tconverter -f <in-file-name> -f <out-file-name> (The input and output data are files)\n\tconverter -d stdin -f <out-file-name> (The input data is read from the keyboard, the output data is a file)\n\tconverter -d stdin -d stdout (Input data is read from the keyboard, output data is output to the terminal)\n\tconverter -help (Call help)");
     }
+    else
+        printf("Usage:\n\tconverter -f <in-file-name> -f <out-file-name> (The input and output data are files)\n\tconverter -d stdin -f <out-file-name> (The input data is read from the keyboard, the output data is a file)\n\tconverter -d stdin -d stdout (Input data is read from the keyboard, output data is output to the terminal)\n\tconverter -help (Call help)");
 }
