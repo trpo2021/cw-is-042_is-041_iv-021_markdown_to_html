@@ -1,8 +1,9 @@
 #include <stdio.h>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    if (fopen("template_top.html", "r") == NULL || fopen("template_bottom.html", "r") == NULL || fopen("template.css", "r") == NULL)
+    if (fopen("template_top.html", "r") == NULL || fopen("template_bottom.html", "r") == NULL ||
+        fopen("template.css", "r") == NULL)
     {
         create_template();
     }
@@ -21,8 +22,14 @@ int main(int argc, char **argv)
     }
     else if (strcmp("-help", argv[1]) == 0)
     {
-        printf("Usage:\n\tconverter -f <in-file-name> -f <out-file-name> (The input and output data are files)\n\tconverter -d stdin -f <out-file-name> (The input data is read from the keyboard, the output data is a file)\n\tconverter -d stdin -d stdout (Input data is read from the keyboard, output data is output to the terminal)\n\tconverter -help (Call help)");
+        printf("Usage:\n\tconverter -f <in-file-name> -f <out-file-name> (The input and output data are "
+               "files)\n\tconverter -d stdin -f <out-file-name> (The input data is read from the keyboard, the output "
+               "data is a file)\n\tconverter -d stdin -d stdout (Input data is read from the keyboard, output data is "
+               "output to the terminal)\n\tconverter -help (Call help)");
     }
     else
-        printf("Usage:\n\tconverter -f <in-file-name> -f <out-file-name> (The input and output data are files)\n\tconverter -d stdin -f <out-file-name> (The input data is read from the keyboard, the output data is a file)\n\tconverter -d stdin -d stdout (Input data is read from the keyboard, output data is output to the terminal)\n\tconverter -help (Call help)");
+        printf("Usage:\n\tconverter -f <in-file-name> -f <out-file-name> (The input and output data are "
+               "files)\n\tconverter -d stdin -f <out-file-name> (The input data is read from the keyboard, the output "
+               "data is a file)\n\tconverter -d stdin -d stdout (Input data is read from the keyboard, output data is "
+               "output to the terminal)\n\tconverter -help (Call help)");
 }
