@@ -20,3 +20,5 @@ struct String
 };
 
 string init(size_t initial_capacity);
+
+string create(const char* source);

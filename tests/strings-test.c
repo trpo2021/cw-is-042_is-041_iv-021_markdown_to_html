@@ -25,3 +25,45 @@ CTEST(strings, print)
     string s = init(10);
     ASSERT_STR("\0", s->Text(s));
 }
+
+CTEST(strings, print_content)
+{
+    string s = create("test");
+    printf("%s", s->Text(s));
+}
+
+CTEST(strings, create)
+{
+    string s = create("test");
+    ASSERT_STR("test", s->Text(s));
+}
+
+CTEST(strings, create_empty)
+{
+    string s = create("");
+    ASSERT_STR("\0", s->Text(s));
+}
+
+CTEST(strings, create_length)
+{
+    string s = create("test");
+    ASSERT_EQUAL(4, s->Length(s));
+}
+
+CTEST(strings, create_capacity)
+{
+    string s = create("test");
+    ASSERT_EQUAL(4 + 10, s->Capacity(s));
+}
+
+CTEST(strings, create_empty_length)
+{
+    string s = create("");
+    ASSERT_EQUAL(0, s->Length(s));
+}
+
+CTEST(strings, create_empty_capacity)
+{
+    string s = create("");
+    ASSERT_EQUAL(10, s->Capacity(s));
+}

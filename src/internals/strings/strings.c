@@ -57,3 +57,18 @@ string init(size_t initial_capacity)
     }
     return NULL;
 }
+
+string create(const char* source)
+{
+    if (strlen(source) > 0)
+    {
+        string s = init(strlen(source) + 10);
+        memcpy(((Data*)s->internals)->data, source, strlen(source) + 1);
+        ((Data*)s->internals)->length = strlen(source);
+        return s;
+    }
+    else
+    {
+        return init(10);
+    }
+}
