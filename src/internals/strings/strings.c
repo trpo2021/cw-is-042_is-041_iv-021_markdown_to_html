@@ -34,6 +34,7 @@ void str_concat(struct String* str, const char* item)
         char* temp = realloc(((Data*)str->internals)->data, (((Data*)str->internals)->length + strlen(item) + 1) * 2);
         if (temp)
         {
+            ((Data*)str->internals)->data = temp;
             strcat(((Data*)str->internals)->data, item);
             ((Data*)str->internals)->capacity = (((Data*)str->internals)->length + strlen(item) + 1) * 2;
             ((Data*)str->internals)->length += strlen(item);
@@ -173,7 +174,9 @@ string str_replace(const struct String* str, const char* old, const char* new)
 
     size_t remains = source_len - (start_substr - str->Text(str)) + 1;
     memcpy(dst, start_substr, remains);
-    return create(result);
+    string out = create(result);
+    free(result);
+    return out;
 }
 
 string* str_split(const struct String* str, const char* pattern, size_t* length)
@@ -184,9 +187,14 @@ string* str_split(const struct String* str, const char* pattern, size_t* length)
     *length = 0;
     for (char* p = strtok(copy, pattern); p != NULL; p = strtok(NULL, pattern))
     {
-        container = realloc(container, sizeof(string) * (++(*length)));
-        container[(*length) - 1] = create(p);
+        string* temp = realloc(container, sizeof(string) * (++(*length)));
+        if (temp)
+        {
+            container = temp;
+            container[(*length) - 1] = create(p);
+        }
     }
+    free(copy);
     return container;
 }
 
