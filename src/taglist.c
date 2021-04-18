@@ -44,5 +44,3 @@ TagList list = {
     .tags[27] = {"`", "<code>"},
     .tags[28] = {"    ", "<pre><code>"}};
 
-char template_top[] = "<!doctype html>\n<head>\n\t<meta charset=\"utf-8\"/>\n\t<title>Website name</title>\n\t<link rel=\"stylesheet\" href\"style.css\">\n</head>\n</body>\n";
-char template_bot[] = "</body>\n</html>\n";
