@@ -10,6 +10,18 @@ typedef struct
     size_t capacity;
 } Data;
 
+static bool realloc_memory(struct String* str)
+{
+    ((Data*)str->internals)->capacity = 1 + (((Data*)str->internals)->capacity * 2);
+    char* temp = realloc(((Data*)str->internals)->data, (((Data*)str->internals)->capacity));
+    if (!temp)
+    {
+        return false;
+    }
+    ((Data*)str->internals)->data = temp;
+    return true;
+}
+
 size_t str_length(const struct String* str)
 {
     return ((Data*)str->internals)->length;
@@ -41,6 +53,22 @@ char str_get(const struct String* str, size_t index)
         return ((Data*)str->internals)->data[index];
     }
     return -1;
+}
+
+void str_append(struct String* str, char item)
+{
+    if (((Data*)str->internals)->length + 1 < ((Data*)str->internals)->capacity)
+    {
+        ((Data*)str->internals)->data[((Data*)str->internals)->length++] = item;
+        ((Data*)str->internals)->data[((Data*)str->internals)->length] = '\0';
+        return;
+    }
+    if (realloc_memory(str))
+    {
+        ((Data*)str->internals)->data[((Data*)str->internals)->length++] = item;
+        ((Data*)str->internals)->data[((Data*)str->internals)->length] = '\0';
+        return;
+    }
 }
 
 string str_copy(const struct String* str)
@@ -97,6 +125,7 @@ string init(size_t initial_capacity)
         str->Free = &str_free;
         str->Set = &str_set;
         str->Get = &str_get;
+        str->Append = &str_append;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }

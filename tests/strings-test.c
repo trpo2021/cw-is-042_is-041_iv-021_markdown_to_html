@@ -152,3 +152,37 @@ CTEST(strings, get_out_of_range)
     string s = create("test");
     ASSERT_EQUAL(-1, s->Get(s, 7));
 }
+
+CTEST(strings, append)
+{
+    string s = create("test");
+    s->Append(s, '2');
+    ASSERT_STR("test2", s->Text(s));
+}
+
+CTEST(strings, append_realloc)
+{
+    string s = create("test");
+    for (size_t i = '0'; i < '0' + 20; i++)
+    {
+        s->Append(s, (char)i);
+    }
+    ASSERT_STR("test0123456789:;<=>?@ABC", s->Text(s));
+}
+
+CTEST(strings, append_empty)
+{
+    string s = create("");
+    s->Append(s, 'w');
+    ASSERT_STR("w", s->Text(s));
+}
+
+CTEST(strings, append_empty_realloc)
+{
+    string s = create("");
+    for (size_t i = '0'; i < '0' + 20; i++)
+    {
+        s->Append(s, (char)i);
+    }
+    ASSERT_STR("0123456789:;<=>?@ABC", s->Text(s));
+}
