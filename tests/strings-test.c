@@ -226,3 +226,27 @@ CTEST(strings, empty_contains_false)
     string s = create("");
     ASSERT_FALSE(s->Contains(s, "test"));
 }
+
+CTEST(strings, compare_true)
+{
+    string s = create("test");
+    ASSERT_TRUE(s->Compare(s, "test"));
+}
+
+CTEST(strings, compare_false)
+{
+    string s = create("test");
+    ASSERT_FALSE(s->Compare(s, "str"));
+}
+
+CTEST(strings, compare_empty_true)
+{
+    string s = create("");
+    ASSERT_TRUE(s->Compare(s, ""));
+}
+
+CTEST(strings, compare_empty_false)
+{
+    string s = create("");
+    ASSERT_FALSE(s->Compare(s, "str"));
+}
