@@ -23,6 +23,7 @@ struct String
     string (*Copy)(const struct String* str);
     void (*Free)(struct String* str);
     void (*Append)(struct String* str, char item);
+    void (*Concat)(struct String* str, const char* item);
 };
 
 string init(size_t initial_capacity);

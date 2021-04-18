@@ -186,3 +186,17 @@ CTEST(strings, append_empty_realloc)
     }
     ASSERT_STR("0123456789:;<=>?@ABC", s->Text(s));
 }
+
+CTEST(strings, concat)
+{
+    string s = create("test");
+    s->Concat(s, " concated");
+    ASSERT_STR("test concated", s->Text(s));
+}
+
+CTEST(strings, concat_empty)
+{
+    string s = create("");
+    s->Concat(s, "concated");
+    ASSERT_STR("concated", s->Text(s));
+}

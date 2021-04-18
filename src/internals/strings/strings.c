@@ -22,6 +22,25 @@ static bool realloc_memory(struct String* str)
     return true;
 }
 
+void str_concat(struct String* str, const char* item)
+{
+    if (((Data*)str->internals)->length + strlen(item) + 1 < ((Data*)str->internals)->capacity)
+    {
+        strcat(((Data*)str->internals)->data, item);
+        ((Data*)str->internals)->length += strlen(item);
+    }
+    else
+    {
+        char* temp = realloc(((Data*)str->internals)->data, (((Data*)str->internals)->length + strlen(item) + 1) * 2);
+        if (temp)
+        {
+            strcat(((Data*)str->internals)->data, item);
+            ((Data*)str->internals)->length += strlen(item);
+            return;
+        }
+    }
+}
+
 size_t str_length(const struct String* str)
 {
     return ((Data*)str->internals)->length;
@@ -125,6 +144,8 @@ string init(size_t initial_capacity)
         str->Free = &str_free;
         str->Set = &str_set;
         str->Get = &str_get;
+        str->Append = &str_append;
+        str->Concat = &str_concat;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
