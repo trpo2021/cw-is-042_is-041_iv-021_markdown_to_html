@@ -26,6 +26,7 @@ struct String
     void (*Concat)(struct String* str, const char* item);
     bool (*Contains)(const struct String* str, const char* item);
     bool (*Compare)(const struct String* str, const char* item);
+    string (*Replace)(const struct String* str, const char* new, const char* old);
 };
 
 string init(size_t initial_capacity);

@@ -250,3 +250,53 @@ CTEST(strings, compare_empty_false)
     string s = create("");
     ASSERT_FALSE(s->Compare(s, "str"));
 }
+
+CTEST(strings, replace)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, " ", "");
+    s->Free(s);
+    ASSERT_STR("testtesttestspaces!", replaced->Text(replaced));
+}
+
+CTEST(strings, replace_not_contains)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, "not", "");
+    ASSERT_STR(s->Text(s), replaced->Text(replaced));
+}
+
+CTEST(strings, replace_empty_old)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, "", "");
+    ASSERT_NULL(replaced);
+}
+
+CTEST(strings, replace_empty_source)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(NULL, "", "");
+    ASSERT_NULL(replaced);
+}
+
+CTEST(strings, replace_empty_new)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, "test", "");
+    ASSERT_STR("     spaces!", replaced->Text(replaced));
+}
+
+CTEST(strings, empty_string_replace)
+{
+    string s = create("");
+    string replaced = s->Replace(s, "test", "ssss");
+    ASSERT_NULL(replaced);
+}
+
+CTEST(strings, replace_large_substr_len)
+{
+    string s = create("test");
+    string replaced = s->Replace(s, "tested", "wwww");
+    ASSERT_STR(s->Text(s), replaced->Text(replaced));
+}

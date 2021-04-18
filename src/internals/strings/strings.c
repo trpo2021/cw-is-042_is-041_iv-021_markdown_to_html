@@ -108,6 +108,73 @@ bool str_compare(const struct String* str, const char* item)
     return false;
 }
 
+string str_replace(const struct String* str, const char* old, const char* new)
+{
+    if (!str || !old || !new)
+    {
+        return NULL;
+    }
+    size_t source_len = str->Length(str);
+    if (!source_len)
+    {
+        return NULL;
+    }
+    size_t old_len = strlen(old);
+    if (!old_len)
+    {
+        return NULL;
+    }
+    size_t count = 0;
+    const char* p = str->Text(str);
+    do
+    {
+        p = strstr(p, old);
+        if (p)
+        {
+            p += old_len;
+            ++count;
+        }
+    } while (p);
+
+    if (!count)
+    {
+        return str->Copy(str);
+    }
+
+    size_t source_without_old_len = source_len - count * old_len;
+    size_t new_len = strlen(new);
+    size_t source_with_new_len = source_without_old_len + count * new_len;
+    if (new_len && ((source_with_new_len <= source_without_old_len) || (source_with_new_len + 1 == 0)))
+    {
+        /* Overflow. */
+        return NULL;
+    }
+
+    char* result = malloc(source_with_new_len + 1);
+    if (!result)
+    {
+        return NULL;
+    }
+
+    char* dst = result;
+    const char* start_substr = str->Text(str);
+    size_t i;
+    for (i = 0; i != count; ++i)
+    {
+        const char* end_substr = strstr(start_substr, old);
+        size_t substr_len = end_substr - start_substr;
+        memcpy(dst, start_substr, substr_len);
+        dst += substr_len;
+        memcpy(dst, new, new_len);
+        dst += new_len;
+        start_substr = end_substr + old_len;
+    }
+
+    size_t remains = source_len - (start_substr - str->Text(str)) + 1;
+    memcpy(dst, start_substr, remains);
+    return create(result);
+}
+
 string str_copy(const struct String* str)
 {
     return create(str->Text(str));
@@ -166,6 +233,7 @@ string init(size_t initial_capacity)
         str->Concat = &str_concat;
         str->Contains = &str_contains;
         str->Compare = &str_compare;
+        str->Replace = &str_replace;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
