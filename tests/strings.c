@@ -20,30 +20,40 @@ size_t str_capacity(const struct String* str)
     return ((Data*)str->internals)->capacity;
 }
 
+const char* str_text(const struct String* v)
+{
+    return ((Data*)v->internals)->data;
+}
+
 string init(size_t initial_capacity)
 {
-    string str = malloc(sizeof(struct String));
-    if (!str)
+    if (initial_capacity > 0)
     {
-        return NULL;
+        string str = malloc(sizeof(struct String));
+        if (!str)
+        {
+            return NULL;
+        }
+        str->internals = malloc(sizeof(Data));
+        if (!str->internals)
+        {
+            free(str);
+            return NULL;
+        }
+        ((Data*)str->internals)->capacity = initial_capacity;
+        ((Data*)str->internals)->data = malloc(((Data*)str->internals)->capacity);
+        if (!((Data*)str->internals)->data)
+        {
+            free(str->internals);
+            free(str);
+            return NULL;
+        }
+        ((Data*)str->internals)->length = 0;
+        str->Capacity = &str_capacity;
+        str->Length = &str_length;
+        str->Text = &str_text;
+        ((Data*)str->internals)->data[0] = '\0';
+        return str;
     }
-    str->internals = malloc(sizeof(Data));
-    if (!str->internals)
-    {
-        free(str);
-        return NULL;
-    }
-    ((Data*)str->internals)->capacity = initial_capacity;
-    ((Data*)str->internals)->data = malloc(((Data*)str->internals)->capacity);
-    if (!((Data*)str->internals)->data)
-    {
-        free(str->internals);
-        free(str);
-        return NULL;
-    }
-    ((Data*)str->internals)->length = 0;
-    str->Capacity = &str_capacity;
-    str->Length = &str_length;
-    ((Data*)str->internals)->data[0] = '\0';
-    return str;
+    return NULL;
 }
