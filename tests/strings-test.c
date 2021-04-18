@@ -67,3 +67,45 @@ CTEST(strings, create_empty_capacity)
     string s = create("");
     ASSERT_EQUAL(10, s->Capacity(s));
 }
+
+CTEST(strings, copy)
+{
+    string s = create("test");
+    string s2 = s->Copy(s);
+    ASSERT_STR(s2->Text(s2), s->Text(s));
+}
+
+CTEST(strings, copy_length)
+{
+    string s = create("test");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Length(s2), s->Length(s));
+}
+
+CTEST(strings, copy_capacity)
+{
+    string s = create("test");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+}
+
+CTEST(strings, copy_empty)
+{
+    string s = create("");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+}
+
+CTEST(strings, copy_empty_length)
+{
+    string s = create("");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+}
+
+CTEST(strings, copy_empty_capacity)
+{
+    string s = create("");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+}

@@ -17,6 +17,8 @@ struct String
     size_t (*Length)(const struct String* str);
     size_t (*Capacity)(const struct String* str);
     const char* (*Text)(const struct String* str);
+    // methods
+    string (*Copy)(const struct String* str);
 };
 
 string init(size_t initial_capacity);

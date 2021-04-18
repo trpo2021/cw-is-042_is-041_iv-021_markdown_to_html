@@ -1,4 +1,4 @@
-#include <internals/strings/strings.h>
+#include <../src/internals/strings/strings.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -20,9 +20,14 @@ size_t str_capacity(const struct String* str)
     return ((Data*)str->internals)->capacity;
 }
 
-const char* str_text(const struct String* v)
+const char* str_text(const struct String* str)
 {
-    return ((Data*)v->internals)->data;
+    return ((Data*)str->internals)->data;
+}
+
+string str_copy(const struct String* str)
+{
+    return create(str->Text(str));
 }
 
 string init(size_t initial_capacity)
@@ -52,6 +57,7 @@ string init(size_t initial_capacity)
         str->Capacity = &str_capacity;
         str->Length = &str_length;
         str->Text = &str_text;
+        str->Copy = str_copy;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
