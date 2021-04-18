@@ -19,6 +19,7 @@ struct String
     const char* (*Text)(const struct String* str);
     // methods
     string (*Copy)(const struct String* str);
+    void (*Free)(struct String* str);
 };
 
 string init(size_t initial_capacity);

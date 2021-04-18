@@ -109,3 +109,17 @@ CTEST(strings, copy_empty_capacity)
     string s2 = s->Copy(s);
     ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
 }
+
+CTEST(strings, free_string)
+{
+    string s = create("test");
+    s->Free(s);
+    ASSERT_NULL(s->internals);
+}
+
+CTEST(strings, free_empty_string)
+{
+    string s = create("");
+    s->Free(s);
+    ASSERT_NULL(s->internals);
+}

@@ -30,6 +30,24 @@ string str_copy(const struct String* str)
     return create(str->Text(str));
 }
 
+void str_free(struct String* str)
+{
+    if (str)
+    {
+        if (str->internals)
+        {
+            if (((Data*)str->internals)->data)
+            {
+                free(((Data*)str->internals)->data);
+                ((Data*)str->internals)->data = NULL;
+            }
+            free(str->internals);
+            str->internals = NULL;
+        }
+        free(str);
+    }
+}
+
 string init(size_t initial_capacity)
 {
     if (initial_capacity > 0)
@@ -57,7 +75,8 @@ string init(size_t initial_capacity)
         str->Capacity = &str_capacity;
         str->Length = &str_length;
         str->Text = &str_text;
-        str->Copy = str_copy;
+        str->Copy = &str_copy;
+        str->Free = &str_free;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
