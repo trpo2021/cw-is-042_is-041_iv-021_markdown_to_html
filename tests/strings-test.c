@@ -137,3 +137,18 @@ CTEST(strings, set_out_of_range)
     s->Set(s, 222, 'w');
     ASSERT_STR("test", s->Text(s));
 }
+
+CTEST(strings, get)
+{
+    string s = create("test");
+    ASSERT_EQUAL('t', s->Get(s, 0));
+    ASSERT_EQUAL('e', s->Get(s, 1));
+    ASSERT_EQUAL('s', s->Get(s, 2));
+    ASSERT_EQUAL('t', s->Get(s, 3));
+}
+
+CTEST(strings, get_out_of_range)
+{
+    string s = create("test");
+    ASSERT_EQUAL(-1, s->Get(s, 7));
+}

@@ -34,6 +34,15 @@ void str_set(const struct String* str, size_t index, char item)
     ((Data*)str->internals)->data[index] = item;
 }
 
+char str_get(const struct String* str, size_t index)
+{
+    if (index < ((Data*)str->internals)->length)
+    {
+        return ((Data*)str->internals)->data[index];
+    }
+    return -1;
+}
+
 string str_copy(const struct String* str)
 {
     return create(str->Text(str));
@@ -87,6 +96,7 @@ string init(size_t initial_capacity)
         str->Copy = &str_copy;
         str->Free = &str_free;
         str->Set = &str_set;
+        str->Get = &str_get;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
