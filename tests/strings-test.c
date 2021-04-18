@@ -200,3 +200,29 @@ CTEST(strings, concat_empty)
     s->Concat(s, "concated");
     ASSERT_STR("concated", s->Text(s));
 }
+
+CTEST(strings, contains)
+{
+    string s = create("test");
+    ASSERT_TRUE(s->Contains(s, "t"));
+    ASSERT_TRUE(s->Contains(s, "e"));
+    ASSERT_TRUE(s->Contains(s, "st"));
+}
+
+CTEST(strings, contains_false)
+{
+    string s = create("test");
+    ASSERT_FALSE(s->Contains(s, "str"));
+}
+
+CTEST(strings, empty_contains_true)
+{
+    string s = create("");
+    ASSERT_TRUE(s->Contains(s, ""));
+}
+
+CTEST(strings, empty_contains_false)
+{
+    string s = create("");
+    ASSERT_FALSE(s->Contains(s, "test"));
+}

@@ -90,6 +90,15 @@ void str_append(struct String* str, char item)
     }
 }
 
+bool str_contains(const struct String* str, const char* item)
+{
+    if (strstr(((Data*)str->internals)->data, item))
+    {
+        return true;
+    }
+    return false;
+}
+
 string str_copy(const struct String* str)
 {
     return create(str->Text(str));
@@ -146,6 +155,7 @@ string init(size_t initial_capacity)
         str->Get = &str_get;
         str->Append = &str_append;
         str->Concat = &str_concat;
+        str->Contains = &str_contains;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
