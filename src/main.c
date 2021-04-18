@@ -2,17 +2,22 @@
 
 int main(int argc, char **argv)
 {
+    if (fopen("template_top.html", "r") == NULL || fopen("template_bottom.html", "r") == NULL || fopen("template.css", "r") == NULL)
+    {
+        create_template();
+    }
+
     if (strcmp("-f", argv[1]) == 0 && strcmp("-f", argv[3]) == 0)
     {
         func_1(read_file(argv[2]), create_out_file(argv[4]));
     }
     else if (strcmp("-d", argv[1]) == 0 && strcmp("-f", argv[3] == 0))
     {
-        func_2(stdin, create_out_file(argv[4]));
+        func_2(read_line(), create_out_file(argv[4]));
     }
     else if (strcmp("-d", argv[1]) == 0 && strcmp("-d", argv[3]) == 0)
     {
-        func_3(stdin, stdout);
+        func_3(read_line(), stdout);
     }
     else if (strcmp("-help", argv[1]) == 0)
     {
