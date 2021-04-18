@@ -123,3 +123,17 @@ CTEST(strings, free_empty_string)
     s->Free(s);
     ASSERT_NULL(s->internals);
 }
+
+CTEST(strings, set)
+{
+    string s = create("test");
+    s->Set(s, 2, 'w');
+    ASSERT_STR("tewt", s->Text(s));
+}
+
+CTEST(strings, set_out_of_range)
+{
+    string s = create("test");
+    s->Set(s, 222, 'w');
+    ASSERT_STR("test", s->Text(s));
+}

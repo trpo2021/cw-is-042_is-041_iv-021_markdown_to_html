@@ -17,6 +17,8 @@ struct String
     size_t (*Length)(const struct String* str);
     size_t (*Capacity)(const struct String* str);
     const char* (*Text)(const struct String* str);
+
+    void (*Set)(const struct String* str, size_t index, char item);
     // methods
     string (*Copy)(const struct String* str);
     void (*Free)(struct String* str);
