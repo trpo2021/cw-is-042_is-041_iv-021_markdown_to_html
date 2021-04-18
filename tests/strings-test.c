@@ -300,3 +300,42 @@ CTEST(strings, replace_large_substr_len)
     string replaced = s->Replace(s, "tested", "wwww");
     ASSERT_STR(s->Text(s), replaced->Text(replaced));
 }
+
+CTEST(strings, split)
+{
+    string s = create("Share Improve this answer Follow");
+    size_t len = 0;
+    string* container = s->Split(s, " ", &len);
+    ASSERT_STR("Share", container[0]->Text(container[0]));
+    ASSERT_STR("Improve", container[1]->Text(container[1]));
+    ASSERT_STR("this", container[2]->Text(container[2]));
+    ASSERT_STR("answer", container[3]->Text(container[3]));
+    ASSERT_STR("Follow", container[4]->Text(container[4]));
+}
+
+CTEST(strings, split_empty_pattern)
+{
+    string s = create("Share Improve this answer Follow");
+    size_t len = 0;
+    string* container = s->Split(s, "6", &len);
+    ASSERT_STR("Share Improve this answer Follow", (*container)->Text(*container));
+}
+
+CTEST(strings, split_empty_string)
+{
+    string s = create("");
+    size_t len = 0;
+    ASSERT_NULL(s->Split(s, "test", &len));
+}
+
+CTEST(strings, split_save_source)
+{
+    string s = create("Share Improve this answer Follow");
+    size_t len = 0;
+    string* container = s->Split(s, " ", &len);
+    for (int i = 0; i < len; i++)
+    {
+        container[i]->Free(container[i]);
+    }
+    ASSERT_STR("Share Improve this answer Follow", s->Text(s));
+}

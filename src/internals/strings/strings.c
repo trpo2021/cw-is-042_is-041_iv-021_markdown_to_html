@@ -175,6 +175,20 @@ string str_replace(const struct String* str, const char* old, const char* new)
     return create(result);
 }
 
+string* str_split(const struct String* str, const char* pattern, size_t* length)
+{
+    char* copy = malloc(((Data*)str->internals)->length + 1);
+    memcpy(copy, ((Data*)str->internals)->data, ((Data*)str->internals)->length + 1);
+    string* container = NULL;
+    *length = 0;
+    for (char* p = strtok(copy, pattern); p != NULL; p = strtok(NULL, pattern))
+    {
+        container = realloc(container, sizeof(string) * (++(*length)));
+        container[(*length) - 1] = create(p);
+    }
+    return container;
+}
+
 string str_copy(const struct String* str)
 {
     return create(str->Text(str));
@@ -234,6 +248,7 @@ string init(size_t initial_capacity)
         str->Contains = &str_contains;
         str->Compare = &str_compare;
         str->Replace = &str_replace;
+        str->Split = &str_split;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
