@@ -339,3 +339,52 @@ CTEST(strings, split_save_source)
     }
     ASSERT_STR("Share Improve this answer Follow", s->Text(s));
 }
+
+CTEST(strings, insert_start)
+{
+    string s = create("test");
+    s->Insert(s, "2", 0);
+    ASSERT_STR("2test", s->Text(s));
+}
+
+CTEST(strings, insert_mid)
+{
+    string s = create("test");
+    s->Insert(s, "2", 2);
+    ASSERT_STR("te2st", s->Text(s));
+}
+
+CTEST(strings, insert_end)
+{
+    string s = create("test");
+    s->Insert(s, "2", s->Length(s) - 1);
+    ASSERT_STR("tes2t", s->Text(s));
+}
+
+CTEST(strings, insert_realloc)
+{
+    string s = create("test");
+    s->Insert(s, "1234567890qwertyuiop", s->Length(s) / 2);
+    ASSERT_STR("te1234567890qwertyuiopst", s->Text(s));
+}
+
+CTEST(strings, insert_empty)
+{
+    string s = create("test");
+    s->Insert(s, "", 2);
+    ASSERT_STR("test", s->Text(s));
+}
+
+CTEST(strings, insert_in_empty_string)
+{
+    string s = create("");
+    s->Insert(s, "test", 0);
+    ASSERT_STR("test", s->Text(s));
+}
+
+CTEST(strings, insert_out_of_range)
+{
+    string s = create("test");
+    s->Insert(s, " test", 10);
+    ASSERT_STR("test", s->Text(s));
+}

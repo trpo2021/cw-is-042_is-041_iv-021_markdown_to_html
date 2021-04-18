@@ -35,6 +35,7 @@ void str_concat(struct String* str, const char* item)
         if (temp)
         {
             strcat(((Data*)str->internals)->data, item);
+            ((Data*)str->internals)->capacity = (((Data*)str->internals)->length + strlen(item) + 1) * 2;
             ((Data*)str->internals)->length += strlen(item);
             return;
         }
@@ -189,6 +190,32 @@ string* str_split(const struct String* str, const char* pattern, size_t* length)
     return container;
 }
 
+void str_insert(struct String* str, const char* item, size_t index)
+{
+    if (str->Length(str) == 0)
+    {
+        str->Concat(str, item);
+        return;
+    }
+    if (index < ((Data*)str->internals)->length)
+    {
+        if (((Data*)str->internals)->capacity < ((Data*)str->internals)->length + strlen(item) + 1)
+        {
+            char* temp =
+                realloc(((Data*)str->internals)->data, (((Data*)str->internals)->length + strlen(item) + 1) * 2);
+            if (temp)
+            {
+                ((Data*)str->internals)->capacity = (((Data*)str->internals)->length + strlen(item) + 1) * 2;
+                ((Data*)str->internals)->data = temp;
+            }
+        }
+        memmove(&((Data*)str->internals)->data[index + strlen(item)], &((Data*)str->internals)->data[index],
+                str->Length(str) - index + 1);
+        memmove(&((Data*)str->internals)->data[index], item, strlen(item));
+        ((Data*)str->internals)->length += strlen(item);
+    }
+}
+
 string str_copy(const struct String* str)
 {
     return create(str->Text(str));
@@ -249,6 +276,7 @@ string init(size_t initial_capacity)
         str->Compare = &str_compare;
         str->Replace = &str_replace;
         str->Split = &str_split;
+        str->Insert = &str_insert;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }

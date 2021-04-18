@@ -28,6 +28,7 @@ struct String
     bool (*Compare)(const struct String* str, const char* item);
     string (*Replace)(const struct String* str, const char* new, const char* old);
     string* (*Split)(const struct String* str, const char* pattern, size_t* length);
+    void (*Insert)(struct String* str, const char* item, size_t index);
 };
 
 string init(size_t initial_capacity);
