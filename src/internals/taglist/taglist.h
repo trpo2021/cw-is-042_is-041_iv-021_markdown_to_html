@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #define HASHTAB_SIZE 100
 
 typedef struct tag Tag;
