@@ -445,3 +445,29 @@ CTEST(strings, insert_out_of_range)
     ASSERT_STR("test", s->Text(s));
     s->Free(s);
 }
+
+CTEST(strings, to_string)
+{
+    int data_int = -123;
+    float data_float = -0.876;
+    double data_double = 123.456;
+    char data_char = 't';
+    char data_hex = 0x90;
+    char* str = NULL;
+    int len;
+    ToCharArray(str, data_int, "%d", len);
+    ASSERT_STR("-123", str);
+    free(str);
+    ToCharArray(str, data_float, "%g", len);
+    ASSERT_STR("-0.876", str);
+    free(str);
+    ToCharArray(str, data_double, "%g", len);
+    ASSERT_STR("123.456", str);
+    free(str);
+    ToCharArray(str, data_char, "%c", len);
+    ASSERT_STR("t", str);
+    free(str);
+    ToCharArray(str, data_hex, "%hhx", len);
+    ASSERT_STR("90", str);
+    free(str);
+}
