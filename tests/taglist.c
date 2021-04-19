@@ -29,6 +29,38 @@ void hashtab_add(Tag** hashtab, char* key, char* value)
     }
 }
 
+Tag* hashtab_lookup(Tag** hashtab, char* key)
+{
+    Tag* node;
+
+    int index = hashtab_hash(key);
+    for (node = hashtab[index]; node != NULL; node = node->next)
+    {
+        if (0 == strcmp(node->key, key))
+            return node;
+    }
+    return NULL;
+}
+
+void hashtab_delete(Tag** hashtab, char* key)
+{
+    Tag *node, *prev = NULL;
+    int index = hashtab_hash(key);
+    for (node = hashtab[index]; node != NULL; node = node->next)
+    {
+        if (0 == strcmp(node->key, key))
+        {
+            if (prev == NULL)
+                hashtab[index] = node->next;
+            else
+                prev->next = node->next;
+            free(node);
+            return;
+        }
+        prev = node;
+    }
+}
+
 void create_taglist(Tag** map)
 {
     TagList list = {.tags[0] = {"# ", "<h1>"},
