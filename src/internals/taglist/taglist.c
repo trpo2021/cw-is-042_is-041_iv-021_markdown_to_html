@@ -1,4 +1,4 @@
-#include "taglist.h"
+#include <internals/taglist/taglist.h>
 
 unsigned int hashtab_hash(char* key)
 {
