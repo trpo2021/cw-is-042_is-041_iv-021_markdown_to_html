@@ -77,7 +77,7 @@ void create_taglist(Tag** map)
                     .tags[11] = {"_", "<em>"},
                     .tags[12] = {"***", "<strong>"},
                     .tags[13] = {"___", "<strong>"},
-                    .tags[14] = {"  \n\n", "<br>"},
+                    .tags[14] = {"  \n", "<br>"},
                     .tags[15] = {">", "<blockquote>"},
                     .tags[16] = {">>", "<blockquote>"},
                     .tags[17] = {">>>", "<blockquote>"},
