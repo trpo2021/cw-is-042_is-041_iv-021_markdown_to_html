@@ -471,3 +471,11 @@ CTEST(strings, to_string)
     ASSERT_STR("90", str);
     free(str);
 }
+
+CTEST(strings, clear)
+{
+    string s = create("test");
+    s->Clear(s);
+    ASSERT_STR("\0", s->Text(s));
+    s->Free(s);
+}

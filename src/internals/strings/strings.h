@@ -54,6 +54,9 @@ struct String
 
     // insert item in string by index
     void (*Insert)(struct String* str, const char* item, size_t index);
+
+    // clear string, new string equal string init(old capacity);
+    void (*Clear)(struct String* str);
 };
 
 // init string with len 0, content = '\0'

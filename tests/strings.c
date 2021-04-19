@@ -247,6 +247,23 @@ void str_free(struct String* str)
     }
 }
 
+void str_clear(struct String* str)
+{
+    if (str)
+    {
+        if (str->internals)
+        {
+            if (((Data*)str->internals)->data)
+            {
+                free(((Data*)str->internals)->data);
+                ((Data*)str->internals)->data = malloc(((Data*)str->internals)->capacity);
+                ((Data*)str->internals)->length = 0;
+                ((Data*)str->internals)->data[0] = '\0';
+            }
+        }
+    }
+}
+
 string init(size_t initial_capacity)
 {
     if (initial_capacity > 0)
@@ -285,6 +302,7 @@ string init(size_t initial_capacity)
         str->Replace = &str_replace;
         str->Split = &str_split;
         str->Insert = &str_insert;
+        str->Clear = &str_clear;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
