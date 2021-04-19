@@ -1,325 +1,481 @@
 #include <../src/internals/strings/strings.h>
+#include <ctest.h>
 #include <stdio.h>
-#include <string.h>
 
-typedef struct
+CTEST(strings, init)
 {
-    // char array
-    char* data;
-    size_t length;
-    size_t capacity;
-} Data;
-
-static bool realloc_memory(struct String* str)
-{
-    ((Data*)str->internals)->capacity = 1 + (((Data*)str->internals)->capacity * 2);
-    char* temp = realloc(((Data*)str->internals)->data, (((Data*)str->internals)->capacity));
-    if (!temp)
-    {
-        return false;
-    }
-    ((Data*)str->internals)->data = temp;
-    return true;
+    string s = init(10);
+    ASSERT_NOT_NULL(s);
+    s->Free(s);
 }
 
-void str_concat(struct String* str, const char* item)
+CTEST(strings, length)
 {
-    if (((Data*)str->internals)->length + strlen(item) + 1 < ((Data*)str->internals)->capacity)
-    {
-        strcat(((Data*)str->internals)->data, item);
-        ((Data*)str->internals)->length += strlen(item);
-    }
-    else
-    {
-        char* temp = realloc(((Data*)str->internals)->data, (((Data*)str->internals)->length + strlen(item) + 1) * 2);
-        if (temp)
-        {
-            ((Data*)str->internals)->data = temp;
-            strcat(((Data*)str->internals)->data, item);
-            ((Data*)str->internals)->capacity = (((Data*)str->internals)->length + strlen(item) + 1) * 2;
-            ((Data*)str->internals)->length += strlen(item);
-            return;
-        }
-    }
+    string s = init(10);
+    ASSERT_EQUAL(0, s->Length(s));
+    s->Free(s);
 }
 
-size_t str_length(const struct String* str)
+CTEST(strings, capacity)
 {
-    return ((Data*)str->internals)->length;
+    string s = init(10);
+    ASSERT_EQUAL(10, s->Capacity(s));
+    s->Free(s);
 }
 
-size_t str_capacity(const struct String* str)
+CTEST(strings, print)
 {
-    return ((Data*)str->internals)->capacity;
+    string s = init(10);
+    ASSERT_STR("\0", s->Text(s));
+    s->Free(s);
 }
 
-const char* str_text(const struct String* str)
+CTEST(strings, print_content)
 {
-    return ((Data*)str->internals)->data;
+    string s = create("test");
+    printf("%s", s->Text(s));
+    s->Free(s);
 }
 
-void str_set(const struct String* str, size_t index, char item)
+CTEST(strings, create)
 {
-    if (index > ((Data*)str->internals)->length - 1)
-    {
-        return;
-    }
-    ((Data*)str->internals)->data[index] = item;
+    string s = create("test");
+    ASSERT_STR("test", s->Text(s));
+    s->Free(s);
 }
 
-char str_get(const struct String* str, size_t index)
+CTEST(strings, create_empty)
 {
-    if (index < ((Data*)str->internals)->length)
-    {
-        return ((Data*)str->internals)->data[index];
-    }
-    return -1;
+    string s = create("");
+    ASSERT_STR("\0", s->Text(s));
+    s->Free(s);
 }
 
-void str_append(struct String* str, char item)
+CTEST(strings, create_length)
 {
-    if (((Data*)str->internals)->length + 1 < ((Data*)str->internals)->capacity)
-    {
-        ((Data*)str->internals)->data[((Data*)str->internals)->length++] = item;
-        ((Data*)str->internals)->data[((Data*)str->internals)->length] = '\0';
-        return;
-    }
-    if (realloc_memory(str))
-    {
-        ((Data*)str->internals)->data[((Data*)str->internals)->length++] = item;
-        ((Data*)str->internals)->data[((Data*)str->internals)->length] = '\0';
-        return;
-    }
+    string s = create("test");
+    ASSERT_EQUAL(4, s->Length(s));
+    s->Free(s);
 }
 
-bool str_contains(const struct String* str, const char* item)
+CTEST(strings, create_capacity)
 {
-    if (strstr(((Data*)str->internals)->data, item))
-    {
-        return true;
-    }
-    return false;
+    string s = create("test");
+    ASSERT_EQUAL(4 + 10, s->Capacity(s));
+    s->Free(s);
 }
 
-bool str_compare(const struct String* str, const char* item)
+CTEST(strings, create_empty_length)
 {
-    if (strcmp(((Data*)str->internals)->data, item) == 0)
-    {
-        return true;
-    }
-    return false;
+    string s = create("");
+    ASSERT_EQUAL(0, s->Length(s));
+    s->Free(s);
 }
 
-string str_replace(const struct String* str, const char* old, const char* new)
+CTEST(strings, create_empty_capacity)
 {
-    if (!str || !old || !new)
-    {
-        return NULL;
-    }
-    size_t source_len = str->Length(str);
-    if (!source_len)
-    {
-        return NULL;
-    }
-    size_t old_len = strlen(old);
-    if (!old_len)
-    {
-        return NULL;
-    }
-    size_t count = 0;
-    const char* p = str->Text(str);
-    do
-    {
-        p = strstr(p, old);
-        if (p)
-        {
-            p += old_len;
-            ++count;
-        }
-    } while (p);
-
-    if (!count)
-    {
-        return str->Copy(str);
-    }
-
-    size_t source_without_old_len = source_len - count * old_len;
-    size_t new_len = strlen(new);
-    size_t source_with_new_len = source_without_old_len + count * new_len;
-    if (new_len && ((source_with_new_len <= source_without_old_len) || (source_with_new_len + 1 == 0)))
-    {
-        /* Overflow. */
-        return NULL;
-    }
-
-    char* result = malloc(source_with_new_len + 1);
-    if (!result)
-    {
-        return NULL;
-    }
-
-    char* dst = result;
-    const char* start_substr = str->Text(str);
-    size_t i;
-    for (i = 0; i != count; ++i)
-    {
-        const char* end_substr = strstr(start_substr, old);
-        size_t substr_len = end_substr - start_substr;
-        memcpy(dst, start_substr, substr_len);
-        dst += substr_len;
-        memcpy(dst, new, new_len);
-        dst += new_len;
-        start_substr = end_substr + old_len;
-    }
-
-    size_t remains = source_len - (start_substr - str->Text(str)) + 1;
-    memcpy(dst, start_substr, remains);
-    string out = create(result);
-    free(result);
-    return out;
+    string s = create("");
+    ASSERT_EQUAL(10, s->Capacity(s));
+    s->Free(s);
 }
 
-string* str_split(const struct String* str, const char* pattern, size_t* length)
+CTEST(strings, copy)
 {
-    char* copy = malloc(((Data*)str->internals)->length + 1);
-    memcpy(copy, ((Data*)str->internals)->data, ((Data*)str->internals)->length + 1);
-    string* container = NULL;
-    *length = 0;
-    for (char* p = strtok(copy, pattern); p != NULL; p = strtok(NULL, pattern))
-    {
-        string* temp = realloc(container, sizeof(string) * (++(*length)));
-        if (temp)
-        {
-            container = temp;
-            container[(*length) - 1] = create(p);
-        }
-    }
-    free(copy);
-    return container;
+    string s = create("test");
+    string s2 = s->Copy(s);
+    ASSERT_STR(s2->Text(s2), s->Text(s));
+    s->Free(s);
+    s2->Free(s2);
 }
 
-void str_insert(struct String* str, const char* item, size_t index)
+CTEST(strings, copy_length)
 {
-    if (str->Length(str) == 0)
-    {
-        str->Concat(str, item);
-        return;
-    }
-    if (index < ((Data*)str->internals)->length)
-    {
-        if (((Data*)str->internals)->capacity < ((Data*)str->internals)->length + strlen(item) + 1)
-        {
-            char* temp =
-                realloc(((Data*)str->internals)->data, (((Data*)str->internals)->length + strlen(item) + 1) * 2);
-            if (temp)
-            {
-                ((Data*)str->internals)->capacity = (((Data*)str->internals)->length + strlen(item) + 1) * 2;
-                ((Data*)str->internals)->data = temp;
-            }
-        }
-        memmove(&((Data*)str->internals)->data[index + strlen(item)], &((Data*)str->internals)->data[index],
-                str->Length(str) - index + 1);
-        memmove(&((Data*)str->internals)->data[index], item, strlen(item));
-        ((Data*)str->internals)->length += strlen(item);
-    }
+    string s = create("test");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Length(s2), s->Length(s));
+    s->Free(s);
+    s2->Free(s2);
 }
 
-string str_copy(const struct String* str)
+CTEST(strings, copy_capacity)
 {
-    return create(str->Text(str));
+    string s = create("test");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+    s->Free(s);
+    s2->Free(s2);
 }
 
-void str_free(struct String* str)
+CTEST(strings, copy_empty)
 {
-    if (str)
-    {
-        if (str->internals)
-        {
-            if (((Data*)str->internals)->data)
-            {
-                free(((Data*)str->internals)->data);
-                ((Data*)str->internals)->data = NULL;
-            }
-            free(str->internals);
-            str->internals = NULL;
-        }
-        free(str);
-    }
+    string s = create("");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+    s->Free(s);
+    s2->Free(s2);
 }
 
-void str_clear(struct String* str)
+CTEST(strings, copy_empty_length)
 {
-    if (str)
-    {
-        if (str->internals)
-        {
-            if (((Data*)str->internals)->data)
-            {
-                free(((Data*)str->internals)->data);
-                ((Data*)str->internals)->data = malloc(((Data*)str->internals)->capacity);
-                ((Data*)str->internals)->length = 0;
-                ((Data*)str->internals)->data[0] = '\0';
-            }
-        }
-    }
+    string s = create("");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+    s->Free(s);
+    s2->Free(s2);
 }
 
-string init(size_t initial_capacity)
+CTEST(strings, copy_empty_capacity)
 {
-    if (initial_capacity > 0)
-    {
-        string str = malloc(sizeof(struct String));
-        if (!str)
-        {
-            return NULL;
-        }
-        str->internals = malloc(sizeof(Data));
-        if (!str->internals)
-        {
-            free(str);
-            return NULL;
-        }
-        ((Data*)str->internals)->capacity = initial_capacity;
-        ((Data*)str->internals)->data = malloc(((Data*)str->internals)->capacity);
-        if (!((Data*)str->internals)->data)
-        {
-            free(str->internals);
-            free(str);
-            return NULL;
-        }
-        ((Data*)str->internals)->length = 0;
-        str->Capacity = &str_capacity;
-        str->Length = &str_length;
-        str->Text = &str_text;
-        str->Copy = &str_copy;
-        str->Free = &str_free;
-        str->Set = &str_set;
-        str->Get = &str_get;
-        str->Append = &str_append;
-        str->Concat = &str_concat;
-        str->Contains = &str_contains;
-        str->Compare = &str_compare;
-        str->Replace = &str_replace;
-        str->Split = &str_split;
-        str->Insert = &str_insert;
-        str->Clear = &str_clear;
-        ((Data*)str->internals)->data[0] = '\0';
-        return str;
-    }
-    return NULL;
+    string s = create("");
+    string s2 = s->Copy(s);
+    ASSERT_EQUAL(s2->Capacity(s2), s->Capacity(s));
+    s->Free(s);
+    s2->Free(s2);
 }
 
-string create(const char* source)
+CTEST(strings, set)
 {
-    if (strlen(source) > 0)
+    string s = create("test");
+    s->Set(s, 2, 'w');
+    ASSERT_STR("tewt", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, set_out_of_range)
+{
+    string s = create("test");
+    s->Set(s, 222, 'w');
+    ASSERT_STR("test", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, get)
+{
+    string s = create("test");
+    ASSERT_EQUAL('t', s->Get(s, 0));
+    ASSERT_EQUAL('e', s->Get(s, 1));
+    ASSERT_EQUAL('s', s->Get(s, 2));
+    ASSERT_EQUAL('t', s->Get(s, 3));
+    s->Free(s);
+}
+
+CTEST(strings, get_out_of_range)
+{
+    string s = create("test");
+    ASSERT_EQUAL(-1, s->Get(s, 7));
+    s->Free(s);
+}
+
+CTEST(strings, append)
+{
+    string s = create("test");
+    s->Append(s, '2');
+    ASSERT_STR("test2", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, append_realloc)
+{
+    string s = create("test");
+    for (size_t i = '0'; i < '0' + 20; i++)
     {
-        string s = init(strlen(source) + 10);
-        memcpy(((Data*)s->internals)->data, source, strlen(source) + 1);
-        ((Data*)s->internals)->length = strlen(source);
-        return s;
+        s->Append(s, (char)i);
     }
-    else
+    ASSERT_STR("test0123456789:;<=>?@ABC", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, append_empty)
+{
+    string s = create("");
+    s->Append(s, 'w');
+    ASSERT_STR("w", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, append_empty_realloc)
+{
+    string s = create("");
+    for (size_t i = '0'; i < '0' + 20; i++)
     {
-        return init(10);
+        s->Append(s, (char)i);
     }
+    ASSERT_STR("0123456789:;<=>?@ABC", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, concat)
+{
+    string s = create("test");
+    s->Concat(s, " concated");
+    ASSERT_STR("test concated", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, concat_empty)
+{
+    string s = create("");
+    s->Concat(s, "concated");
+    ASSERT_STR("concated", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, contains)
+{
+    string s = create("test");
+    ASSERT_TRUE(s->Contains(s, "t"));
+    ASSERT_TRUE(s->Contains(s, "e"));
+    ASSERT_TRUE(s->Contains(s, "st"));
+    s->Free(s);
+}
+
+CTEST(strings, contains_false)
+{
+    string s = create("test");
+    ASSERT_FALSE(s->Contains(s, "str"));
+    s->Free(s);
+}
+
+CTEST(strings, empty_contains_true)
+{
+    string s = create("");
+    ASSERT_TRUE(s->Contains(s, ""));
+    s->Free(s);
+}
+
+CTEST(strings, empty_contains_false)
+{
+    string s = create("");
+    ASSERT_FALSE(s->Contains(s, "test"));
+    s->Free(s);
+}
+
+CTEST(strings, compare_true)
+{
+    string s = create("test");
+    ASSERT_TRUE(s->Compare(s, "test"));
+    s->Free(s);
+}
+
+CTEST(strings, compare_false)
+{
+    string s = create("test");
+    ASSERT_FALSE(s->Compare(s, "str"));
+    s->Free(s);
+}
+
+CTEST(strings, compare_empty_true)
+{
+    string s = create("");
+    ASSERT_TRUE(s->Compare(s, ""));
+    s->Free(s);
+}
+
+CTEST(strings, compare_empty_false)
+{
+    string s = create("");
+    ASSERT_FALSE(s->Compare(s, "str"));
+    s->Free(s);
+}
+
+CTEST(strings, replace)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, " ", "");
+    s->Free(s);
+    ASSERT_STR("testtesttestspaces!", replaced->Text(replaced));
+    replaced->Free(replaced);
+}
+
+CTEST(strings, replace_not_contains)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, "not", "");
+    ASSERT_STR(s->Text(s), replaced->Text(replaced));
+    s->Free(s);
+    replaced->Free(replaced);
+}
+
+CTEST(strings, replace_empty_old)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, "", "");
+    ASSERT_NULL(replaced);
+    s->Free(s);
+}
+
+CTEST(strings, replace_empty_source)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(NULL, "", "");
+    ASSERT_NULL(replaced);
+    s->Free(s);
+}
+
+CTEST(strings, replace_empty_new)
+{
+    string s = create("test test  test  spaces!");
+    string replaced = s->Replace(s, "test", "");
+    ASSERT_STR("     spaces!", replaced->Text(replaced));
+    s->Free(s);
+    replaced->Free(replaced);
+}
+
+CTEST(strings, empty_string_replace)
+{
+    string s = create("");
+    string replaced = s->Replace(s, "test", "ssss");
+    ASSERT_NULL(replaced);
+    s->Free(s);
+}
+
+CTEST(strings, replace_large_substr_len)
+{
+    string s = create("test");
+    string replaced = s->Replace(s, "tested", "wwww");
+    ASSERT_STR(s->Text(s), replaced->Text(replaced));
+    s->Free(s);
+    replaced->Free(replaced);
+}
+
+CTEST(strings, split)
+{
+    string s = create("Share Improve this answer Follow");
+    size_t len = 0;
+    string* container = s->Split(s, " ", &len);
+    ASSERT_STR("Share", container[0]->Text(container[0]));
+    ASSERT_STR("Improve", container[1]->Text(container[1]));
+    ASSERT_STR("this", container[2]->Text(container[2]));
+    ASSERT_STR("answer", container[3]->Text(container[3]));
+    ASSERT_STR("Follow", container[4]->Text(container[4]));
+    s->Free(s);
+    for (int i = 0; i < len; i++)
+    {
+        container[i]->Free(container[i]);
+    }
+    free(container);
+}
+
+CTEST(strings, split_empty_pattern)
+{
+    string s = create("Share Improve this answer Follow");
+    size_t len = 0;
+    string* container = s->Split(s, "6", &len);
+    ASSERT_STR("Share Improve this answer Follow", (*container)->Text(*container));
+    s->Free(s);
+    (container[0])->Free(container[0]);
+    free(container);
+}
+
+CTEST(strings, split_empty_string)
+{
+    string s = create("");
+    size_t len = 0;
+    string* container = s->Split(s, "test", &len);
+    ASSERT_NULL(container);
+    s->Free(s);
+}
+
+CTEST(strings, split_save_source)
+{
+    string s = create("Share Improve this answer Follow");
+    size_t len = 0;
+    string* container = s->Split(s, " ", &len);
+    for (int i = 0; i < len; i++)
+    {
+        container[i]->Free(container[i]);
+    }
+    free(container);
+    ASSERT_STR("Share Improve this answer Follow", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, insert_start)
+{
+    string s = create("test");
+    s->Insert(s, "2", 0);
+    ASSERT_STR("2test", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, insert_mid)
+{
+    string s = create("test");
+    s->Insert(s, "2", 2);
+    ASSERT_STR("te2st", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, insert_end)
+{
+    string s = create("test");
+    s->Insert(s, "2", s->Length(s) - 1);
+    ASSERT_STR("tes2t", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, insert_realloc)
+{
+    string s = create("test");
+    s->Insert(s, "1234567890qwertyuiop", s->Length(s) / 2);
+    ASSERT_STR("te1234567890qwertyuiopst", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, insert_empty)
+{
+    string s = create("test");
+    s->Insert(s, "", 2);
+    ASSERT_STR("test", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, insert_in_empty_string)
+{
+    string s = create("");
+    s->Insert(s, "test", 0);
+    ASSERT_STR("test", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, insert_out_of_range)
+{
+    string s = create("test");
+    s->Insert(s, " test", 10);
+    ASSERT_STR("test", s->Text(s));
+    s->Free(s);
+}
+
+CTEST(strings, to_string)
+{
+    int data_int = -123;
+    float data_float = -0.876;
+    double data_double = 123.456;
+    char data_char = 't';
+    char data_hex = 0x90;
+    char* str = NULL;
+    int len;
+    ToCharArray(str, data_int, "%d", len);
+    ASSERT_STR("-123", str);
+    free(str);
+    ToCharArray(str, data_float, "%g", len);
+    ASSERT_STR("-0.876", str);
+    free(str);
+    ToCharArray(str, data_double, "%g", len);
+    ASSERT_STR("123.456", str);
+    free(str);
+    ToCharArray(str, data_char, "%c", len);
+    ASSERT_STR("t", str);
+    free(str);
+    ToCharArray(str, data_hex, "%hhx", len);
+    ASSERT_STR("90", str);
+    free(str);
+}
+
+CTEST(strings, clear)
+{
+    string s = create("test");
+    s->Clear(s);
+    ASSERT_STR("\0", s->Text(s));
+    s->Free(s);
 }
