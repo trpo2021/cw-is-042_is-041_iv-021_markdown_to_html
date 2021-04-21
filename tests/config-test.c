@@ -4,8 +4,12 @@
 
 CTEST(template_html, create_top)
 {
-    ASSERT_STR("<!doctype html>\n<head>\n\t<meta charset=\"utf-8\"/>\n\t<title>Website "
-               "name</title>\n\t<link rel=\"stylesheet\" href\"template.css\">\n</head>\n<body>\n",
+    ASSERT_STR("<!doctype html>\n"
+               "<head>\n"
+               "\t<meta charset=\"utf-8\"/>\n"
+               "\t<link rel=\"stylesheet\" href\"template.css\">\n"
+               "</head>\n"
+               "<body>\n",
                create_template_top());
 }
 
