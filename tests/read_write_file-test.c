@@ -1,24 +1,25 @@
-#include <../src/internals/read_and_write_file/read_write_file.h>
+#include <../src/internals/io/reader.h>
+#include <../src/internals/io/writer.h>
 #include <ctest.h>
 #include <stdio.h>
-
-CTEST(read_and_write_file, read_file_)
-{
-    const char* string = "tests/templates/test.md";
-    ASSERT_NOT_NULL(read_file(string));
-}
-
-CTEST(read_and_write_file, get_buf)
-{
-    const char* string = "tests/templates/test.md";
-    ASSERT_STR("read_file function test", read_file(string));
-}
+#include <stdlib.h>
 
 CTEST(read_and_write_file, create_file)
 {
-    const char* string = "tests/templates/test.html";
-    create_out_file(string);
-    FILE* out = fopen("tests/templates/test.html", "r");
-    ASSERT_NOT_NULL(out);
-    fclose(out);
+    write_file("test.html", "test");
+    FILE* fp = fopen("test.html", "r");
+    ASSERT_NOT_NULL(fp);
+    fclose(fp);
+    remove("test.html");
+}
+
+CTEST(read_and_write_file, read_file)
+{
+    write_file("test.md", "read_file function test");
+    FILE* fp = fopen("test.md", "r");
+    char* content = read_file("test.md");
+    ASSERT_STR("read_file function test", content);
+    free(content);
+    fclose(fp);
+    remove("test.md");
 }
