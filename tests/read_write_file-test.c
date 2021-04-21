@@ -1,4 +1,4 @@
-#include <../src/internals/read_and_write_file/read_write_file.h>
+#include <../src/internals/io/read_write_file.h>
 #include <ctest.h>
 #include <stdio.h>
 
