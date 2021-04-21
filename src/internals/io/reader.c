@@ -1,5 +1,6 @@
 #include <internals/io/reader.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 char* read_file(const char* file_path)
 {
