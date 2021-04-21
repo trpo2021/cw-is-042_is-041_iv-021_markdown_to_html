@@ -19,6 +19,6 @@ void create_css()
     char CSS_TEMPLATE[] = "html{\nfont-famaly: 'arial'\n}\n h1{\nfont-famaly: 'SmallCaps', sans-serif;\nfont-size: "
                           "2em;\nfont-weight: bold;\n}\n li{\nfont-size: 12px;\nfont-capacity: 0.9\n}\n";
     FILE* template_css = fopen("style.css", "w");
-    fwrite(CSS_TEMPLATE, sizeof(char), strlen(CSS_TEMPLATE) + 1, template_css);
+    fwrite(CSS_TEMPLATE, sizeof(char), strlen(CSS_TEMPLATE), template_css);
     fclose(template_css);
 }
