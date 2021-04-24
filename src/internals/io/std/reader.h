@@ -7,3 +7,4 @@
 static const int STDIN_LIMIT = 1000;
 
 int stdin_read(char* buf);
+void print_error_stdin_read(int code);

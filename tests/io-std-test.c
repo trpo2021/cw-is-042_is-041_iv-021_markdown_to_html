@@ -36,6 +36,7 @@ CTEST(io_std, read_more_than_limit)
     data[9999] = '\0';
     FILE* fp = fopen("stdin-test.txt", "w");
     fwrite(data, 1, strlen(data), fp);
+    free(data);
     fclose(fp);
 
     // using file as stdin

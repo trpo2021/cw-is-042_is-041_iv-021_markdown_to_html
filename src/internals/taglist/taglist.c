@@ -61,6 +61,44 @@ void hashtab_delete(Tag** hashtab, char* key)
     }
 }
 
+// TODO: remove this trash
+void delete_taglist(Tag** map)
+{
+    TagList list = {.tags[0] = {"# ", "<h1>"},
+                    .tags[1] = {"=", "<h1>"},
+                    .tags[2] = {"-", "<h2>"},
+                    .tags[3] = {"## ", "<h2>"},
+                    .tags[4] = {"### ", "<h3>"},
+                    .tags[5] = {"#### ", "<h4>"},
+                    .tags[6] = {"##### ", "<h5>"},
+                    .tags[7] = {"###### ", "<h6>"},
+                    .tags[8] = {"**", "<strong>"},
+                    .tags[9] = {"__", "<strong>"},
+                    .tags[10] = {"*", "<em>"},
+                    .tags[11] = {"_", "<em>"},
+                    .tags[12] = {"***", "<strong>"},
+                    .tags[13] = {"___", "<strong>"},
+                    .tags[14] = {"  \n", "<br>"},
+                    .tags[15] = {">", "<blockquote>"},
+                    .tags[16] = {">>", "<blockquote>"},
+                    .tags[17] = {">>>", "<blockquote>"},
+                    .tags[18] = {"1.", "<ol><li>"},
+                    .tags[19] = {"1)", "<ol><li>"},
+                    .tags[20] = {"- ", "<ul><li>"},
+                    .tags[21] = {"* ", "<ul><li>"},
+                    .tags[22] = {"+ ", "<ul><li>"},
+                    .tags[23] = {"        ", "<code>"},
+                    .tags[24] = {"***", "<hr>"},
+                    .tags[25] = {"---", "<hr>"},
+                    .tags[26] = {"___", "<hr>"},
+                    .tags[27] = {"`", "<code>"},
+                    .tags[28] = {"    ", "<code>"}};
+    for (int i = 0; i < 29; i++)
+    {
+        hashtab_delete(map, list.tags[i].key);
+    }
+}
+
 void create_taglist(Tag** map)
 {
     TagList list = {.tags[0] = {"# ", "<h1>"},
@@ -70,14 +108,14 @@ void create_taglist(Tag** map)
                     .tags[4] = {"### ", "<h3>"},
                     .tags[5] = {"#### ", "<h4>"},
                     .tags[6] = {"##### ", "<h5>"},
-                    .tags[7] = {"######", "<h6>"},
+                    .tags[7] = {"###### ", "<h6>"},
                     .tags[8] = {"**", "<strong>"},
                     .tags[9] = {"__", "<strong>"},
                     .tags[10] = {"*", "<em>"},
                     .tags[11] = {"_", "<em>"},
                     .tags[12] = {"***", "<strong>"},
                     .tags[13] = {"___", "<strong>"},
-                    .tags[14] = {"  \n\n", "<br>"},
+                    .tags[14] = {"  \n", "<br>"},
                     .tags[15] = {">", "<blockquote>"},
                     .tags[16] = {">>", "<blockquote>"},
                     .tags[17] = {">>>", "<blockquote>"},

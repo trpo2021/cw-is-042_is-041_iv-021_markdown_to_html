@@ -3,6 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+void print_error_stdin_read(int code)
+{
+    switch (code)
+    {
+    case STDIN_LIMIT_RECHEAD_CODE:
+        puts("\n\tYou have reached character limit.");
+        puts("\n\tTo convert more than 1000 characters, you can use file.");
+        puts("\n\tRun './converter --help' for more information.\n");
+        return;
+    default:
+        return;
+    }
+}
+
 // end of input
 static const char* const BREAK_LINE = "-quit\n";
 
@@ -26,9 +40,6 @@ int stdin_read(char* buf)
         }
         else
         {
-            puts("\n\tYou have reached character limit\n");
-            puts("\n\tTo convert more than 1000 characters, you can use file.\n");
-            puts("\n\tRun './converter --help' for more information.\n");
             free(line);
             return STDIN_LIMIT_RECHEAD_CODE;
         }
