@@ -57,10 +57,10 @@ lib: $(LIB_PATH)
 test: $(TEST_SOURCES) $(TEST_PATH)
 
 $(TEST_PATH): $(TEST_OBJECTS) 
-	$(CC) -I thirdparty/ -MP -MMD $(TEST_OBJECTS) -o $@
+	$(CC) -I thirdparty/ -MP -MMD $(TEST_OBJECTS) -o $@ $(LSTFLAGS)
 
 $(OBJ_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.c
-	$(CC) -c $(CFLAGS) -I thirdparty/ -MP -MMD $< -o $@
+	$(CC) -c $(CFLAGS) -I thirdparty/ -MP -MMD $< -o $@ $(LSTFLAGS)
 
 .PHONY: clean
 clean:
