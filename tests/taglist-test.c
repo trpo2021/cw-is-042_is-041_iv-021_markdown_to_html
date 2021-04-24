@@ -28,6 +28,7 @@ CTEST(hash, hash_add)
     hashtab_init(map);
     hashtab_add(map, "test", "help");
     ASSERT_STR("test", map[98]->key);
+    hashtab_delete(map, "test");
 }
 
 CTEST(hash, hash_init)
@@ -42,6 +43,7 @@ CTEST(hash, hash_create_1)
     Tag* map[HASHTAB_SIZE];
     create_taglist(map);
     ASSERT_STR("# ", map[17]->key);
+    delete_taglist(map);
 }
 
 CTEST(hash, hash_create_2)
@@ -49,6 +51,7 @@ CTEST(hash, hash_create_2)
     Tag* map[HASHTAB_SIZE];
     create_taglist(map);
     ASSERT_STR("---", map[85]->key);
+    delete_taglist(map);
 }
 
 CTEST(hash, hash_create_3)
@@ -56,6 +59,7 @@ CTEST(hash, hash_create_3)
     Tag* map[HASHTAB_SIZE];
     create_taglist(map);
     ASSERT_STR(">>>", map[66]->key);
+    delete_taglist(map);
 }
 
 CTEST(hash, hash_lookup_1)
@@ -63,6 +67,7 @@ CTEST(hash, hash_lookup_1)
     Tag* map[HASHTAB_SIZE];
     create_taglist(map);
     ASSERT_NOT_NULL(hashtab_lookup(map, "### "));
+    delete_taglist(map);
 }
 
 CTEST(hash, hash_lookup_2)
@@ -70,6 +75,7 @@ CTEST(hash, hash_lookup_2)
     Tag* map[HASHTAB_SIZE];
     create_taglist(map);
     ASSERT_NOT_NULL(hashtab_lookup(map, "  \n"));
+    delete_taglist(map);
 }
 
 CTEST(hash, hash_delete_1)
@@ -78,6 +84,7 @@ CTEST(hash, hash_delete_1)
     create_taglist(map);
     hashtab_delete(map, "1)");
     ASSERT_NULL(hashtab_lookup(map, "1)"));
+    delete_taglist(map);
 }
 
 CTEST(hash, hash_delete_2)
@@ -86,4 +93,5 @@ CTEST(hash, hash_delete_2)
     create_taglist(map);
     hashtab_delete(map, "---");
     ASSERT_NULL(hashtab_lookup(map, "---"));
+    delete_taglist(map);
 }

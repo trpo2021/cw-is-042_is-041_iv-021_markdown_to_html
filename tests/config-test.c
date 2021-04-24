@@ -21,5 +21,8 @@ CTEST(template_html, create_bot)
 CTEST(template_css, template_create)
 {
     create_css();
-    ASSERT_NOT_NULL(fopen("style.css", "r"));
+    FILE* fp = fopen("style.css", "r");
+    ASSERT_NOT_NULL(fp);
+    fclose(fp);
+    remove("style.css");
 }
