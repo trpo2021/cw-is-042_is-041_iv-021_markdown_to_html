@@ -15,18 +15,6 @@ const char* HELP_CALL =
 
 int main(int argc, char** argv)
 {
-    if (strcmp(argv[1], "-t") == 0 && fopen(argv[2], "r") == NULL)
-    {
-        printf("File \"%s\" not found\nDefault styles \"style.css\" created", argv[2]);
-        create_css();
-    }
-
-    if (strcmp(argv[1], "-t") != 0)
-    {
-        create_css();
-    }
-
-    // Input data is read from the keyboard, output data is output to the terminal
     if (argc == 1)
     {
         printf("%s\n", HELP_CALL);
@@ -42,13 +30,23 @@ int main(int argc, char** argv)
         printf("\nYour HTML code:\n");
         printf("%s", buf);
         free(buf);
-        printf("1\n");
         return 0;
     }
-    else if (strcmp(argv[1], "--help") == 0)
+
+    if (strcmp(argv[1], "-t") == 0 && fopen(argv[2], "r") == NULL)
+    {
+        printf("File \"%s\" not found\nDefault styles \"style.css\" created", argv[2]);
+        create_css();
+    }
+    else
+    {
+        create_css();
+    }
+    // Input data is read from the keyboard, output data is output to the terminal
+
+    if (strcmp(argv[1], "--help") == 0)
     {
         printf("%s", HELP_CALL);
-        printf("2\n");
         return 0;
     }
     // If you want to use your own styles
@@ -74,7 +72,6 @@ int main(int argc, char** argv)
                 write_file(argv[6], "test");
             }
         }
-        printf("3\n");
         return 0;
     }
     // The input and output data are files
@@ -97,7 +94,6 @@ int main(int argc, char** argv)
             read_file(argv[2]);
             write_file(argv[4], "test");
         }
-        printf("5\n");
         return 0;
     }
     // The input data is read from the keyboard, the output data is a file
@@ -114,7 +110,6 @@ int main(int argc, char** argv)
 
         write_file(argv[2], buf);
         free(buf);
-        printf("5\n");
         return 0;
     }
     else
@@ -123,5 +118,6 @@ int main(int argc, char** argv)
         printf("Incorrect input\n");
         printf("---------------\n");
         printf("%s\n", HELP_CALL);
+        remove("style.css");
     }
 }
