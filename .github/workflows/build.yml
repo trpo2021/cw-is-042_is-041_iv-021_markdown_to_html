@@ -16,4 +16,4 @@ jobs:
         run: make test && ./converter-test
 
       - name: Build application
-        run: make DEBUG=0
+        run: make
