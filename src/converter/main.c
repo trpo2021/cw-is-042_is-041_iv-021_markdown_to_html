@@ -15,29 +15,6 @@ const char* HELP_CALL =
 
 int main(int argc, char** argv)
 {
-    // Input data is read from the keyboard, output data is output to the terminal
-    if (argc == 1)
-    {
-        printf("Use \"-quit\" to exit input field\n");
-        char* buf = calloc(STDIN_LIMIT, 1);
-        int check_flag = stdin_read(buf);
-        if (check_flag == 1)
-        {
-            print_error_stdin_read(STDIN_LIMIT_RECHEAD_CODE);
-            return -1;
-        }
-
-        printf("Your HTML code:\n");
-        free(buf);
-        return 0;
-    }
-
-    if (strcmp(argv[1], "--help") == 0)
-    {
-        printf("%s", HELP_CALL);
-        return 0;
-    }
-
     if (strcmp(argv[1], "-t") == 0 && fopen(argv[2], "r") == NULL)
     {
         printf("File \"%s\" not found\nDefault styles \"style.css\" created", argv[2]);
@@ -49,8 +26,33 @@ int main(int argc, char** argv)
         create_css();
     }
 
+    // Input data is read from the keyboard, output data is output to the terminal
+    if (argc == 1)
+    {
+        printf("%s\n", HELP_CALL);
+        printf("Use \"-quit\" to exit input field\n");
+        char* buf = calloc(STDIN_LIMIT, 1);
+        int check_flag = stdin_read(buf);
+        if (check_flag == 1)
+        {
+            print_error_stdin_read(STDIN_LIMIT_RECHEAD_CODE);
+            return -1;
+        }
+
+        printf("\nYour HTML code:\n");
+        printf("%s", buf);
+        free(buf);
+        printf("1\n");
+        return 0;
+    }
+    else if (strcmp(argv[1], "--help") == 0)
+    {
+        printf("%s", HELP_CALL);
+        printf("2\n");
+        return 0;
+    }
     // If you want to use your own styles
-    if (strcmp(argv[1], "-t") == 0 && fopen(argv[2], "r") != NULL)
+    else if (strcmp(argv[1], "-t") == 0 && fopen(argv[2], "r") != NULL)
     {
         if (strcmp(argv[3], "-s") == 0 && strcmp(argv[5], "-o") == 0)
         {
@@ -72,11 +74,11 @@ int main(int argc, char** argv)
                 write_file(argv[6], "test");
             }
         }
+        printf("3\n");
         return 0;
     }
-
     // The input and output data are files
-    if (strcmp(argv[1], "-s") == 0 && strcmp(argv[3], "-o") == 0)
+    else if (strcmp(argv[1], "-s") == 0 && strcmp(argv[3], "-o") == 0)
     {
         if (fopen(argv[2], "r") == NULL)
         {
@@ -95,11 +97,11 @@ int main(int argc, char** argv)
             read_file(argv[2]);
             write_file(argv[4], "test");
         }
+        printf("5\n");
         return 0;
     }
-
     // The input data is read from the keyboard, the output data is a file
-    if (strcmp(argv[1], "-o") == 0)
+    else if (strcmp(argv[1], "-o") == 0)
     {
         printf("Use \"-quit\" to exit input field\n");
         char* buf = calloc(STDIN_LIMIT, 1);
@@ -112,6 +114,14 @@ int main(int argc, char** argv)
 
         write_file(argv[2], buf);
         free(buf);
+        printf("5\n");
         return 0;
+    }
+    else
+    {
+        printf("\n---------------\n");
+        printf("Incorrect input\n");
+        printf("---------------\n");
+        printf("%s\n", HELP_CALL);
     }
 }
