@@ -1,5 +1,5 @@
-#include <../src/internals/templates/config.h>
 #include <ctest.h>
+#include <internals/templates/config.h>
 #include <stdio.h>
 
 CTEST(template_html, create_top)

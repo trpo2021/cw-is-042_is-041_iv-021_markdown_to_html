@@ -1,6 +1,6 @@
-#include <../src/internals/io/file/reader.h>
-#include <../src/internals/io/file/writer.h>
 #include <ctest.h>
+#include <internals/io/file/reader.h>
+#include <internals/io/file/writer.h>
 #include <stdio.h>
 #include <stdlib.h>
 

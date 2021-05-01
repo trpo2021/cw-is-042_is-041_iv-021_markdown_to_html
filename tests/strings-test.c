@@ -1,5 +1,5 @@
-#include <../src/internals/strings/strings.h>
 #include <ctest.h>
+#include <internals/strings/strings.h>
 #include <stdio.h>
 
 CTEST(strings, init)

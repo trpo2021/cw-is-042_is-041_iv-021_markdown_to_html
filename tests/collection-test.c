@@ -1,5 +1,5 @@
-#include <../src/internals/parser/collection.h>
 #include <ctest.h>
+#include <internals/parser/collection.h>
 #include <stdio.h>
 
 CTEST(generic_array, get_size)
