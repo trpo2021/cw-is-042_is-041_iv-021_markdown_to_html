@@ -1,5 +1,5 @@
-#include <../src/internals/io/std/reader.h>
 #include <ctest.h>
+#include <internals/io/std/reader.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,5 +1,5 @@
-#include <../src/internals/taglist/taglist.h>
 #include <ctest.h>
+#include <internals/taglist/taglist.h>
 #include <stdio.h>
 
 CTEST(hash, hash_sum_1)

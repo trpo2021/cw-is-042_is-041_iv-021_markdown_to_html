@@ -29,8 +29,6 @@ APP_OBJECTS = $(APP_SOURCES:$(SRC_DIR)/%.$(SRC_EXT)=$(OBJ_DIR)/$(SRC_DIR)/%.o)
 
 LIB_SOURCES = $(shell find $(SRC_DIR)/$(LIB_NAME) -name '*.$(SRC_EXT)')
 LIB_OBJECTS = $(LIB_SOURCES:$(SRC_DIR)/%.$(SRC_EXT)=$(OBJ_DIR)/$(SRC_DIR)/%.o)
-LIB_TEST_OBJECTS = $(LIB_SOURCES:$(SRC_DIR)/%.$(SRC_EXT)=$(OBJ_DIR)/$(notdir $(SRC_DIR)/%.o))
-
 
 TEST_SOURCES = $(shell find $(TEST_DIR)/ -name '*.$(SRC_EXT)')
 TEST_OBJECTS = $(TEST_SOURCES:$(TEST_DIR)/%.$(SRC_EXT)=$(OBJ_DIR)/$(TEST_DIR)/%.o)
@@ -59,10 +57,10 @@ lib: $(LIB_PATH)
 test: $(TEST_SOURCES) $(TEST_PATH)
 
 $(TEST_PATH): $(TEST_OBJECTS) $(LIB_OBJECTS)
-	$(CC) -I thirdparty/ -MP -MMD $(TEST_OBJECTS) $(LIB_OBJECTS) -o $@ $(LSTFLAGS)
+	$(CC) -I thirdparty/ $(CPPFLAGS) $(TEST_OBJECTS) $(LIB_OBJECTS) -o $@ $(LSTFLAGS)
 
-$(OBJ_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.c $(LIB_OBJECTS)
-	$(CC) -c $(CFLAGS) -I thirdparty/ -MP -MMD $< -o $@ $(LSTFLAGS)
+$(OBJ_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.c $(LIB_PATH)
+	$(CC) -c $(CFLAGS) -I thirdparty/ $(CPPFLAGS) $< -o $@ $(LSTFLAGS)
 
 .PHONY: clean
 clean:
