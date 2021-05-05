@@ -34,7 +34,7 @@ typedef struct _tnode
         bool nested;
     };
     struct _tnode* parrent;
-    collection(struct _tnode*) children;
+    ArrayList(struct _tnode*) children;
 } TNode;
 
 TNode* InitNode(TypeOfTNode type, string head, string content, bool nested);

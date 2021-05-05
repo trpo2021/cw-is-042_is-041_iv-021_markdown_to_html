@@ -5,91 +5,90 @@
 /* using negitive index for storing 2 "fields" */
 /* cuz our data starts from 2, we could use 0, 1 indexes in block of memory */
 
-#define data_index 2
-#define size_index -1
-#define capacity_index -2
+#define ARRAYLIST_DATA_ST 2
+#define ARRAY_LIST_LENGTH_P -1
+#define ARRAY_LIST_CAP_P -2
 
 /* using: collection(type) identifier */
-#define collection(T) T*
+#define ArrayList(T) T*
 
 /* "private" macros, using only by structure itself */
 
 /* also, using {...} for save context */
 
-#define collection_set_capacity(source, size)                                                                          \
+#define array_list_set_capacity(source, size)                                                                          \
     {                                                                                                                  \
-        source ? ((size_t*)(source))[capacity_index] = (size) : 0;                                                     \
+        source ? ((size_t*)(source))[ARRAY_LIST_CAP_P] = (size) : 0;                                                   \
     }
 
-#define collection_set_size(source, size)                                                                              \
+#define array_list_set_size(source, size)                                                                              \
     {                                                                                                                  \
-        source ? ((size_t*)(source))[size_index] = (size) : 0;                                                         \
+        source ? ((size_t*)(source))[ARRAY_LIST_LENGTH_P] = (size) : 0;                                                \
     }
 
-#define collection_expand(source, count)                                                                               \
+#define array_list_expand(source, count)                                                                               \
     {                                                                                                                  \
+        size_t new_cap = ((count) * sizeof(*(source)) + (sizeof(size_t) * 2));                                         \
         if (source)                                                                                                    \
         {                                                                                                              \
-            size_t* tmp =                                                                                              \
-                realloc(&((size_t*)(source))[capacity_index], ((count) * sizeof(*(source)) + (sizeof(size_t) * 2)));   \
+            size_t* tmp = realloc(&((size_t*)(source))[ARRAY_LIST_CAP_P], new_cap);                                    \
             if (tmp)                                                                                                   \
             {                                                                                                          \
-                (source) = (void*)(&tmp[data_index]);                                                                  \
-                collection_set_capacity((source), (count));                                                            \
+                (source) = (void*)(&tmp[ARRAYLIST_DATA_ST]);                                                           \
+                array_list_set_capacity((source), (count));                                                            \
             }                                                                                                          \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            size_t* tmp = malloc((count) * sizeof(*(source)) + (sizeof(size_t) * 2));                                  \
+            size_t* tmp = malloc(new_cap);                                                                             \
             if (tmp)                                                                                                   \
             {                                                                                                          \
-                (source) = (void*)(&tmp[data_index]);                                                                  \
-                collection_set_size((source), 0);                                                                      \
-                collection_set_capacity((source), (count));                                                            \
+                (source) = (void*)(&tmp[ARRAYLIST_DATA_ST]);                                                           \
+                array_list_set_size((source), 0);                                                                      \
+                array_list_set_capacity((source), (count));                                                            \
             }                                                                                                          \
         }                                                                                                              \
     }
 
 /* "public" macros: add, remove, free, copy */
 
-#define collection_remove(source, index)                                                                               \
+#define ArrayListRemove(source, index)                                                                                 \
     {                                                                                                                  \
         if (source)                                                                                                    \
         {                                                                                                              \
-            if ((index) < collection_get_size(source))                                                                 \
+            if ((index) < ArrayListGetLength(source))                                                                  \
             {                                                                                                          \
-                collection_set_size((source), collection_get_size(source) - 1);                                        \
-                for (size_t itr = (index); itr < collection_get_size(source);                                          \
-                     (source)[itr] = (source)[itr + 1], itr++)                                                         \
+                array_list_set_size((source), ArrayListGetLength(source) - 1);                                         \
+                for (size_t itr = (index); itr < ArrayListGetLength(source); (source)[itr] = (source)[itr + 1], itr++) \
                     ;                                                                                                  \
             }                                                                                                          \
         }                                                                                                              \
     }
 
-#define collection_add(source, item)                                                                                   \
+#define ArrayListAdd(source, item)                                                                                     \
     {                                                                                                                  \
-        if (collection_get_size(source) >= collection_get_capacity(source))                                            \
+        if (ArrayListGetLength(source) >= ArrayListGetCapacity(source))                                                \
         {                                                                                                              \
-            size_t capacity = collection_get_capacity(source);                                                         \
-            collection_expand((source), !capacity ? capacity + 1 : capacity * 2);                                      \
+            size_t capacity = ArrayListGetCapacity(source);                                                            \
+            array_list_expand((source), !capacity ? capacity + 1 : capacity * 2);                                      \
         }                                                                                                              \
-        source[collection_get_size(source)] = (item);                                                                  \
-        collection_set_size((source), collection_get_size(source) + 1);                                                \
+        source[ArrayListGetLength(source)] = (item);                                                                   \
+        array_list_set_size((source), ArrayListGetLength(source) + 1);                                                 \
     }
 
-#define collection_copy(dest, source)                                                                                  \
+#define ArrayListCopy(dest, source)                                                                                    \
     {                                                                                                                  \
-        for (size_t i = 0; i < collection_get_size(source);)                                                           \
-            collection_add(dest, source[i++]);                                                                         \
+        for (size_t i = 0; i < ArrayListGetLength(source);)                                                            \
+            ArrayListAdd(dest, source[i++]);                                                                           \
     }
 
-#define collection_free(source)                                                                                        \
+#define ArrayListFree(source)                                                                                          \
     {                                                                                                                  \
-        source ? free(&((size_t*)(source))[capacity_index]) : 0;                                                       \
+        source ? free(&((size_t*)(source))[ARRAY_LIST_CAP_P]) : 0;                                                     \
     }
 
 /* getters */
 
-#define collection_get_capacity(source) ((source) ? ((size_t*)(source))[capacity_index] : (size_t)0)
+#define ArrayListGetCapacity(source) ((source) ? ((size_t*)(source))[ARRAY_LIST_CAP_P] : (size_t)0)
 
-#define collection_get_size(source) ((source) ? ((size_t*)(source))[size_index] : (size_t)0)
+#define ArrayListGetLength(source) ((source) ? ((size_t*)(source))[ARRAY_LIST_LENGTH_P] : (size_t)0)

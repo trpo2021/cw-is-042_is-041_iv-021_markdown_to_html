@@ -26,9 +26,9 @@ static LState get_lstate(string raw, int index)
     return StateText;
 }
 
-collection(Token_t) Tokenize(const string raw)
+ArrayList(Token) Tokenize(const string raw)
 {
-    collection(Token_t) vector = NULL;
+    ArrayList(Token) list = NULL;
     LState state = get_lstate(raw, 0);
     string value = init(10);
     for (int i = 0; i < raw->Length(raw); i++)
@@ -44,8 +44,8 @@ collection(Token_t) Tokenize(const string raw)
             }
             else
             {
-                Token_t token = {.type = TypeText, .value = value->Copy(value)};
-                collection_add(vector, token);
+                Token token = {.type = TokenText, .value = value->Copy(value)};
+                ArrayListAdd(list, token);
                 value->Clear(value);
                 state = get_lstate(raw, i);
                 --i;
@@ -63,8 +63,8 @@ collection(Token_t) Tokenize(const string raw)
             else
             {
                 value->Append(value, c);
-                Token_t token = {.type = (TokenType)(is_match(c)), .value = value->Copy(value)};
-                collection_add(vector, token);
+                Token token = {.type = (TypeOfToken)(is_match(c)), .value = value->Copy(value)};
+                ArrayListAdd(list, token);
                 value->Clear(value);
             }
         }
@@ -72,5 +72,5 @@ collection(Token_t) Tokenize(const string raw)
         }
     }
     value->Free(value);
-    return vector;
+    return list;
 }

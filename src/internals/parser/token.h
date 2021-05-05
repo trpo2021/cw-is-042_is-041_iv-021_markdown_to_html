@@ -3,81 +3,80 @@
 #include <internals/strings/strings.h>
 
 /* array to represent every TokenType constant's name as string */
-static const char* const EnumToString[] = {"TypeUnderscore",
-                                           "TypeLineBreak",
-                                           "TypeAsterisk",
-                                           "TypePlus",
-                                           "TypeMinus",
-                                           "TypeLattice",
-                                           "TypeTab",
-                                           "TypeSpace",
-                                           "TypeEscape",
-                                           "TypeGraveAccent",
-                                           "TypeExclamationMark",
-                                           "TypeEquals",
-                                           "TypeOPSquareBraket",
-                                           "TypeCLSquareBraket",
-                                           "TypeOPBraket",
-                                           "TypeCLBraket",
-                                           "TypeOPAngleBraket",
-                                           "TypeCLAngleBraket",
-                                           "TypeText"};
+static const char* const TOKEN_TO_STRING[] = {"TokenUnderscore",
+                                              "TokenLineBreak",
+                                              "TokenAsterisk",
+                                              "TokenPlus",
+                                              "TokenMinus",
+                                              "TokenLattice",
+                                              "TokenTab",
+                                              "TokenSpace",
+                                              "TokenEscape",
+                                              "TokenGraveAccent",
+                                              "TokenExclamationMark",
+                                              "TokenEquals",
+                                              "TokenOPSquareBraket",
+                                              "TokenCLSquareBraket",
+                                              "TokenOPBraket",
+                                              "TokenCLBraket",
+                                              "TokenOPAngleBraket",
+                                              "TokenCLAngleBraket",
+                                              "TokenText"};
 
 typedef enum
 {
     /* _ */
-    TypeUnderscore,
+    TokenUnderscore,
     /* \n */
-    TypeLineBreak,
+    TokenLineBreak,
     /* ** */
-    TypeAsterisk,
+    TokenAsterisk,
     /* + */
-    TypePlus,
+    TokenPlus,
     /* - */
-    TypeMinus,
+    TokenMinus,
     /* - */
-    TypeLattice,
+    TokenLattice,
     /* \\t */
-    TypeTab,
+    TokenTab,
     /*  */
-    TypeSpace,
+    TokenSpace,
     /* \ */
-    TypeEscape,
+    TokenEscape,
     /* ` */
-    TypeGraveAccent,
+    TokenGraveAccent,
     /* ! */
-    TypeExclamationMark,
+    TokenExclamationMark,
     /* = */
-    TypeEquals,
+    TokenEquals,
 
     /* Brakets */
 
     /* [ */
-    TypeOPSquareBraket,
+    TokenOPSquareBraket,
     /* ] */
-    TypeCLSquareBraket,
+    TokenCLSquareBraket,
     /* ( */
-    TypeOPBraket,
+    TokenOPBraket,
     /* ) */
-    TypeCLBraket,
+    TokenCLBraket,
     /* < */
-    TypeOPAngleBraket,
+    TokenOPAngleBraket,
     /* > */
-    TypeCLAngleBraket,
+    TokenCLAngleBraket,
 
     /* Other */
 
     /* Some text */
-    TypeText
+    TokenText
 
-} TokenType;
+} TypeOfToken;
 
 typedef struct
 {
-    TokenType type;
+    TypeOfToken type;
     string value;
-} Token_t;
+} Token;
 
-#define GET_TOKEN_NAME(token_type)                                                                                     \
-    ((int)token_type < sizeof(EnumToString) && (int)token_type >= 0) ? EnumToString[token_type] : NULL
-// # - + * ( ) [ ] \ !
+#define TokenToString(token_type)                                                                                      \
+    ((int)token_type < sizeof(TOKEN_TO_STRING) && (int)token_type >= 0) ? TOKEN_TO_STRING[token_type] : NULL

@@ -26,11 +26,11 @@ void TreeFree(TNode* node)
         }
         if (node->children)
         {
-            for (size_t i = 0; i < collection_get_size(node->children); i++)
+            for (size_t i = 0; i < ArrayListGetLength(node->children); i++)
             {
                 TreeFree(node->children[i]);
             }
-            collection_free(node->children);
+            ArrayListFree(node->children);
         }
         free(node);
     }
@@ -39,7 +39,7 @@ void TreeFree(TNode* node)
 void NodeAdd(TNode* parrent, TNode* child)
 {
     child->parrent = parrent;
-    collection_add(parrent->children, child);
+    ArrayListAdd(parrent->children, child);
 }
 
 bool IsRoot(TNode* node)
@@ -49,7 +49,7 @@ bool IsRoot(TNode* node)
 
 bool IsLeaf(TNode* node)
 {
-    return (collection_get_size(node->children) == 0) ? true : false;
+    return (ArrayListGetLength(node->children) == 0) ? true : false;
 }
 
 size_t GetNodeLevel(TNode* node)

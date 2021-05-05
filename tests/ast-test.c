@@ -10,7 +10,7 @@ CTEST(ast, node_operations)
     ASSERT_EQUAL(0, GetNodeLevel(root));
     TNode* node = InitNode(NodeHeading, create("<h1>"), create("Header content"), false);
     NodeAdd(root, node);
-    for (size_t i = 0; i < collection_get_size(root->children); i++)
+    for (size_t i = 0; i < ArrayListGetLength(root->children); i++)
     {
         ASSERT_STR("<h1>", root->children[i]->head->Text(root->children[i]->head));
         ASSERT_STR("Header content", root->children[i]->content->Text(root->children[i]->content));
@@ -29,7 +29,7 @@ CTEST(ast, tree_build)
     {
         NodeAdd(root, InitNode(NodeHeading, create("<h1>"), create("test"), false));
     }
-    for (size_t i = 0; i < collection_get_size(root->children); i++)
+    for (size_t i = 0; i < ArrayListGetLength(root->children); i++)
     {
         ASSERT_STR("<h1>", root->children[i]->head->Text(root->children[i]->head));
         ASSERT_STR("test", root->children[i]->content->Text(root->children[i]->content));
