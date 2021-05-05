@@ -6,7 +6,7 @@
 CTEST(tokenizer, get_token_value)
 {
     string str = create("1. # some. *italic*.   text\n");
-    collection(Token_t) vec = tokenize(str);
+    collection(Token_t) vec = Tokenize(str);
     ASSERT_STR("1.", vec[0].value->Text(vec[0].value));
     ASSERT_STR(" ", vec[1].value->Text(vec[1].value));
     ASSERT_STR("#", vec[2].value->Text(vec[2].value));
@@ -33,7 +33,7 @@ CTEST(tokenizer, get_token_value)
 CTEST(tokenizer, get_token_type)
 {
     string str = create("1. # some. *italic*.   text\n");
-    collection(Token_t) vec = tokenize(str);
+    collection(Token_t) vec = Tokenize(str);
     ASSERT_EQUAL(TypeText, vec[0].type);
     ASSERT_EQUAL(TypeSpace, vec[1].type);
     ASSERT_EQUAL(TypeLattice, vec[2].type);
@@ -60,7 +60,7 @@ CTEST(tokenizer, get_token_type)
 CTEST(tokenizer, token_type_to_string)
 {
     string str = create("1. # some. *italic*.   text\n");
-    collection(Token_t) vec = tokenize(str);
+    collection(Token_t) vec = Tokenize(str);
     ASSERT_STR("TypeText", GET_TOKEN_NAME(vec[0].type));
     ASSERT_STR("TypeSpace", GET_TOKEN_NAME(vec[1].type));
     ASSERT_STR("TypeLattice", GET_TOKEN_NAME(vec[2].type));
@@ -87,7 +87,7 @@ CTEST(tokenizer, token_type_to_string)
 CTEST(tokenizer, check_all_tokens)
 {
     string str = create("_\n*+-#\t \\`!=[]()<>");
-    collection(Token_t) vec = tokenize(str);
+    collection(Token_t) vec = Tokenize(str);
     for (size_t i = 0; i < collection_get_size(vec); i++)
     {
         ASSERT_STR(EnumToString[i], GET_TOKEN_NAME(vec[i].type));
