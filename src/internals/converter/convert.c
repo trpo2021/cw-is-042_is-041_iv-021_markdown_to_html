@@ -9,3 +9,17 @@ string convert_node(string head, string content)
     content->Free(content);
     return tmp;
 }
+
+string close_tag(string head)
+{
+    if (!head->Compare(head, "<br>") && !head->Compare(head, "<hr/>") && !head->Compare(head, "<a>"))
+    {
+        string tmp = head->Copy(head);
+        tmp->Insert(tmp, "/", 1);
+        return tmp;
+    }
+    else
+    {
+        return create("");
+    }
+}
