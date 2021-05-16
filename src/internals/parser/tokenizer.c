@@ -28,13 +28,13 @@ static int8_t is_match(char c)
 
 /* valid: 123. or something like this */
 
-static TypeOfToken validate_number(const string value)
+static TypeOfToken validate_number(const String* value)
 {
-    const char* text = value->Text(value);
+    const char* text = value->text(value);
     if (text[0] >= '1' && text[0] <= '9')
     {
         size_t i = 1;
-        for (; i < value->Length(value) - 1; ++i)
+        for (; i < value->length(value) - 1; ++i)
         {
             if (text[i] < '0' || text[i] > '9')
             {
@@ -49,24 +49,24 @@ static TypeOfToken validate_number(const string value)
     return TokenText;
 }
 
-static LState get_lstate(const string line, size_t index)
+static LState get_lstate(const String* line, size_t index)
 {
-    if (is_match(line->Get(line, index)) == NOT_FOUND_CODE)
+    if (is_match(line->get(line, index)) == NOT_FOUND_CODE)
     {
         return StateText;
     }
     return StateOther;
 }
 
-ArrayList(Token) Tokenize(const string line)
+Array(Token) tokenize(const String* line)
 {
-    ArrayList(Token) list = NULL;
+    Array(Token) arr = NULL;
     LState state = get_lstate(line, 0);
-    string value = init(10);
-    for (size_t i = 0; i < line->Length(line); ++i)
+    String* value = init_string(10);
+    for (size_t i = 0; i < line->length(line); ++i)
     {
-        char c = line->Get(line, i);
-        if (c == '\\' && i + 2 < line->Length(line) && state != StateEscape)
+        char c = line->get(line, i);
+        if (c == '\\' && i + 2 < line->length(line) && state != StateEscape)
         {
             state = StateEscape;
             continue;
@@ -77,14 +77,14 @@ ArrayList(Token) Tokenize(const string line)
         {
             if (is_match(c) == NOT_FOUND_CODE)
             {
-                value->Append(value, c);
+                value->append(value, c);
             }
             else
             {
-                Token token = {.type = validate_number(value), .value = value->Copy(value)};
+                Token token = {.type = validate_number(value), .value = value->copy(value)};
                 token.op = token.type == TokenNumber ? true : false;
-                ArrayListAdd(list, token);
-                value->Clear(value);
+                add_array_item(arr, token);
+                value->clear(value);
                 state = get_lstate(line, i);
                 --i;
             }
@@ -94,31 +94,31 @@ ArrayList(Token) Tokenize(const string line)
         {
             if (is_match(c) == NOT_FOUND_CODE)
             {
-                value->Clear(value);
+                value->clear(value);
                 state = get_lstate(line, i);
                 --i;
             }
             else
             {
-                value->Append(value, c);
-                Token token = {.type = (TypeOfToken)(is_match(c)), .value = value->Copy(value)};
+                value->append(value, c);
+                Token token = {.type = (TypeOfToken)(is_match(c)), .value = value->copy(value)};
                 token.op = token.type < TokenSpace ? true : false;
-                ArrayListAdd(list, token);
-                value->Clear(value);
+                add_array_item(arr, token);
+                value->clear(value);
             }
         }
         break;
         case StateEscape:
         {
-            value->Append(value, c);
-            Token token = {.type = TokenText, .value = value->Copy(value), false};
-            ArrayListAdd(list, token);
-            value->Clear(value);
+            value->append(value, c);
+            Token token = {.type = TokenText, .value = value->copy(value), false};
+            add_array_item(arr, token);
+            value->clear(value);
             state = get_lstate(line, i + 1);
         }
         break;
         }
     }
-    value->Free(value);
-    return list;
+    value->free(value);
+    return arr;
 }

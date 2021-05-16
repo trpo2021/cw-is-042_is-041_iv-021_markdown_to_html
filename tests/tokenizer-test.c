@@ -3,12 +3,12 @@
 #include <internals/parser/parser.h>
 #include <time.h>
 
-static string convert_to_string(size_t num)
+static String* convert_to_string(size_t num)
 {
     char* buf = NULL;
     size_t len;
-    ToCharArray(buf, num, "%zu", len);
-    string out = create(buf);
+    convert_to_char_array(buf, num, "%zu", len);
+    String* out = create_string(buf);
     free(buf);
     return out;
 }
@@ -16,118 +16,118 @@ static string convert_to_string(size_t num)
 CTEST(tokenizer, check_long_number)
 {
     srand(time(NULL));
-    string str = convert_to_string(rand() % 100000000 + 10000000);
-    str->Concat(str, ".\n");
-    ArrayList(Token) list = Tokenize(str);
-    ASSERT_EQUAL(TokenNumber, list[0].type);
-    for (size_t i = 0; i < ArrayListGetLength(list); ++i)
+    String* str = convert_to_string(rand() % 100000000 + 10000000);
+    str->concat(str, ".\n");
+    Array(Token) arr = tokenize(str);
+    ASSERT_EQUAL(TokenNumber, arr[0].type);
+    for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        list[i].value->Free(list[i].value);
+        arr[i].value->free(arr[i].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, check_empty)
 {
-    string str = create("");
-    ArrayList(Token) list = Tokenize(str);
-    ASSERT_EQUAL(0, ArrayListGetLength(list));
-    ArrayListFree(list);
-    str->Free(str);
+    String* str = create_string("");
+    Array(Token) arr = tokenize(str);
+    ASSERT_EQUAL(0, get_array_length(arr));
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, try_valid_number)
 {
-    string str = create("1. 2. 3. 4. 5. 6. 7. 8. 9. 123456. ");
-    ArrayList(Token) list = Tokenize(str);
-    for (size_t i = 0; i < ArrayListGetLength(list); i += 2)
+    String* str = create_string("1. 2. 3. 4. 5. 6. 7. 8. 9. 123456. ");
+    Array(Token) arr = tokenize(str);
+    for (size_t i = 0; i < get_array_length(arr); i += 2)
     {
-        ASSERT_EQUAL(TokenNumber, list[i].type);
-        list[i].value->Free(list[i].value);
-        list[i + 1].value->Free(list[i + 1].value);
+        ASSERT_EQUAL(TokenNumber, arr[i].type);
+        arr[i].value->free(arr[i].value);
+        arr[i + 1].value->free(arr[i + 1].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, try_invalid_number)
 {
-    string str = create("012.\n");
-    ArrayList(Token) list = Tokenize(str);
-    ASSERT_EQUAL(TokenText, list[0].type);
-    for (size_t i = 0; i < ArrayListGetLength(list); ++i)
+    String* str = create_string("012.\n");
+    Array(Token) arr = tokenize(str);
+    ASSERT_EQUAL(TokenText, arr[0].type);
+    for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        list[i].value->Free(list[i].value);
+        arr[i].value->free(arr[i].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, escape_number)
 {
-    string str = create("\\1.\n");
-    ArrayList(Token) list = Tokenize(str);
-    ASSERT_EQUAL(TokenText, list[0].type);
-    for (size_t i = 0; i < ArrayListGetLength(list); ++i)
+    String* str = create_string("\\1.\n");
+    Array(Token) arr = tokenize(str);
+    ASSERT_EQUAL(TokenText, arr[0].type);
+    for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        list[i].value->Free(list[i].value);
+        arr[i].value->free(arr[i].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, escape_escape)
 {
-    string str = create("\\\\\n");
-    ArrayList(Token) list = Tokenize(str);
-    ASSERT_EQUAL(TokenText, list[0].type);
-    for (size_t i = 0; i < ArrayListGetLength(list); ++i)
+    String* str = create_string("\\\\\n");
+    Array(Token) arr = tokenize(str);
+    ASSERT_EQUAL(TokenText, arr[0].type);
+    for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        list[i].value->Free(list[i].value);
+        arr[i].value->free(arr[i].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, escape_all_single_tokens)
 {
-    string str = create("\\\n\\_\\*\\`\\=\\-\\+\\<\\#\\!\\[\\>\\ \\]\\(\\)");
-    ArrayList(Token) list = Tokenize(str);
-    for (size_t i = 0; i < ArrayListGetLength(list); ++i)
+    String* str = create_string("\\\n\\_\\*\\`\\=\\-\\+\\<\\#\\!\\[\\>\\ \\]\\(\\)");
+    Array(Token) arr = tokenize(str);
+    for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        ASSERT_EQUAL(TokenText, list[0].type);
-        list[i].value->Free(list[i].value);
+        ASSERT_EQUAL(TokenText, arr[0].type);
+        arr[i].value->free(arr[i].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, check_all_single_tokens)
 {
-    string str = create("\n_*`=-+<#![> ]()");
-    ArrayList(Token) list = Tokenize(str);
-    for (size_t i = 0; i < ArrayListGetLength(list); ++i)
+    String* str = create_string("\n_*`=-+<#![> ]()");
+    Array(Token) arr = tokenize(str);
+    for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        ASSERT_EQUAL(str->Get(str, i), TokenToCharArray(list[i])[0]);
-        ASSERT_EQUAL((TypeOfToken)i, list[i].type);
-        i < TokenSpace ? ASSERT_TRUE(list[i].op) : ASSERT_FALSE(list[i].op);
-        list[i].value->Free(list[i].value);
+        ASSERT_EQUAL(str->get(str, i), get_token_value(arr[i])[0]);
+        ASSERT_EQUAL((TypeOfToken)i, arr[i].type);
+        i < TokenSpace ? ASSERT_TRUE(arr[i].op) : ASSERT_FALSE(arr[i].op);
+        arr[i].value->free(arr[i].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }
 
 CTEST(tokenizer, ascii_table_to_token_text)
 {
-    string str = create("\"$%&',./0123456789:;?@QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm^~|\n");
-    ArrayList(Token) list = Tokenize(str);
-    ASSERT_EQUAL(2, ArrayListGetLength(list));
-    ASSERT_EQUAL(TokenText, list[0].type);
-    for (size_t i = 0; i < ArrayListGetLength(list); ++i)
+    String* str = create_string("\"$%&',./0123456789:;?@QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm^~|\n");
+    Array(Token) arr = tokenize(str);
+    ASSERT_EQUAL(2, get_array_length(arr));
+    ASSERT_EQUAL(TokenText, arr[0].type);
+    for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        list[i].value->Free(list[i].value);
+        arr[i].value->free(arr[i].value);
     }
-    ArrayListFree(list);
-    str->Free(str);
+    free_array(arr);
+    str->free(str);
 }

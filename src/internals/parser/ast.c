@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <internals/parser/ast.h>
 
-TNode* InitNode(TypeOfTNode type, string head, string content, bool nesting)
+TNode* init_tnode(TypeOfTNode type, String* head, String* content, bool nesting)
 {
     TNode* node = malloc(sizeof(TNode));
     node->type = type;
@@ -13,49 +13,49 @@ TNode* InitNode(TypeOfTNode type, string head, string content, bool nesting)
     return node;
 }
 
-void TreeFree(TNode* node)
+void free_tnode(TNode* node)
 {
     if (node)
     {
         if (node->head)
         {
-            node->head->Free(node->head);
+            node->head->free(node->head);
         }
         if (node->content)
         {
-            node->content->Free(node->content);
+            node->content->free(node->content);
         }
         if (node->children)
         {
-            for (size_t i = 0; i < ArrayListGetLength(node->children); i++)
+            for (size_t i = 0; i < get_array_length(node->children); ++i)
             {
-                TreeFree(node->children[i]);
+                free_tnode(node->children[i]);
             }
-            ArrayListFree(node->children);
+            free_array(node->children);
         }
         free(node);
     }
 }
 
-void NodeAdd(TNode* parrent, TNode* child)
+void add_tnode(TNode* parrent, TNode* child)
 {
     assert(child);
     assert(parrent);
     child->parrent = parrent;
-    ArrayListAdd(parrent->children, child);
+    add_array_item(parrent->children, child);
 }
 
-bool IsRoot(TNode* node)
+bool is_root_tnode(TNode* node)
 {
     return (node->parrent == NULL) ? true : false;
 }
 
-bool IsLeaf(TNode* node)
+bool is_leaf_tnode(TNode* node)
 {
-    return (ArrayListGetLength(node->children) == 0) ? true : false;
+    return (get_array_length(node->children) == 0) ? true : false;
 }
 
-size_t GetNodeLevel(TNode* node)
+size_t get_tnode_lvl(TNode* node)
 {
-    return (IsRoot(node)) ? 0 : GetNodeLevel(node->parrent) + 1;
+    return (is_root_tnode(node)) ? 0 : get_tnode_lvl(node->parrent) + 1;
 }

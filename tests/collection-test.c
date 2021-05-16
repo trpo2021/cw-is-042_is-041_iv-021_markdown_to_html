@@ -4,82 +4,82 @@
 
 CTEST(generic_array, get_size)
 {
-    ArrayList(int) list = NULL;
-    ASSERT_EQUAL(0, ArrayListGetLength(list));
+    Array(int) list = NULL;
+    ASSERT_EQUAL(0, get_array_length(list));
 }
 
 CTEST(generic_array, get_capacity)
 {
-    ArrayList(int) list = NULL;
-    ASSERT_EQUAL(0, ArrayListGetCapacity(list));
+    Array(int) list = NULL;
+    ASSERT_EQUAL(0, get_array_capacity(list));
 }
 
 CTEST(generic_array, add_item)
 {
-    ArrayList(int) list = NULL;
-    ArrayListAdd(list, 123);
+    Array(int) list = NULL;
+    add_array_item(list, 123);
     ASSERT_EQUAL(123, list[0]);
-    ArrayListFree(list);
+    free_array(list);
 }
 
 CTEST(generic_array, remove_item)
 {
-    ArrayList(int) list = NULL;
+    Array(int) list = NULL;
     for (int i = 0; i < 10; i++)
     {
-        ArrayListAdd(list, i);
+        add_array_item(list, i);
     }
-    ArrayListRemove(list, 7);
-    ASSERT_EQUAL(9, ArrayListGetLength(list));
+    remove_array_item(list, 7);
+    ASSERT_EQUAL(9, get_array_length(list));
     ASSERT_EQUAL(8, list[7]);
-    ArrayListFree(list);
+    free_array(list);
 }
 
 CTEST(generic_array, remove_to_start)
 {
-    ArrayList(int) list = NULL;
+    Array(int) list = NULL;
     for (int i = 0; i < 10; i++)
     {
-        ArrayListAdd(list, i);
+        add_array_item(list, i);
     }
     for (int i = 9; i > -1; i--)
     {
-        ArrayListRemove(list, i);
+        remove_array_item(list, i);
     }
-    ASSERT_EQUAL(0, ArrayListGetLength(list));
+    ASSERT_EQUAL(0, get_array_length(list));
     ASSERT_EQUAL(0, list[0]);
-    ArrayListFree(list);
+    free_array(list);
 }
 
 CTEST(generic_array, copy)
 {
-    ArrayList(int) list = NULL;
+    Array(int) list = NULL;
     for (int i = 0; i < 10; i++)
     {
-        ArrayListAdd(list, i);
+        add_array_item(list, i);
     }
-    ArrayList(int) list_copy = NULL;
-    ArrayListCopy(list_copy, list);
-    for (int i = 0; i < ArrayListGetLength(list); i++)
+    Array(int) list_copy = NULL;
+    copy_array(list_copy, list);
+    for (int i = 0; i < get_array_length(list); i++)
     {
         ASSERT_EQUAL(list[i], list_copy[i]);
     }
-    ArrayListFree(list);
-    ArrayListFree(list_copy);
+    free_array(list);
+    free_array(list_copy);
 }
 
 CTEST(generic_array, use_case)
 {
-    ArrayList(int) list_of_exps = NULL;
+    Array(int) list_of_exps = NULL;
     for (int i = 1; i <= 1024; i *= 2)
     {
-        ArrayListAdd(list_of_exps, i);
+        add_array_item(list_of_exps, i);
     }
-    ASSERT_EQUAL(11, ArrayListGetLength(list_of_exps));
-    ArrayListRemove(list_of_exps, 0);
+    ASSERT_EQUAL(11, get_array_length(list_of_exps));
+    remove_array_item(list_of_exps, 0);
     for (int i = 2, j = 0; i <= 1024; i *= 2, j++)
     {
         ASSERT_EQUAL(i, list_of_exps[j]);
     }
-    ArrayListFree(list_of_exps);
+    free_array(list_of_exps);
 }

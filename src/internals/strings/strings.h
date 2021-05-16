@@ -4,69 +4,46 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-typedef struct String* string;
-
-struct String
+typedef struct _string
 {
-    // private data
     void* internals;
 
-    /* public interface */
+    size_t (*length)(const struct _string* str);
 
-    // return copy of string length
-    size_t (*Length)(const struct String* str);
+    size_t (*capacity)(const struct _string* str);
 
-    // return copy of string capacity
-    size_t (*Capacity)(const struct String* str);
+    const char* (*text)(const struct _string* str);
 
-    // return readonly representation of string content
-    const char* (*Text)(const struct String* str);
+    void (*set)(const struct _string* str, size_t index, char item);
 
-    // func to set char by index in string
-    void (*Set)(const struct String* str, size_t index, char item);
+    char (*get)(const struct _string* str, size_t index);
 
-    // func to get char by index in string
-    char (*Get)(const struct String* str, size_t index);
+    struct _string* (*copy)(const struct _string* str);
 
-    // return copy of struct
-    string (*Copy)(const struct String* str);
+    void (*free)(struct _string* str);
 
-    // free string
-    void (*Free)(struct String* str);
+    void (*append)(const struct _string* str, char item);
 
-    // concat a single char to string
-    void (*Append)(struct String* str, char item);
+    void (*concat)(const struct _string* str, const char* item);
 
-    // concat item to string
-    void (*Concat)(struct String* str, const char* item);
+    bool (*contains)(const struct _string* str, const char* item);
 
-    // return true, if string content contains substring
-    bool (*Contains)(const struct String* str, const char* item);
+    bool (*compare)(const struct _string* str, const char* item);
 
-    // return true, if string content equals to item
-    bool (*Compare)(const struct String* str, const char* item);
+    struct _string* (*replace)(const struct _string* str, const char* new, const char* old);
 
-    // replace all substring (old) by new substring (new) in string
-    string (*Replace)(const struct String* str, const char* new, const char* old);
+    struct _string** (*split)(const struct _string* str, const char* pattern, size_t* length);
 
-    // return string array, splited by pattern, param length must be != null
-    string* (*Split)(const struct String* str, const char* pattern, size_t* length);
+    void (*insert)(const struct _string* str, const char* item, size_t index);
 
-    // insert item in string by index
-    void (*Insert)(struct String* str, const char* item, size_t index);
+    void (*clear)(const struct _string* str);
+} String;
 
-    // clear string, new string equal string init(old capacity);
-    void (*Clear)(struct String* str);
-};
+String* init_string(size_t initial_capacity);
 
-// init string with len 0, content = '\0'
-string init(size_t initial_capacity);
+String* create_string(const char* source);
 
-// init string and fill with data from source
-string create(const char* source);
-
-// convert base types to char*
-#define ToCharArray(buf, data, format, length)                                                                         \
+#define convert_to_char_array(buf, data, format, length)                                                               \
     length = snprintf(NULL, 0, format, data);                                                                          \
     buf = malloc(length + 1);                                                                                          \
     snprintf(buf, length + 1, format, data);

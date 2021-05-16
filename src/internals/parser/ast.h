@@ -41,26 +41,26 @@ typedef struct _tnode
     struct
     {
         TypeOfTNode type;
-        string head;
+        String* head;
         /* may be NULL */
-        string content;
+        String* content;
         bool nesting;
         size_t offset;
     };
     struct _tnode* parrent;
-    ArrayList(struct _tnode*) children;
+    Array(struct _tnode*) children;
 } TNode;
 
-TNode* InitNode(TypeOfTNode type, string head, string content, bool nesting);
+TNode* init_tnode(TypeOfTNode type, String* head, String* content, bool nesting);
 
-void TreeFree(TNode* root);
+void free_tnode(TNode* root);
 
-void TreePrint(TNode* node, FILE* out);
+void print_tnode(TNode* node, FILE* out);
 
-void NodeAdd(TNode* parrent, TNode* child);
+void add_tnode(TNode* parrent, TNode* child);
 
-bool IsRoot(TNode* node);
+bool is_root_tnode(TNode* node);
 
-bool IsLeaf(TNode* node);
+bool is_leaf_tnode(TNode* node);
 
-size_t GetNodeLevel(TNode* node);
+size_t get_tnode_lvl(TNode* node);

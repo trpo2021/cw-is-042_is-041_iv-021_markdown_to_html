@@ -37,11 +37,11 @@ typedef enum
 typedef struct
 {
     TypeOfToken type;
-    string value;
+    String* value;
     bool op;
 } Token;
 
-#define TokenToCharArray(token) token.value->Text(token.value)
+#define get_token_value(token) token.value->text(token.value)
 
-#define TokenToString(token_type)                                                                                      \
+#define token_name_to_string(token_type)                                                                               \
     ((int)token_type < sizeof(TOKEN_TO_STRING) && (int)token_type >= 0) ? TOKEN_TO_STRING[token_type] : NULL

@@ -1,26 +1,26 @@
 #include <internals/parser/ast.h>
 
-void TreePrint(TNode* node, FILE* out)
+void print_tnode(TNode* node, FILE* out)
 {
     if (node)
     {
-        fprintf(out, "%zu  | ", GetNodeLevel(node));
-        for (size_t i = 0; i < GetNodeLevel(node); i++)
+        fprintf(out, "%zu  | ", get_tnode_lvl(node));
+        for (size_t i = 0; i < get_tnode_lvl(node); i++)
         {
             fprintf(out, "%s", " ");
         }
         if (node->head)
         {
-            fprintf(out, "%s", node->head->Text(node->head));
+            fprintf(out, "%s", node->head->text(node->head));
         }
         if (node->content)
         {
-            fprintf(out, "%s", node->content->Text(node->content));
+            fprintf(out, "%s", node->content->text(node->content));
         }
         fprintf(out, "%s", "\n");
-        for (size_t i = 0; i < ArrayListGetLength(node->children); i++)
+        for (size_t i = 0; i < get_array_length(node->children); i++)
         {
-            TreePrint(node->children[i], out);
+            print_tnode(node->children[i], out);
         }
     }
 }
