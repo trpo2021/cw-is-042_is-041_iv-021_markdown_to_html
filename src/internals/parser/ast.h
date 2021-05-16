@@ -8,18 +8,31 @@ typedef enum
 {
     NodeBody,
     NodeSection,
-    NodeHeading,
-    NodeBlockquote,
+
+    NodeHorizontalLine,
+    NodeBreakLine,
+
+    NodePre,
+
     NodeOList,
     NodeUOList,
+
+    NodeHeadingInline,
+    NodeHeadingUnderline,
+    NodeBlockquote,
+
     NodeInlineCode,
     NodeEmphasis,
-    NodeBlockCode,
-    NodeBreakLine,
-    NodeHorizontalLine,
     NodeImage,
     NodeLink,
+
+    NodeListItem,
+    NodeCode,
+    NodeAlt,
+    NodeSrc,
+
     NodeParagraph,
+
     NodeSpan,
 } TypeOfTNode;
 
@@ -29,15 +42,16 @@ typedef struct _tnode
     {
         TypeOfTNode type;
         string head;
+        /* may be NULL */
         string content;
-        // tmp
-        bool nested;
+        bool nesting;
+        size_t offset;
     };
     struct _tnode* parrent;
     ArrayList(struct _tnode*) children;
 } TNode;
 
-TNode* InitNode(TypeOfTNode type, string head, string content, bool nested);
+TNode* InitNode(TypeOfTNode type, string head, string content, bool nesting);
 
 void TreeFree(TNode* root);
 

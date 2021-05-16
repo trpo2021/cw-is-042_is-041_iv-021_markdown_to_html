@@ -1,12 +1,13 @@
+#include <assert.h>
 #include <internals/parser/ast.h>
 
-TNode* InitNode(TypeOfTNode type, string head, string content, bool nested)
+TNode* InitNode(TypeOfTNode type, string head, string content, bool nesting)
 {
     TNode* node = malloc(sizeof(TNode));
     node->type = type;
     node->head = head;
     node->content = content;
-    node->nested = nested;
+    node->nesting = nesting;
     node->parrent = NULL;
     node->children = NULL;
     return node;
@@ -38,6 +39,8 @@ void TreeFree(TNode* node)
 
 void NodeAdd(TNode* parrent, TNode* child)
 {
+    assert(child);
+    assert(parrent);
     child->parrent = parrent;
     ArrayListAdd(parrent->children, child);
 }

@@ -8,7 +8,7 @@ CTEST(ast, node_operations)
     ASSERT_TRUE(IsRoot(root));
     ASSERT_TRUE(IsLeaf(root));
     ASSERT_EQUAL(0, GetNodeLevel(root));
-    TNode* node = InitNode(NodeHeading, create("<h1>"), create("Header content"), false);
+    TNode* node = InitNode(NodeHeadingInline, create("<h1>"), create("Header content"), false);
     NodeAdd(root, node);
     for (size_t i = 0; i < ArrayListGetLength(root->children); i++)
     {
@@ -27,7 +27,7 @@ CTEST(ast, tree_build)
     TNode* root = InitNode(NodeBody, create("<body>"), NULL, false);
     for (size_t i = 0; i < 10; i++)
     {
-        NodeAdd(root, InitNode(NodeHeading, create("<h1>"), create("test"), false));
+        NodeAdd(root, InitNode(NodeHeadingInline, create("<h1>"), create("test"), false));
     }
     for (size_t i = 0; i < ArrayListGetLength(root->children); i++)
     {
@@ -50,12 +50,12 @@ CTEST(ast, tree_print)
         }
         if (i % 2 == 0)
         {
-            NodeAdd(root->children[j], InitNode(NodeHeading, create("<h1>"), NULL, false));
-            NodeAdd(root->children[j]->children[0], InitNode(NodeHeading, create("<span>"), create("test"), false));
+            NodeAdd(root->children[j], InitNode(NodeHeadingInline, create("<h1>"), NULL, false));
+            NodeAdd(root->children[j]->children[0], InitNode(NodeHeadingInline, create("<span>"), create(""), false));
         }
         else
         {
-            NodeAdd(root->children[j], InitNode(NodeHeading, create("<span>"), create("test"), false));
+            NodeAdd(root->children[j], InitNode(NodeHeadingInline, create("<span>"), create(""), false));
         }
     }
     FILE* out = fopen("tree.txt", "w");
