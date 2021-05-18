@@ -6,13 +6,16 @@ static const char tokens[] = "\n_*`=-+<#![> ]()";
 
 typedef enum
 {
-    /* used for words, numbers and chars, that don't match */
     StateText,
-    /* for escape */
     StateEscape,
-    /* used for single char tokens */
     StateOther
 } LState;
+
+/******************************
+ *                            *
+ *  Section: Helper functions *
+ *                            *
+ ******************************/
 
 static int8_t is_match(char c)
 {
@@ -57,6 +60,18 @@ static LState get_lstate(const String* line, size_t index)
     }
     return StateOther;
 }
+
+/******************************
+ *                            *
+ *        End section         *
+ *                            *
+ ******************************/
+
+/******************************
+ *                            *
+ *    Section: Main lexer     *
+ *                            *
+ ******************************/
 
 Array(Token) tokenize(const String* line)
 {
@@ -122,3 +137,9 @@ Array(Token) tokenize(const String* line)
     value->free(value);
     return arr;
 }
+
+/******************************
+ *                            *
+ *        End section         *
+ *                            *
+ ******************************/
