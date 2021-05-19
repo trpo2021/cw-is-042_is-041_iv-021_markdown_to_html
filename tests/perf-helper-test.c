@@ -1,8 +1,7 @@
 #include <ctest.h>
 #include <internals/parser/rule-performer.h>
-#include <time.h>
 
-CTEST(tokenizer, skip_spaces_skip_case)
+CTEST(rp_help, skip_spaces_skip_case)
 {
     String* str = create_string("   start from 3\n");
     Array(Token) arr = tokenize(str);
@@ -17,7 +16,7 @@ CTEST(tokenizer, skip_spaces_skip_case)
     str->free(str);
 }
 
-CTEST(tokenizer, skip_spaces_wo_spaces_case)
+CTEST(rp_help, skip_spaces_wo_spaces_case)
 {
     String* str = create_string("start from zero\n");
     Array(Token) arr = tokenize(str);
@@ -32,7 +31,7 @@ CTEST(tokenizer, skip_spaces_wo_spaces_case)
     str->free(str);
 }
 
-CTEST(tokenizer, find_end_pos_default)
+CTEST(rp_help, find_end_pos_default)
 {
     String* str = create_string("**some bold text**\n");
     Array(Token) arr = tokenize(str);
@@ -49,7 +48,7 @@ CTEST(tokenizer, find_end_pos_default)
     str->free(str);
 }
 
-CTEST(tokenizer, find_end_pos_wo_spaces)
+CTEST(rp_help, find_end_pos_wo_spaces)
 {
     String* str = create_string("****\n");
     Array(Token) arr = tokenize(str);
@@ -66,7 +65,7 @@ CTEST(tokenizer, find_end_pos_wo_spaces)
     str->free(str);
 }
 
-CTEST(tokenizer, find_end_pos_fail)
+CTEST(rp_help, find_end_pos_fail)
 {
     String* str = create_string("without emphasis\n");
     Array(Token) arr = tokenize(str);
@@ -83,7 +82,7 @@ CTEST(tokenizer, find_end_pos_fail)
     str->free(str);
 }
 
-CTEST(tokenizer, token_belongs_hr_term)
+CTEST(rp_help, token_belongs_hr_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -98,7 +97,7 @@ CTEST(tokenizer, token_belongs_hr_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_br_term)
+CTEST(rp_help, token_belongs_br_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -113,7 +112,7 @@ CTEST(tokenizer, token_belongs_br_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_h1u_term)
+CTEST(rp_help, token_belongs_h1u_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -128,7 +127,7 @@ CTEST(tokenizer, token_belongs_h1u_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_h2u_term)
+CTEST(rp_help, token_belongs_h2u_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -143,7 +142,7 @@ CTEST(tokenizer, token_belongs_h2u_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_code_term)
+CTEST(rp_help, token_belongs_code_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -158,7 +157,7 @@ CTEST(tokenizer, token_belongs_code_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_olist_term)
+CTEST(rp_help, token_belongs_olist_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -173,7 +172,7 @@ CTEST(tokenizer, token_belongs_olist_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_uolist_term)
+CTEST(rp_help, token_belongs_uolist_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -188,7 +187,7 @@ CTEST(tokenizer, token_belongs_uolist_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_bq_term)
+CTEST(rp_help, token_belongs_bq_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -203,7 +202,7 @@ CTEST(tokenizer, token_belongs_bq_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_hi_term)
+CTEST(rp_help, token_belongs_hi_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -218,7 +217,7 @@ CTEST(tokenizer, token_belongs_hi_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_link_end_first_term)
+CTEST(rp_help, token_belongs_link_end_first_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -233,7 +232,7 @@ CTEST(tokenizer, token_belongs_link_end_first_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_link_end_last_term)
+CTEST(rp_help, token_belongs_link_end_last_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -248,7 +247,7 @@ CTEST(tokenizer, token_belongs_link_end_last_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_alink_end_term)
+CTEST(rp_help, token_belongs_alink_end_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -263,7 +262,7 @@ CTEST(tokenizer, token_belongs_alink_end_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_link_term)
+CTEST(rp_help, token_belongs_link_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -278,7 +277,7 @@ CTEST(tokenizer, token_belongs_link_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_img_term)
+CTEST(rp_help, token_belongs_img_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -293,7 +292,7 @@ CTEST(tokenizer, token_belongs_img_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_emphasis_term)
+CTEST(rp_help, token_belongs_emphasis_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
@@ -308,7 +307,7 @@ CTEST(tokenizer, token_belongs_emphasis_term)
     }
 }
 
-CTEST(tokenizer, token_belongs_space_term)
+CTEST(rp_help, token_belongs_space_term)
 {
     for (TypeOfToken t = TokenLineBreak; t <= TokenText; ++t)
     {
