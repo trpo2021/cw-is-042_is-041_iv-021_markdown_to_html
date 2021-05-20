@@ -2,6 +2,8 @@
 
 #include <internals/parser/main/parser.h>
 
+/* TODO: remove stack from interface */
+
 typedef struct
 {
     size_t cp;

@@ -1,5 +1,7 @@
 #include <internals/parser/main/parser.h>
 
+/* TODO: some refactorng */
+
 /******************************
  *                            *
  *  Section: Helper functions *
@@ -150,10 +152,8 @@ TNode* parse_document(const String* raw)
         free_array(tokens);
         line->free(line);
     }
-    printf("\n");
 
     free_builder(&builder);
-    print_tnode(root, stdout);
 
     return root;
 }

@@ -1,7 +1,16 @@
 #include <internals/parser/helpers/rule-performer.h>
 #include <stdarg.h>
 
+/* TODO: some refactorng */
+
 #define PARSE_RULE_FAIL_CODE NULL
+#define MAX_RULES_FOR_TOKEN 5
+
+/******************************
+ *                            *
+ *  Section: Helper functions *
+ *                            *
+ ******************************/
 
 /* parse subset of tokens as text */
 static inline void parse_text_to_node(RulePerformer* perf, TNode* node, size_t end_pos)
@@ -32,6 +41,18 @@ static inline size_t get_sequence_length(RulePerformer* perf, Term term, bool ig
     --perf->cp;
     return t_count;
 }
+
+/******************************
+ *                            *
+ *        End section         *
+ *                            *
+ ******************************/
+
+/******************************
+ *                            *
+ *   Section: Rule parsing    *
+ *                            *
+ ******************************/
 
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
@@ -93,6 +114,7 @@ static TNode* parse_header_underline_rule(RulePerformer* perf, size_t lim, ...)
     va_start(args, lim);
     TypeOfRule rule = va_arg(args, TypeOfRule);
     va_end(args);
+
     size_t backup = perf->cp;
     size_t t_count = get_sequence_length(perf, rule == RuleH1Underline ? H1U_TERM : H2U_TERM, false);
     if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count > 1)
@@ -138,6 +160,7 @@ static TNode* parse_list_rule(RulePerformer* perf, size_t lim, ...)
     va_start(args, lim);
     TypeOfRule rule = va_arg(args, TypeOfRule);
     va_end(args);
+
     if (is_token_in_term(WHITESPACE_TERM, perf->tokens[++perf->cp].type))
     {
         TNode* parrent;
@@ -291,6 +314,7 @@ static TNode* parse_img_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for <em> and <strong> */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -326,30 +350,37 @@ static TNode* parse_empasis_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/******************************
+ *                            *
+ *        End section         *
+ *                            *
+ ******************************/
+
+/******************************
+ *                            *
+ *      Section: RP main      *
+ *                            *
+ ******************************/
+
 typedef struct
 {
     TNode* (*parse_rule)(RulePerformer* perf, size_t lim, ...);
 } Rule;
 
-typedef struct
-{
-    TypeOfRule rules[5];
-} SelectionTable;
-
-static const SelectionTable RULE_TABLE[] = {
-    [TokenLineBreak] = {{RuleLineBreak, RuleUnknown}},
-    [TokenUnderscore] = {{RuleHorizontalLine, RuleEmphasis, RuleUnknown}},
-    [TokenAsterisk] = {{RuleHorizontalLine, RuleUOList, RuleEmphasis, RuleUnknown}},
-    [TokenGraveAccent] = {{RuleCodeBlock, RuleCodeInline, RuleUnknown}},
-    [TokenEquals] = {{RuleH1Underline, RuleUnknown}},
-    [TokenMinus] = {{RuleH2Underline, RuleUOList, RuleUnknown}},
-    [TokenPlus] = {{RuleUOList, RuleUnknown}},
-    [TokenOPAngleBracket] = {{RuleAutoLink, RuleUnknown}},
-    [TokenLattice] = {{RuleHeadingInline, RuleUnknown}},
-    [TokenExclamationMark] = {{RuleImage, RuleUnknown}},
-    [TokenOPSquareBracket] = {{RuleLink, RuleUnknown}},
-    [TokenCLAngleBracket] = {{RuleBlockquote, RuleUnknown}},
-    [TokenNumber] = {{RuleOList, RuleUnknown}},
+static const TypeOfRule RULE_TABLE[][MAX_RULES_FOR_TOKEN] = {
+    [TokenLineBreak] = {RuleLineBreak, RuleUnknown},
+    [TokenUnderscore] = {RuleHorizontalLine, RuleEmphasis, RuleUnknown},
+    [TokenAsterisk] = {RuleHorizontalLine, RuleUOList, RuleEmphasis, RuleUnknown},
+    [TokenGraveAccent] = {RuleCodeBlock, RuleCodeInline, RuleUnknown},
+    [TokenEquals] = {RuleH1Underline, RuleUnknown},
+    [TokenMinus] = {RuleH2Underline, RuleUOList, RuleUnknown},
+    [TokenPlus] = {RuleUOList, RuleUnknown},
+    [TokenOPAngleBracket] = {RuleAutoLink, RuleUnknown},
+    [TokenLattice] = {RuleHeadingInline, RuleUnknown},
+    [TokenExclamationMark] = {RuleImage, RuleUnknown},
+    [TokenOPSquareBracket] = {RuleLink, RuleUnknown},
+    [TokenCLAngleBracket] = {RuleBlockquote, RuleUnknown},
+    [TokenNumber] = {RuleOList, RuleUnknown},
 };
 
 static const Rule PARSE_TABLE[] = {[RuleHorizontalLine] = {parse_hr_rule},
@@ -368,6 +399,7 @@ static const Rule PARSE_TABLE[] = {[RuleHorizontalLine] = {parse_hr_rule},
                                    [RuleAutoLink] = {parse_alink_rule},
                                    [RuleUnknown] = {parse_span}};
 
+/* change rp mode by current rule */
 /* @param rule parsed rule */
 /* @return mode depending on the rule */
 static RPMode change_mode(TypeOfRule rule)
@@ -392,9 +424,10 @@ static RPMode change_mode(TypeOfRule rule)
 /* @return rule depending on the token and attempt */
 static TypeOfRule try_get_rule(TypeOfToken t, int32_t attempt)
 {
-    return RULE_TABLE[t].rules[attempt];
+    return RULE_TABLE[t][attempt];
 }
 
+/* dispatcher */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @return node from block of tokens, can't be NULL */
@@ -435,3 +468,9 @@ void init_performer(RulePerformer* perf, Array(Token) tokens, size_t pos)
     perf->count = get_array_length(tokens);
     perf->invoke = &execute;
 }
+
+/******************************
+ *                            *
+ *        End section         *
+ *                            *
+ ******************************/

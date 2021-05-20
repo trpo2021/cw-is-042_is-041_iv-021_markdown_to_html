@@ -1,6 +1,9 @@
 #include <internals/parser/helpers/tbuilder.h>
 
-// tmp?
+/* TODO: some refactorng */
+/* TODO: realloc stack */
+
+/* tmp? */
 #define MAX_STATE_LVL 10
 
 /******************************
@@ -62,6 +65,8 @@ static void stack_free(PStateStack* stack)
  *  Section: Helper functions *
  *                            *
  ******************************/
+
+/* TODO: Maximum refactoring */
 
 /* in case, when we can't wrap span in header */
 /* @param header node to convert to span node */
@@ -238,13 +243,11 @@ void handle_default(TBuilder* builder, TNode** node)
         break;
     case NodeUOList:
     case NodeOList:
-    {
         (*node)->offset = 0;
         TNode* anchor = get_anchor(builder);
         add_tnode(anchor, *node);
         switch_to_list(builder, &(*node)->children[0]);
-    }
-    break;
+        break;
     default:
         connect_to_anchor(builder, node);
         break;
@@ -258,7 +261,7 @@ void handle_codeblock(TBuilder* builder, TNode** node)
     case NodePre:
         remove_anchor(builder);
         free_tnode(*node);
-        break;
+        return;
     default:
     {
         TNode* anchor = get_anchor(builder);
@@ -266,7 +269,7 @@ void handle_codeblock(TBuilder* builder, TNode** node)
         code->concat(code, builder->raw->text(builder->raw));
         free_tnode(*node);
     }
-    break;
+        return;
     }
 }
 
