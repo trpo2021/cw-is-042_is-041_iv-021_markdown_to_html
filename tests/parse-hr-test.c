@@ -1,8 +1,8 @@
 #include "parse-single-rule-helper.h"
 #include <ctest.h>
-#include <time.h>
 
-CTEST(parse_hr_rule, rule_hr_correct)
+/* in case when we have correct rule ( 3 <= x ('*' | '_')) */
+CTEST(parse_hr_rule, correct)
 {
     srand(time(NULL));
     Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'*', '_'}, 2, rand() % 100 + 3));
@@ -22,7 +22,8 @@ CTEST(parse_hr_rule, rule_hr_correct)
     free_tnode(real);
 }
 
-CTEST(parse_hr_rule, rule_hr_correct_with_spaces)
+/* in case when we have spaces between tokens */
+CTEST(parse_hr_rule, correct_with_spaces)
 {
     srand(time(NULL));
     String* str = create_string("   _   *   _ ***   ____    ___________ ***** ***\n");
@@ -44,10 +45,11 @@ CTEST(parse_hr_rule, rule_hr_correct_with_spaces)
     free_tnode(real);
 }
 
-CTEST(parse_hr_rule, rule_hr_incorrect_count_less)
+/* in case when we have fewer tokens than allowed */
+CTEST(parse_hr_rule, incorrect_count_less)
 {
     srand(time(NULL));
-    Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'*', '_', ' '}, 3, rand() % 2));
+    Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'*', '_', ' '}, 3, rand() % 2 + 1));
     TNode* exp = init_tnode(NodeHorizontalLine, create_string("<hr/>"), NULL, false);
 
     RulePerformer perf = {0};
@@ -62,7 +64,8 @@ CTEST(parse_hr_rule, rule_hr_incorrect_count_less)
     free_tnode(real);
 }
 
-CTEST(parse_hr_rule, rule_hr_incorrect_with_others_token)
+/* in case when we have any other token in line */
+CTEST(parse_hr_rule, incorrect_with_others_token)
 {
     srand(time(NULL));
     const char tokens[] = "\n_*`=-+<#![> ]()";

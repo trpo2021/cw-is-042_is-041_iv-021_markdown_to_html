@@ -1,8 +1,8 @@
 #include "parse-single-rule-helper.h"
 #include <ctest.h>
-#include <time.h>
 
-CTEST(parse_header_underline_rule, rule_h1_underline_correct)
+/* in case when we have correct rule ( 2 <= x ('=')) */
+CTEST(parse_header_underline_rule, h1_correct)
 {
     srand(time(NULL));
     char* raw_data = generate_sequence_of_terms((char[]){'='}, 1, rand() % 100 + 2);
@@ -23,7 +23,8 @@ CTEST(parse_header_underline_rule, rule_h1_underline_correct)
     free_tnode(real);
 }
 
-CTEST(parse_header_underline_rule, rule_h2_underline_correct)
+/* in case when we have correct rule ( 2 <= x ('-')) */
+CTEST(parse_header_underline_rule, h2_correct)
 {
     srand(time(NULL));
     char* raw_data = generate_sequence_of_terms((char[]){'-'}, 1, rand() % 100 + 2);
@@ -44,10 +45,11 @@ CTEST(parse_header_underline_rule, rule_h2_underline_correct)
     free_tnode(real);
 }
 
-CTEST(parse_header_underline_rule, rule_header_underline_incorrect_count_less)
+/* in case when we have fewer tokens than allowed */
+CTEST(parse_header_underline_rule, incorrect_count_less)
 {
     srand(time(NULL));
-    Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'='}, 1, rand() % 2));
+    Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'='}, 1, 1));
 
     RulePerformer perf = {0};
     init_performer(&perf, arr, 0);
@@ -59,7 +61,7 @@ CTEST(parse_header_underline_rule, rule_header_underline_incorrect_count_less)
     free_test_data(arr);
     free_tnode(real);
 
-    arr = create_test_data(generate_sequence_of_terms((char[]){'-'}, 1, rand() % 2));
+    arr = create_test_data(generate_sequence_of_terms((char[]){'-'}, 1, 1));
 
     init_performer(&perf, arr, 0);
 
@@ -71,10 +73,11 @@ CTEST(parse_header_underline_rule, rule_header_underline_incorrect_count_less)
     free_tnode(real);
 }
 
-CTEST(parse_header_underline_rule, rule_header_underline_incorrect_spaces_between)
+/* in case when we have spaces between tokens */
+CTEST(parse_header_underline_rule, incorrect_spaces_between)
 {
     srand(time(NULL));
-    Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'=', ' '}, 2, rand() % 1000 + 500));
+    Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'=', ' '}, 2, rand() % 10000 + 500));
 
     RulePerformer perf = {0};
     init_performer(&perf, arr, skip_spaces(0, arr));
@@ -86,7 +89,7 @@ CTEST(parse_header_underline_rule, rule_header_underline_incorrect_spaces_betwee
     free_test_data(arr);
     free_tnode(real);
 
-    arr = create_test_data(generate_sequence_of_terms((char[]){'-', ' '}, 2, rand() % 1000 + 500));
+    arr = create_test_data(generate_sequence_of_terms((char[]){'-', ' '}, 2, rand() % 10000 + 500));
 
     init_performer(&perf, arr, 0);
 

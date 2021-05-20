@@ -1,7 +1,8 @@
 #include "parse-single-rule-helper.h"
 #include <ctest.h>
 
-CTEST(parse_br_rule, rule_br_correct)
+/* in case when we have correct rule */
+CTEST(parse_br_rule, correct)
 {
     Array(Token) arr = create_test_data(generate_sequence_of_terms(NULL, 0, 0));
     TNode* exp = init_tnode(NodeBreakLine, create_string("<br>"), NULL, false);
@@ -20,7 +21,8 @@ CTEST(parse_br_rule, rule_br_correct)
     free_tnode(real);
 }
 
-CTEST(parse_br_rule, rule_br_correct_with_spaces)
+/* in case when we have spaces strom start of line */
+CTEST(parse_br_rule, correct_with_spaces_from_start)
 {
     Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){' '}, 1, rand() % 100 + 1));
     TNode* exp = init_tnode(NodeBreakLine, create_string("<br>"), NULL, false);

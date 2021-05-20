@@ -53,7 +53,6 @@ static TNode* parse_span(RulePerformer* perf, size_t lim, ...)
             add_tnode(node, init_tnode(NodeBreakLine, create_string("<br>"), NULL, false));
             node->nesting = true;
         }
-        // printf("%s\n", node->content->text(node->content));
         perf->cp = perf->count;
     }
     return node;
@@ -254,7 +253,7 @@ static TNode* parse_link_rule(RulePerformer* perf, size_t lim, ...)
             if (end_df_pos > perf->cp)
             {
                 TNode* parrent = init_tnode(NodeLink, create_string("<a>"), NULL, true);
-                TNode* alt = init_tnode(NodeAlt, create_string("<alt>"), create_string(""), false);
+                TNode* alt = init_tnode(NodeAlt, create_string("<alt>"), NULL, false);
                 TNode* src = init_tnode(NodeSrc, create_string("<src>"), create_string(""), false);
                 add_tnode(parrent, alt);
                 add_tnode(parrent, src);

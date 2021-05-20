@@ -1,6 +1,7 @@
 #include <internals/parser/rule-performer.h>
+#include <time.h>
 
-static Array(Token) create_test_data(char* raw)
+__attribute__((unused)) static Array(Token) create_test_data(char* raw)
 {
     String* str = create_string(raw);
     free(raw);
@@ -10,7 +11,7 @@ static Array(Token) create_test_data(char* raw)
     return arr;
 }
 
-static void free_test_data(Array(Token) data)
+__attribute__((unused)) static void free_test_data(Array(Token) data)
 {
     for (size_t i = 0; i < get_array_length(data); ++i)
     {
@@ -19,10 +20,11 @@ static void free_test_data(Array(Token) data)
     free_array(data);
 }
 
-static char* generate_sequence_of_terms(const char raw_tokens[], size_t count_of_tokens, size_t lim)
+__attribute__((unused)) static char* generate_sequence_of_terms(const char raw_tokens[], size_t count_of_tokens,
+                                                                size_t lim)
 {
     char* raw_data = malloc(lim + 1);
-    for (size_t i = 0; i < lim; i++)
+    for (size_t i = 0; i < lim; ++i)
     {
         raw_data[i] = raw_tokens[rand() % count_of_tokens];
     }

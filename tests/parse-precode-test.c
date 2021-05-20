@@ -1,8 +1,8 @@
 #include "parse-single-rule-helper.h"
 #include <ctest.h>
-#include <time.h>
 
-CTEST(parse_precode_rule, rule_precode_correct)
+/* in case when we have correct rule (3 <= x ('`')) */
+CTEST(parse_precode_rule, correct)
 {
     srand(time(NULL));
     Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){'`'}, 1, rand() % 100 + 3));
@@ -33,7 +33,8 @@ CTEST(parse_precode_rule, rule_precode_correct)
     free_tnode(real);
 }
 
-CTEST(parse_precode_rule, rule_precode_correct_with_spaces_from_start)
+/* in case when we have spaces from start of line */
+CTEST(parse_precode_rule, correct_with_spaces_from_start)
 {
     srand(time(NULL));
     String* str = create_string("    ```\n");
@@ -63,5 +64,24 @@ CTEST(parse_precode_rule, rule_precode_correct_with_spaces_from_start)
     str->free(str);
     free_test_data(arr);
     free_tnode(exp);
+    free_tnode(real);
+}
+
+/* in case when we have spaces between tokens */
+CTEST(parse_precode_rule, incorrect_with_spaces_between_tokens)
+{
+    srand(time(NULL));
+    String* str = create_string("    ``     `` ``\n");
+    Array(Token) arr = tokenize(str);
+
+    RulePerformer perf = {0};
+    init_performer(&perf, arr, skip_spaces(0, arr));
+
+    TNode* real = perf.invoke(&perf, perf.count);
+
+    ASSERT_NOT_EQUAL(NodePre, real->type);
+
+    str->free(str);
+    free_test_data(arr);
     free_tnode(real);
 }
