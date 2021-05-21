@@ -90,3 +90,26 @@ CTEST(tbuilder, header_underline_correct)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, header_underline_with_paragraph)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+
+    for (size_t i = 0; i < 2; ++i)
+    {
+        TNode* tmp = init_tnode(NodeSpan, NULL, NULL, false);
+        builder.build_tree(&builder, &tmp);
+    }
+
+    ASSERT_EQUAL(NodeParagraph, get_last_child(root->children[0])->type);
+    ASSERT_EQUAL(2, get_array_length(get_last_child(root->children[0])->children));
+
+    for (size_t i = 0; i < get_array_length(get_last_child(root->children[0])->children); ++i)
+    {
+        ASSERT_EQUAL(NodeSpan, get_last_child(root->children[0])->children[i]->type);
+    }
+
+    free_builder(&builder);
+    free_tnode(root);
+}
