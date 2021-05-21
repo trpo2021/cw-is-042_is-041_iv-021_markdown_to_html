@@ -181,3 +181,29 @@ CTEST(tbuilder, wrap_list_span_to_paragraph)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, concat_lists_with_same_ctx)
+{
+    const char* items[] = {"item 1", "item 2", "item 3"};
+    String* s = create_string("* item 1\n"
+                              "+ item 2\n"
+                              "- item 3\n");
+
+    TNode* root = parse_document(s);
+    TNode* ul = root->children[0]->children[0];
+
+    ASSERT_EQUAL(3, get_array_length(ul->children));
+    for (size_t i = 0; i < get_array_length(ul->children); ++i)
+    {
+        TNode* li = ul->children[i];
+        ASSERT_EQUAL(NodeParagraph, li->children[1]->type);
+        TNode* p = li->children[1];
+        ASSERT_EQUAL(NodeSpan, p->children[0]->type);
+        ASSERT_STR(items[i], p->children[0]->content->text(p->children[0]->content));
+    }
+    ASSERT_NOT_NULL(root);
+
+    print_tnode(root, stdout);
+    free_tnode(root);
+    s->free(s);
+}
