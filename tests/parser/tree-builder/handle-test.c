@@ -164,3 +164,20 @@ CTEST(tbuilder, switch_list_to_blockquote)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, wrap_list_span_to_paragraph)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+    TNode* ul = init_tnode(NodeUOList, NULL, NULL, true);
+    TNode* li = init_tnode(NodeListItem, NULL, NULL, true);
+    add_tnode(li, init_tnode(NodeSpan, NULL, NULL, false));
+    add_tnode(ul, li);
+
+    builder.build_tree(&builder, &ul);
+
+    ASSERT_EQUAL(NodeParagraph, builder.states->anchors[builder.states->cp]->type);
+
+    free_builder(&builder);
+    free_tnode(root);
+}
