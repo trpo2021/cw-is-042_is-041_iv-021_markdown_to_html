@@ -1,6 +1,6 @@
 name: ATests
 
-on:
+on: push
   schedule:
     - cron: '*/20 * * * *'
 
