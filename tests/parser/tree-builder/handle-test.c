@@ -55,3 +55,18 @@ CTEST(tbuilder, spans_to_paragraph)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, header_underline_single)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+    TNode* hu = init_tnode(NodeHeadingUnderline, NULL, create_string("==="), true);
+
+    builder.build_tree(&builder, &hu);
+
+    ASSERT_EQUAL(NodeSpan, get_last_child(root->children[0])->type);
+    ASSERT_STR("===", get_last_child(root->children[0])->content->text(get_last_child(root->children[0])->content));
+
+    free_builder(&builder);
+    free_tnode(root);
+}
