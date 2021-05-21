@@ -143,3 +143,24 @@ CTEST(tbuilder, span_to_paragraph_in_blockquote)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, switch_list_to_blockquote)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+    TNode* ul = init_tnode(NodeUOList, NULL, NULL, true);
+    TNode* li = init_tnode(NodeListItem, NULL, NULL, true);
+    add_tnode(ul, li);
+    TNode* bq = init_tnode(NodeBlockquote, NULL, NULL, true);
+    add_tnode(bq, init_tnode(NodeSpan, NULL, NULL, false));
+    add_tnode(li, bq);
+
+    builder.build_tree(&builder, &ul);
+
+    ASSERT_EQUAL(NodeParagraph, builder.states->anchors[builder.states->cp]->type);
+    ASSERT_EQUAL(NodeBlockquote, builder.states->anchors[builder.states->cp - 1]->type);
+    ASSERT_EQUAL(NodeListItem, builder.states->anchors[builder.states->cp - 2]->type);
+
+    free_builder(&builder);
+    free_tnode(root);
+}
