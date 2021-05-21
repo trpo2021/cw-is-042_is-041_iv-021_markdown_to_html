@@ -113,3 +113,33 @@ CTEST(tbuilder, header_underline_with_paragraph)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, header_inline_to_paragraph_in_blockquote)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+    TNode* bq = init_tnode(NodeBlockquote, NULL, NULL, true);
+    add_tnode(bq, init_tnode(NodeHeadingInline, NULL, NULL, true));
+
+    builder.build_tree(&builder, &bq);
+
+    ASSERT_EQUAL(NodeParagraph, bq->children[0]->type);
+
+    free_builder(&builder);
+    free_tnode(root);
+}
+
+CTEST(tbuilder, span_to_paragraph_in_blockquote)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+    TNode* bq = init_tnode(NodeBlockquote, NULL, NULL, true);
+    add_tnode(bq, init_tnode(NodeSpan, NULL, NULL, false));
+
+    builder.build_tree(&builder, &bq);
+
+    ASSERT_EQUAL(NodeParagraph, bq->children[0]->type);
+
+    free_builder(&builder);
+    free_tnode(root);
+}
