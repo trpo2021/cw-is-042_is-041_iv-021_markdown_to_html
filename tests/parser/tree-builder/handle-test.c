@@ -70,3 +70,23 @@ CTEST(tbuilder, header_underline_single)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, header_underline_correct)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+    TNode* span = init_tnode(NodeSpan, NULL, NULL, false);
+    TNode* hu = init_tnode(NodeHeadingUnderline, NULL, create_string("==="), true);
+
+    builder.build_tree(&builder, &span);
+
+    ASSERT_EQUAL(NodeSpan, get_last_child(root->children[0])->type);
+
+    builder.build_tree(&builder, &hu);
+
+    ASSERT_EQUAL(NodeHeadingUnderline, get_last_child(root->children[0])->type);
+    ASSERT_EQUAL(1, get_array_length(hu->children));
+
+    free_builder(&builder);
+    free_tnode(root);
+}
