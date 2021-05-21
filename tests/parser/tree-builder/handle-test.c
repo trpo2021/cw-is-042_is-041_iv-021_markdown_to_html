@@ -31,3 +31,27 @@ CTEST(tbuilder, close_section)
     free_builder(&builder);
     free_tnode(root);
 }
+
+CTEST(tbuilder, spans_to_paragraph)
+{
+    TBuilder builder = {0};
+    TNode* root = setup_builder_for_test(&builder);
+    TNode* span = init_tnode(NodeSpan, NULL, NULL, false);
+
+    builder.build_tree(&builder, &span);
+
+    ASSERT_EQUAL(1, get_array_length(root->children[0]->children));
+    ASSERT_NOT_EQUAL(NodeParagraph, get_last_child(root->children[0])->type);
+
+    for (size_t i = 0; i < 10; ++i)
+    {
+        TNode* tmp = init_tnode(NodeSpan, NULL, NULL, false);
+        builder.build_tree(&builder, &tmp);
+    }
+
+    ASSERT_EQUAL(NodeParagraph, get_last_child(root->children[0])->type);
+    ASSERT_EQUAL(11, get_array_length(get_last_child(root->children[0])->children));
+
+    free_builder(&builder);
+    free_tnode(root);
+}
