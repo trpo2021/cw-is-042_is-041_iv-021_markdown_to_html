@@ -201,9 +201,36 @@ CTEST(tbuilder, concat_lists_with_same_ctx)
         ASSERT_EQUAL(NodeSpan, p->children[0]->type);
         ASSERT_STR(items[i], p->children[0]->content->text(p->children[0]->content));
     }
-    ASSERT_NOT_NULL(root);
 
-    print_tnode(root, stdout);
+    free_tnode(root);
+    s->free(s);
+}
+
+CTEST(tbuilder, check_codeblock)
+{
+    TypeOfTNode types[] = {NodeBody, NodeSection, NodePre, NodeCode, NodeSpan};
+    const char* code_content = "1. >> ## *test* [test](test)\n";
+    const char* after_content = " header lvl 3";
+    String* s = create_string("```\n");
+    s->concat(s, code_content);
+    s->concat(s, "```\n");
+    s->concat(s, "###");
+    s->concat(s, after_content);
+
+    TNode* root = parse_document(s);
+    TNode* tmp = root;
+    for (size_t i = 0; tmp->children && i < sizeof(types) / sizeof(types[0]); ++i)
+    {
+        ASSERT_EQUAL(types[i], tmp->type);
+        tmp = tmp->children[0];
+    }
+    ASSERT_STR(code_content, tmp->content->text(tmp->content));
+
+    TNode* h3 = root->children[0]->children[1];
+    ASSERT_EQUAL(NodeHeadingInline, h3->type);
+    ASSERT_EQUAL(NodeSpan, h3->children[0]->type);
+    ASSERT_STR(after_content, h3->children[0]->content->text(h3->children[0]->content));
+
     free_tnode(root);
     s->free(s);
 }
