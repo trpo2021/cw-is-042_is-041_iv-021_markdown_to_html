@@ -234,3 +234,41 @@ CTEST(tbuilder, check_codeblock)
     free_tnode(root);
     s->free(s);
 }
+
+CTEST(tbuilder, check_bq_leveling)
+{
+    String* s = create_string("> bq lvl 0\n"
+                              ">> bq lvl 1\n"
+                              "> > bq lvl 1\n"
+                              ">>> bq lvl 3\n"
+                              "> bq lvl 1\n"
+                              "another text to bq");
+    TNode* root = parse_document(s);
+    TNode* bq = root->children[0]->children[0];
+
+    ASSERT_EQUAL(NodeBlockquote, bq->type);
+    ASSERT_EQUAL(NodeParagraph, bq->children[0]->type);
+    ASSERT_EQUAL(NodeBlockquote, bq->children[1]->type);
+    ASSERT_EQUAL(NodeParagraph, bq->children[2]->type);
+
+    TNode* tmp = bq->children[0];
+    ASSERT_EQUAL(NodeSpan, tmp->children[0]->type);
+    ASSERT_STR("bq lvl 0", tmp->children[0]->content->text(tmp->children[0]->content));
+
+    tmp = bq->children[1];
+    for (size_t i = 0; i < get_array_length(tmp->children) - 1; ++i)
+    {
+        ASSERT_EQUAL(NodeParagraph, tmp->children[i]->type);
+        ASSERT_EQUAL(NodeSpan, tmp->children[i]->children[0]->type);
+        ASSERT_STR("bq lvl 1", tmp->children[i]->children[0]->content->text(tmp->children[i]->children[0]->content));
+    }
+    ASSERT_EQUAL(NodeBlockquote, tmp->children[get_array_length(tmp->children) - 1]->type);
+    ASSERT_EQUAL(NodeParagraph, tmp->children[get_array_length(tmp->children) - 1]->children[0]->type);
+
+    tmp = bq->children[2];
+    ASSERT_STR("bq lvl 1", tmp->children[0]->content->text(tmp->children[0]->content));
+    ASSERT_STR("another text to bq", tmp->children[1]->content->text(tmp->children[1]->content));
+
+    free_tnode(root);
+    s->free(s);
+}
