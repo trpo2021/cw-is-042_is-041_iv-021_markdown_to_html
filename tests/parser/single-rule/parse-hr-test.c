@@ -1,5 +1,6 @@
 #include "parse-single-rule-helper.h"
 #include <ctest.h>
+#include <memory.h>
 
 static TNode* create_hr_from_test_data(char* raw_data)
 {
@@ -67,10 +68,18 @@ CTEST(parse_hr_rule, incorrect_count_less)
 /* in case when we have any other token in line */
 CTEST(parse_hr_rule, incorrect_with_others_token)
 {
-    const char tokens[] = "\n_*`=-+<#![> ]()";
+    const char tokens[] = "`=-+<#![>]()";
     TNode* exp = init_tnode(NodeHorizontalLine, create_string("<hr/>"), NULL, false);
 
-    TNode* real = create_hr_from_test_data(generate_sequence_of_terms(tokens, sizeof(tokens), rand() % 100 + 3));
+    size_t count = rand() % 100 + 3;
+    char* invalid_data = generate_sequence_of_terms(tokens, sizeof(tokens), count);
+    char* raw_data = malloc(count + 2);
+    raw_data[0] = (rand() % 2) ? '*' : '_';
+    memmove(&raw_data[1], invalid_data, count);
+    raw_data[count + 1] = 0;
+    free(invalid_data);
+
+    TNode* real = create_hr_from_test_data(raw_data);
 
     ASSERT_NOT_EQUAL(exp->type, real->type);
 
