@@ -18,7 +18,6 @@ CTEST(tbuilder, close_section)
 
     builder.build_tree(&builder, &hr);
 
-    ASSERT_EQUAL(0, builder.states->cp);
     ASSERT_EQUAL(3, get_array_length(root->children));
     ASSERT_EQUAL(NodeSection, root->children[0]->type);
     ASSERT_EQUAL(NodeHorizontalLine, root->children[1]->type);
@@ -60,7 +59,7 @@ CTEST(tbuilder, header_underline_single)
 {
     TBuilder builder = {0};
     TNode* root = setup_builder_for_test(&builder);
-    TNode* hu = init_tnode(NodeHeadingUnderline, NULL, create_string("==="), true);
+    TNode* hu = init_tnode(NodeHeadingUnderline, create_string("<h1>"), create_string("==="), true);
 
     builder.build_tree(&builder, &hu);
 
@@ -76,7 +75,7 @@ CTEST(tbuilder, header_underline_correct)
     TBuilder builder = {0};
     TNode* root = setup_builder_for_test(&builder);
     TNode* span = init_tnode(NodeSpan, NULL, NULL, false);
-    TNode* hu = init_tnode(NodeHeadingUnderline, NULL, create_string("==="), true);
+    TNode* hu = init_tnode(NodeHeadingUnderline, create_string("<h1>"), create_string("==="), true);
 
     builder.build_tree(&builder, &span);
 
@@ -157,9 +156,16 @@ CTEST(tbuilder, switch_list_to_blockquote)
 
     builder.build_tree(&builder, &ul);
 
-    ASSERT_EQUAL(NodeParagraph, builder.states->anchors[builder.states->cp]->type);
-    ASSERT_EQUAL(NodeBlockquote, builder.states->anchors[builder.states->cp - 1]->type);
-    ASSERT_EQUAL(NodeListItem, builder.states->anchors[builder.states->cp - 2]->type);
+    TNode* tmp = root;
+    for (size_t i = 0; i < 3; ++i)
+    {
+        tmp = tmp->children[0];
+    }
+    tmp = tmp->children[1];
+
+    ASSERT_EQUAL(NodeBlockquote, tmp->type);
+    ASSERT_EQUAL(NodeListItem, tmp->parrent->type);
+    ASSERT_EQUAL(NodeParagraph, tmp->children[0]->type);
 
     free_builder(&builder);
     free_tnode(root);
@@ -176,7 +182,14 @@ CTEST(tbuilder, wrap_list_span_to_paragraph)
 
     builder.build_tree(&builder, &ul);
 
-    ASSERT_EQUAL(NodeParagraph, builder.states->anchors[builder.states->cp]->type);
+    TNode* tmp = root;
+    for (size_t i = 0; i < 3; ++i)
+    {
+        tmp = tmp->children[0];
+    }
+    tmp = tmp->children[1];
+
+    ASSERT_EQUAL(NodeParagraph, tmp->type);
 
     free_builder(&builder);
     free_tnode(root);

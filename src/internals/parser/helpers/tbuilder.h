@@ -2,18 +2,11 @@
 
 #include <internals/parser/main/parser.h>
 
-/* TODO: remove stack from interface */
-
-typedef struct
-{
-    int64_t cp;
-    int64_t cap;
-    TNode** anchors;
-} PStateStack;
+struct _pstate_stack;
 
 typedef struct _tbuilder
 {
-    PStateStack* states;
+    struct _pstate_stack* states;
     String* raw;
     void (*build_tree)(struct _tbuilder* builder, TNode** node_ptr);
 } TBuilder;

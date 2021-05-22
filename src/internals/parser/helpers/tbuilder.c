@@ -2,9 +2,15 @@
 #include <internals/parser/helpers/tbuilder.h>
 
 /* TODO: some refactorng */
-/* TODO: realloc stack */
 
 #define STACK_INITIAL_CAP 10
+
+typedef struct _pstate_stack
+{
+    int64_t cp;
+    int64_t cap;
+    TNode** anchors;
+} PStateStack;
 
 /******************************
  *                            *
@@ -41,6 +47,7 @@ static void add_anchor(TBuilder* builder, TNode** anchor)
 
 /* remove anchor from builder */
 /* @param builder tree builder */
+/* @return pointer to removed anchor */
 static TNode* remove_anchor(TBuilder* builder)
 {
     return builder->states->anchors[builder->states->cp--];
@@ -48,9 +55,10 @@ static TNode* remove_anchor(TBuilder* builder)
 
 /* peek anchor from builder */
 /* @param builder tree builder */
+/* @return pointer to peeked anchor or NULL if stack is empty */
 static TNode* get_anchor(TBuilder* builder)
 {
-    return builder->states->anchors[builder->states->cp];
+    return builder->states->cp >= 0 ? builder->states->anchors[builder->states->cp] : NULL;
 }
 
 /* free PStateStack */
@@ -73,8 +81,6 @@ static void stack_free(PStateStack* stack)
  *                            *
  ******************************/
 
-/* TODO: Maximum refactoring */
-
 /* in case, when we can't wrap span in header */
 /* @param header node to convert to span node */
 static void nullify_header_underline(TNode** header)
@@ -82,6 +88,7 @@ static void nullify_header_underline(TNode** header)
     (*header)->type = NodeSpan;
     (*header)->head->clear((*header)->head);
     (*header)->head->concat((*header)->head, "<span>");
+    (*header)->nesting = false;
 }
 
 /* connect node to current anchor */
@@ -123,7 +130,10 @@ static void close_section(TBuilder* builder, TNode** node)
     add_anchor(builder, &new_sec);
 }
 
-static void wrap_to_paragraph(TBuilder* builder, TNode** node)
+/* in case when we got > 2 spans in row, we wrap them */
+/* @param builder tree builder */
+/* @param node paragraph's child */
+static void wrap_span_to_paragraph(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder);
     TNode* p = init_tnode(NodeParagraph, create_string("<p>"), NULL, true);
@@ -134,35 +144,40 @@ static void wrap_to_paragraph(TBuilder* builder, TNode** node)
     add_anchor(builder, &p);
 }
 
+/* for default handle */
+/* @param builder tree builder */
+/* @param node header underline */
 static void process_hunderline_node(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder);
-
     if (anchor->children && get_last_child(anchor)->type == NodeSpan)
     {
         add_tnode(*node, get_last_child(anchor));
         get_last_child(anchor) = NULL;
         add_tnode(anchor, *node);
+        return;
     }
-    else
-    {
-        TNode* span = init_tnode(NodeSpan, create_string("<span>"), (*node)->content->copy((*node)->content), false);
-        add_tnode(anchor, span);
-        free_tnode(*node);
-    }
+    nullify_header_underline(node);
+    add_tnode(anchor, *node);
 }
 
+/* for default handle */
+/* @param builder tree builder */
+/* @param node span */
 static void process_span_node(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder);
     if (anchor->children && get_last_child(anchor)->type == NodeSpan)
     {
-        wrap_to_paragraph(builder, node);
+        wrap_span_to_paragraph(builder, node);
         return;
     }
     add_tnode(anchor, *node);
 }
 
+/* change state from current to blockquote and after to paragraph */
+/* @param builder tree builder */
+/* @param node blockquote */
 static void switch_to_blockquote(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder);
@@ -180,6 +195,9 @@ static void switch_to_blockquote(TBuilder* builder, TNode** node)
     add_anchor(builder, &p);
 }
 
+/* change state from current to list and after to paragraph */
+/* @param builder tree builder */
+/* @param node list item */
 static void switch_to_list(TBuilder* builder, TNode** node)
 {
     add_anchor(builder, node);
@@ -197,12 +215,18 @@ static void switch_to_list(TBuilder* builder, TNode** node)
     add_anchor(builder, &p);
 }
 
+/* grow down in current list */
+/* @param builder tree builder */
+/* @param node list item */
 static inline void add_li_lvl(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder)->parrent;
     add_tnode(get_last_child(anchor), *node);
 }
 
+/* in case when we have list with same context */
+/* @param builder tree builder */
+/* @param node list header */
 static inline void combine_lists(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder)->parrent;
@@ -225,6 +249,9 @@ static inline void combine_lists(TBuilder* builder, TNode** node)
  *                            *
  ******************************/
 
+/* handle global state */
+/* @param builder tree builder */
+/* @param node current node from parser */
 void handle_default(TBuilder* builder, TNode** node)
 {
     switch ((*node)->type)
@@ -261,25 +288,27 @@ void handle_default(TBuilder* builder, TNode** node)
     }
 }
 
+/* handle codeblock state */
+/* @param builder tree builder */
+/* @param node current node from parser */
 void handle_codeblock(TBuilder* builder, TNode** node)
 {
-    switch ((*node)->type)
-    {
-    case NodePre:
-        remove_anchor(builder);
-        free_tnode(*node);
-        return;
-    default:
+    if ((*node)->type != NodePre)
     {
         TNode* anchor = get_anchor(builder);
         String* code = anchor->children[0]->children[0]->content;
         code->concat(code, builder->raw->text(builder->raw));
-        free_tnode(*node);
     }
-        return;
+    else
+    {
+        remove_anchor(builder);
     }
+    free_tnode(*node);
 }
 
+/* handle blockquote state */
+/* @param builder tree builder */
+/* @param node current node from parser */
 void handle_blockquote(TBuilder* builder, TNode** node)
 {
     if ((*node)->type == NodeBlockquote)
@@ -321,6 +350,9 @@ void handle_blockquote(TBuilder* builder, TNode** node)
     return_back(builder, node);
 }
 
+/* handle paragraph state */
+/* @param builder tree builder */
+/* @param node current node from parser */
 void handle_paragraph(TBuilder* builder, TNode** node)
 {
     switch ((*node)->type)
@@ -340,6 +372,9 @@ void handle_paragraph(TBuilder* builder, TNode** node)
     }
 }
 
+/* handle list state */
+/* @param builder tree builder */
+/* @param node current node from parser */
 void handle_list(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder)->parrent;
@@ -350,9 +385,9 @@ void handle_list(TBuilder* builder, TNode** node)
             add_li_lvl(builder, node);
             switch_to_list(builder, &(*node)->children[0]);
         }
-        else if (anchor->offset == (*node)->offset)
+        else if (anchor->offset == (*node)->offset && (*node)->type == anchor->type)
         {
-            (*node)->type == anchor->type ? combine_lists(builder, node) : return_back(builder, node);
+            combine_lists(builder, node);
         }
         else
         {
