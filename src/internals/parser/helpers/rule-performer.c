@@ -1,8 +1,6 @@
 #include <internals/parser/helpers/rule-performer.h>
 #include <stdarg.h>
 
-/* TODO: some refactorng */
-
 #define PARSE_RULE_FAIL_CODE NULL
 #define MAX_RULES_FOR_TOKEN 5
 
@@ -13,6 +11,9 @@
  ******************************/
 
 /* parse subset of tokens as text */
+/* @param perf struct rule performer */
+/* @param node node to parse */
+/* @param end_pos limit for parsing */
 static inline void parse_text_to_node(RulePerformer* perf, TNode* node, size_t end_pos)
 {
     for (; perf->cp < end_pos; ++perf->cp)
@@ -21,6 +22,7 @@ static inline void parse_text_to_node(RulePerformer* perf, TNode* node, size_t e
     }
 }
 
+/* counting special tokens in the sequence */
 /* @param perf struct rule performer */
 /* @param term set of tokens */
 /* @param ignore_spaces if the rule allows spaces */
@@ -54,6 +56,7 @@ static inline size_t get_sequence_length(RulePerformer* perf, Term term, bool ig
  *                            *
  ******************************/
 
+/* for parse text with whitespaces */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -79,6 +82,7 @@ static TNode* parse_span(RulePerformer* perf, size_t lim, ...)
     return node;
 }
 
+/* for parse horizontal rule */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -94,6 +98,7 @@ static TNode* parse_hr_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse line break */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -104,6 +109,7 @@ static TNode* parse_br_rule(RulePerformer* perf, size_t lim, ...)
     return init_tnode(NodeBreakLine, create_string("<br>"), NULL, false);
 }
 
+/* for parse underline headers */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -131,6 +137,7 @@ static TNode* parse_header_underline_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse block of code */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -150,6 +157,7 @@ static TNode* parse_precode_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse <ol> and <ul> */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -178,6 +186,7 @@ static TNode* parse_list_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse blockquote */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -199,6 +208,7 @@ static TNode* parse_blockquote_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse inline header */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -219,6 +229,7 @@ static TNode* parse_hinline_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse inline code */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -239,6 +250,7 @@ static TNode* parse_code_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse automatic links */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -259,6 +271,7 @@ static TNode* parse_alink_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse default links */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -295,6 +308,7 @@ static TNode* parse_link_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
+/* for parse images */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -314,7 +328,7 @@ static TNode* parse_img_rule(RulePerformer* perf, size_t lim, ...)
     return PARSE_RULE_FAIL_CODE;
 }
 
-/* for <em> and <strong> */
+/* for parse <em> and <strong> */
 /* @param perf struct rule performer */
 /* @param lim limit for parse */
 /* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
@@ -365,7 +379,7 @@ static TNode* parse_empasis_rule(RulePerformer* perf, size_t lim, ...)
 typedef struct
 {
     TNode* (*parse_rule)(RulePerformer* perf, size_t lim, ...);
-} Rule;
+} RuleFunc;
 
 static const TypeOfRule RULE_TABLE[][MAX_RULES_FOR_TOKEN] = {
     [TokenLineBreak] = {RuleLineBreak, RuleUnknown},
@@ -383,21 +397,21 @@ static const TypeOfRule RULE_TABLE[][MAX_RULES_FOR_TOKEN] = {
     [TokenNumber] = {RuleOList, RuleUnknown},
 };
 
-static const Rule PARSE_TABLE[] = {[RuleHorizontalLine] = {parse_hr_rule},
-                                   [RuleLineBreak] = {parse_br_rule},
-                                   [RuleH1Underline] = {parse_header_underline_rule},
-                                   [RuleH2Underline] = {parse_header_underline_rule},
-                                   [RuleCodeBlock] = {parse_precode_rule},
-                                   [RuleOList] = {parse_list_rule},
-                                   [RuleUOList] = {parse_list_rule},
-                                   [RuleBlockquote] = {parse_blockquote_rule},
-                                   [RuleHeadingInline] = {parse_hinline_rule},
-                                   [RuleEmphasis] = {parse_empasis_rule},
-                                   [RuleCodeInline] = {parse_code_rule},
-                                   [RuleImage] = {parse_img_rule},
-                                   [RuleLink] = {parse_link_rule},
-                                   [RuleAutoLink] = {parse_alink_rule},
-                                   [RuleUnknown] = {parse_span}};
+static const RuleFunc PARSE_TABLE[] = {[RuleHorizontalLine] = {parse_hr_rule},
+                                       [RuleLineBreak] = {parse_br_rule},
+                                       [RuleH1Underline] = {parse_header_underline_rule},
+                                       [RuleH2Underline] = {parse_header_underline_rule},
+                                       [RuleCodeBlock] = {parse_precode_rule},
+                                       [RuleOList] = {parse_list_rule},
+                                       [RuleUOList] = {parse_list_rule},
+                                       [RuleBlockquote] = {parse_blockquote_rule},
+                                       [RuleHeadingInline] = {parse_hinline_rule},
+                                       [RuleEmphasis] = {parse_empasis_rule},
+                                       [RuleCodeInline] = {parse_code_rule},
+                                       [RuleImage] = {parse_img_rule},
+                                       [RuleLink] = {parse_link_rule},
+                                       [RuleAutoLink] = {parse_alink_rule},
+                                       [RuleUnknown] = {parse_span}};
 
 /* change rp mode by current rule */
 /* @param rule parsed rule */

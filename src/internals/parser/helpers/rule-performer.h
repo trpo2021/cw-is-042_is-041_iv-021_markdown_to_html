@@ -26,9 +26,9 @@ typedef struct rule_performer
         /* current pos in tokens */
         size_t cp;
     };
-    /* count of tokens in sequense */
+    /* count of tokens in sequenсe */
     size_t count;
-    /* token sequense */
+    /* token sequenсe */
     Array(Token) tokens;
     /* select rule and return tree node */
     TNode* (*invoke)(struct rule_performer* perf, size_t lim);
@@ -42,9 +42,9 @@ void init_performer(RulePerformer* perf, Array(Token) tokens, size_t pos);
  *                            *
  ******************************/
 
-/* @param index current position in token sequense */
-/* @param tokens token sequense */
-/* @return index of first non whitespace token in the sequense */
+/* @param index current position in token sequenсe */
+/* @param tokens token sequenсe */
+/* @return index of first non whitespace token in the sequenсe */
 static inline size_t skip_spaces(size_t index, Array(Token) tokens)
 {
     for (; index < get_array_length(tokens); ++index)
@@ -78,7 +78,7 @@ static inline bool is_token_in_term(Term term, TypeOfToken token)
 /* @param term set of tokens for search */
 /* @param lim limit for search */
 /* @param count count of tokens for search */
-/* @return last element's index in the token sequence or 0 if sequense doesn't contains */
+/* @return last element's index in the token sequence or 0 if sequenсe doesn't contains */
 static inline size_t find_end_pos(RulePerformer* perf, size_t lim, Term term, size_t count)
 {
     for (size_t i = perf->cp, c_count = 0; i < lim; ++i)
