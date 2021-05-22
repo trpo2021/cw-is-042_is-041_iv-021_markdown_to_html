@@ -1,10 +1,10 @@
+#include <assert.h>
 #include <internals/parser/helpers/tbuilder.h>
 
 /* TODO: some refactorng */
 /* TODO: realloc stack */
 
-/* tmp? */
-#define MAX_STATE_LVL 10
+#define STACK_INITIAL_CAP 10
 
 /******************************
  *                            *
@@ -29,6 +29,13 @@ static PStateStack* create_stack(size_t capacity)
 /* @param anchor node to push on stack */
 static void add_anchor(TBuilder* builder, TNode** anchor)
 {
+    if (builder->states->cap - 1 <= builder->states->cp)
+    {
+        builder->states->cap = ((builder->states->cap + 1) * 2);
+        TNode** tmp = realloc(builder->states->anchors, sizeof(TNode**) * builder->states->cap);
+        assert(tmp);
+        builder->states->anchors = tmp;
+    }
     builder->states->anchors[++builder->states->cp] = *anchor;
 }
 
@@ -404,7 +411,7 @@ static void build_tree(TBuilder* builder, TNode** node)
 /* @param st_anchor start anchor */
 void init_builder(TBuilder* builder, TNode** st_anchor)
 {
-    builder->states = create_stack(MAX_STATE_LVL);
+    builder->states = create_stack(STACK_INITIAL_CAP);
     builder->build_tree = build_tree;
     add_anchor(builder, st_anchor);
 }

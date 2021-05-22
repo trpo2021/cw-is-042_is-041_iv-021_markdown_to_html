@@ -6,8 +6,8 @@
 
 typedef struct
 {
-    size_t cp;
-    size_t cap;
+    int64_t cp;
+    int64_t cap;
     TNode** anchors;
 } PStateStack;
 
