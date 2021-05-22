@@ -10,7 +10,7 @@ typedef struct
     size_t capacity;
 } Data;
 
-static bool realloc_memory(struct String* str)
+static bool realloc_memory(const struct _string* str)
 {
     ((Data*)str->internals)->capacity = 1 + (((Data*)str->internals)->capacity * 2);
     char* temp = realloc(((Data*)str->internals)->data, (((Data*)str->internals)->capacity));
@@ -22,7 +22,7 @@ static bool realloc_memory(struct String* str)
     return true;
 }
 
-void str_concat(struct String* str, const char* item)
+void str_concat(const struct _string* str, const char* item)
 {
     if (((Data*)str->internals)->length + strlen(item) + 1 < ((Data*)str->internals)->capacity)
     {
@@ -43,22 +43,22 @@ void str_concat(struct String* str, const char* item)
     }
 }
 
-size_t str_length(const struct String* str)
+size_t str_length(const struct _string* str)
 {
     return ((Data*)str->internals)->length;
 }
 
-size_t str_capacity(const struct String* str)
+size_t str_capacity(const struct _string* str)
 {
     return ((Data*)str->internals)->capacity;
 }
 
-const char* str_text(const struct String* str)
+const char* str_text(const struct _string* str)
 {
     return ((Data*)str->internals)->data;
 }
 
-void str_set(const struct String* str, size_t index, char item)
+void str_set(const struct _string* str, size_t index, char item)
 {
     if (index > ((Data*)str->internals)->length - 1)
     {
@@ -67,7 +67,7 @@ void str_set(const struct String* str, size_t index, char item)
     ((Data*)str->internals)->data[index] = item;
 }
 
-char str_get(const struct String* str, size_t index)
+char str_get(const struct _string* str, size_t index)
 {
     if (index < ((Data*)str->internals)->length)
     {
@@ -76,7 +76,7 @@ char str_get(const struct String* str, size_t index)
     return -1;
 }
 
-void str_append(struct String* str, char item)
+void str_append(const struct _string* str, char item)
 {
     if (((Data*)str->internals)->length + 1 < ((Data*)str->internals)->capacity)
     {
@@ -92,7 +92,7 @@ void str_append(struct String* str, char item)
     }
 }
 
-bool str_contains(const struct String* str, const char* item)
+bool str_contains(const struct _string* str, const char* item)
 {
     if (strstr(((Data*)str->internals)->data, item))
     {
@@ -101,7 +101,7 @@ bool str_contains(const struct String* str, const char* item)
     return false;
 }
 
-bool str_compare(const struct String* str, const char* item)
+bool str_compare(const struct _string* str, const char* item)
 {
     if (strcmp(((Data*)str->internals)->data, item) == 0)
     {
@@ -110,13 +110,13 @@ bool str_compare(const struct String* str, const char* item)
     return false;
 }
 
-string str_replace(const struct String* str, const char* old, const char* new)
+String* str_replace(const struct _string* str, const char* old, const char* new)
 {
     if (!str || !old || !new)
     {
         return NULL;
     }
-    size_t source_len = str->Length(str);
+    size_t source_len = str->length(str);
     if (!source_len)
     {
         return NULL;
@@ -127,7 +127,7 @@ string str_replace(const struct String* str, const char* old, const char* new)
         return NULL;
     }
     size_t count = 0;
-    const char* p = str->Text(str);
+    const char* p = str->text(str);
     do
     {
         p = strstr(p, old);
@@ -140,7 +140,7 @@ string str_replace(const struct String* str, const char* old, const char* new)
 
     if (!count)
     {
-        return str->Copy(str);
+        return str->copy(str);
     }
 
     size_t source_without_old_len = source_len - count * old_len;
@@ -159,7 +159,7 @@ string str_replace(const struct String* str, const char* old, const char* new)
     }
 
     char* dst = result;
-    const char* start_substr = str->Text(str);
+    const char* start_substr = str->text(str);
     size_t i;
     for (i = 0; i != count; ++i)
     {
@@ -172,37 +172,37 @@ string str_replace(const struct String* str, const char* old, const char* new)
         start_substr = end_substr + old_len;
     }
 
-    size_t remains = source_len - (start_substr - str->Text(str)) + 1;
+    size_t remains = source_len - (start_substr - str->text(str)) + 1;
     memcpy(dst, start_substr, remains);
-    string out = create(result);
+    String* out = create_string(result);
     free(result);
     return out;
 }
 
-string* str_split(const struct String* str, const char* pattern, size_t* length)
+String** str_split(const struct _string* str, const char* pattern, size_t* length)
 {
     char* copy = malloc(((Data*)str->internals)->length + 1);
     memcpy(copy, ((Data*)str->internals)->data, ((Data*)str->internals)->length + 1);
-    string* container = NULL;
+    String** container = NULL;
     *length = 0;
     for (char* p = strtok(copy, pattern); p != NULL; p = strtok(NULL, pattern))
     {
-        string* temp = realloc(container, sizeof(string) * (++(*length)));
+        String** temp = realloc(container, sizeof(String*) * (++(*length)));
         if (temp)
         {
             container = temp;
-            container[(*length) - 1] = create(p);
+            container[(*length) - 1] = create_string(p);
         }
     }
     free(copy);
     return container;
 }
 
-void str_insert(struct String* str, const char* item, size_t index)
+void str_insert(const struct _string* str, const char* item, size_t index)
 {
-    if (str->Length(str) == 0)
+    if (str->length(str) == 0)
     {
-        str->Concat(str, item);
+        str->concat(str, item);
         return;
     }
     if (index < ((Data*)str->internals)->length)
@@ -218,18 +218,18 @@ void str_insert(struct String* str, const char* item, size_t index)
             }
         }
         memmove(&((Data*)str->internals)->data[index + strlen(item)], &((Data*)str->internals)->data[index],
-                str->Length(str) - index + 1);
+                str->length(str) - index + 1);
         memmove(&((Data*)str->internals)->data[index], item, strlen(item));
         ((Data*)str->internals)->length += strlen(item);
     }
 }
 
-string str_copy(const struct String* str)
+String* str_copy(const struct _string* str)
 {
-    return create(str->Text(str));
+    return create_string(str->text(str));
 }
 
-void str_free(struct String* str)
+void str_free(struct _string* str)
 {
     if (str)
     {
@@ -247,7 +247,7 @@ void str_free(struct String* str)
     }
 }
 
-void str_clear(struct String* str)
+void str_clear(const struct _string* str)
 {
     if (str)
     {
@@ -264,11 +264,11 @@ void str_clear(struct String* str)
     }
 }
 
-string init(size_t initial_capacity)
+String* init_string(size_t initial_capacity)
 {
     if (initial_capacity > 0)
     {
-        string str = malloc(sizeof(struct String));
+        String* str = malloc(sizeof(String));
         if (!str)
         {
             return NULL;
@@ -288,38 +288,38 @@ string init(size_t initial_capacity)
             return NULL;
         }
         ((Data*)str->internals)->length = 0;
-        str->Capacity = &str_capacity;
-        str->Length = &str_length;
-        str->Text = &str_text;
-        str->Copy = &str_copy;
-        str->Free = &str_free;
-        str->Set = &str_set;
-        str->Get = &str_get;
-        str->Append = &str_append;
-        str->Concat = &str_concat;
-        str->Contains = &str_contains;
-        str->Compare = &str_compare;
-        str->Replace = &str_replace;
-        str->Split = &str_split;
-        str->Insert = &str_insert;
-        str->Clear = &str_clear;
+        str->capacity = &str_capacity;
+        str->length = &str_length;
+        str->text = &str_text;
+        str->copy = &str_copy;
+        str->free = &str_free;
+        str->set = &str_set;
+        str->get = &str_get;
+        str->append = &str_append;
+        str->concat = &str_concat;
+        str->contains = &str_contains;
+        str->compare = &str_compare;
+        str->replace = &str_replace;
+        str->split = &str_split;
+        str->insert = &str_insert;
+        str->clear = &str_clear;
         ((Data*)str->internals)->data[0] = '\0';
         return str;
     }
     return NULL;
 }
 
-string create(const char* source)
+String* create_string(const char* source)
 {
     if (strlen(source) > 0)
     {
-        string s = init(strlen(source) + 10);
+        String* s = init_string(strlen(source) + 10);
         memcpy(((Data*)s->internals)->data, source, strlen(source) + 1);
         ((Data*)s->internals)->length = strlen(source);
         return s;
     }
     else
     {
-        return init(10);
+        return init_string(10);
     }
 }
