@@ -272,3 +272,50 @@ CTEST(tbuilder, check_bq_leveling)
     free_tnode(root);
     s->free(s);
 }
+
+CTEST(tbuilder, check_list_leveling_in_different_ctx)
+{
+    String* s = create_string("* 1) ul lvl 0\n"
+                              "    + 1) ul lvl 1\n"
+                              "    1. 1) ol lvl 1\n"
+                              "    2. 1) ol lvl 1\n"
+                              "        1. 1) ol lvl 2\n"
+                              "    - 1) ul lvl 1\n"
+                              "+ 1) ul lvl 0\n"
+                              "\n"
+                              "\n"
+                              "+ 2) another ul lvl 0\n");
+
+    TNode* root = parse_document(s);
+
+    TNode* tmp = root->children[0]->children[0];
+    ASSERT_EQUAL(NodeUOList, tmp->type);
+    ASSERT_EQUAL(NodeListItem, tmp->children[0]->type);
+
+    tmp = tmp->children[0];
+    ASSERT_EQUAL(NodeParagraph, tmp->children[1]->type);
+    ASSERT_EQUAL(NodeUOList, tmp->children[2]->type);
+    ASSERT_EQUAL(NodeOList, tmp->children[3]->type);
+    ASSERT_EQUAL(NodeUOList, tmp->children[4]->type);
+
+    tmp = tmp->children[3];
+    ASSERT_EQUAL(NodeListItem, tmp->children[0]->type);
+    ASSERT_EQUAL(NodeListItem, tmp->children[1]->type);
+    ASSERT_EQUAL(NodeOList, tmp->children[1]->children[2]->type);
+
+    tmp = root->children[0]->children[0]->children[0];
+    ASSERT_EQUAL(NodeUOList, tmp->children[4]->type);
+
+    tmp = root->children[0]->children[0];
+    ASSERT_EQUAL(2, get_array_length(tmp->children));
+    for (size_t i = 0; i < get_array_length(tmp->children); ++i)
+    {
+        ASSERT_EQUAL(NodeListItem, tmp->children[i]->type);
+    }
+
+    tmp = root->children[0]->children[1];
+    ASSERT_EQUAL(NodeUOList, tmp->type);
+
+    free_tnode(root);
+    s->free(s);
+}
