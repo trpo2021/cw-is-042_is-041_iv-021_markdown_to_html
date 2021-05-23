@@ -116,66 +116,27 @@ String* str_replace(const struct _string* str, const char* old, const char* new)
     {
         return NULL;
     }
-    size_t source_len = str->length(str);
-    if (!source_len)
-    {
-        return NULL;
-    }
-    size_t old_len = strlen(old);
-    if (!old_len)
-    {
-        return NULL;
-    }
-    size_t count = 0;
-    const char* p = str->text(str);
-    do
-    {
-        p = strstr(p, old);
-        if (p)
-        {
-            p += old_len;
-            ++count;
-        }
-    } while (p);
-
-    if (!count)
+    char* ptr = strstr(str->text(str), old);
+    if (!ptr || strlen(old) == 0)
     {
         return str->copy(str);
     }
-
-    size_t source_without_old_len = source_len - count * old_len;
-    size_t new_len = strlen(new);
-    size_t source_with_new_len = source_without_old_len + count * new_len;
-    if (new_len && ((source_with_new_len <= source_without_old_len) || (source_with_new_len + 1 == 0)))
+    String* out = init_string(str->capacity(str));
+    size_t pos = 0;
+    while (ptr)
     {
-        /* Overflow. */
-        return NULL;
+        for (; pos < ptr - str->text(str); ++pos)
+        {
+            out->append(out, str->get(str, pos));
+        }
+        out->concat(out, new);
+        ptr = strstr(ptr + strlen(old), old);
+        pos += strlen(old);
     }
-
-    char* result = malloc(source_with_new_len + 1);
-    if (!result)
+    for (; pos < str->length(str); ++pos)
     {
-        return NULL;
+        out->append(out, str->get(str, pos));
     }
-
-    char* dst = result;
-    const char* start_substr = str->text(str);
-    size_t i;
-    for (i = 0; i != count; ++i)
-    {
-        const char* end_substr = strstr(start_substr, old);
-        size_t substr_len = end_substr - start_substr;
-        memcpy(dst, start_substr, substr_len);
-        dst += substr_len;
-        memcpy(dst, new, new_len);
-        dst += new_len;
-        start_substr = end_substr + old_len;
-    }
-
-    size_t remains = source_len - (start_substr - str->text(str)) + 1;
-    memcpy(dst, start_substr, remains);
-    String* out = create_string(result);
-    free(result);
     return out;
 }
 

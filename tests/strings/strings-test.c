@@ -300,8 +300,9 @@ CTEST(strings, replace_empty_old)
 {
     String* s = create_string("test test  test  spaces!");
     String* replaced = s->replace(s, "", "");
-    ASSERT_NULL(replaced);
+    ASSERT_STR(s->text(s), replaced->text(replaced));
     s->free(s);
+    replaced->free(replaced);
 }
 
 CTEST(strings, replace_empty_source)
@@ -325,15 +326,25 @@ CTEST(strings, empty_string_replace)
 {
     String* s = create_string("");
     String* replaced = s->replace(s, "test", "ssss");
-    ASSERT_NULL(replaced);
+    ASSERT_STR(s->text(s), replaced->text(replaced));
     s->free(s);
+    replaced->free(replaced);
 }
 
 CTEST(strings, replace_large_substr_len)
 {
     String* s = create_string("test");
-    String* replaced = s->replace(s, "tested", "wwww");
-    ASSERT_STR(s->text(s), replaced->text(replaced));
+    String* replaced = s->replace(s, "t", "wwww");
+    ASSERT_STR("wwwweswwww", replaced->text(replaced));
+    s->free(s);
+    replaced->free(replaced);
+}
+
+CTEST(strings, replace_tabs_with_spaces)
+{
+    String* s = create_string("\t\ttest ");
+    String* replaced = s->replace(s, "\t", "    ");
+    ASSERT_STR("        test ", replaced->text(replaced));
     s->free(s);
     replaced->free(replaced);
 }
