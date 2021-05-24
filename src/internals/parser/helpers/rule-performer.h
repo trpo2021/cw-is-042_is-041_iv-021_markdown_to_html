@@ -5,16 +5,11 @@
 
 typedef enum
 {
-    /* in start of line */
-    ModeAAL = 0,
-    /* after li */
-    ModeAFL = 5,
-    /* after blockquote */
-    ModeAFB = 7,
-    /* after inline header */
-    ModeAFH = 8,
-    /* default */
-    ModeAFE = 9
+    ModeAvaliableAll = RuleHorizontalLine,
+    ModeAvaliableFromList = RuleOList,
+    ModeAvaliableFromBlockquote = RuleBlockquote,
+    ModeAvaliableFromHeader = RuleHeadingInline,
+    ModeAvaliableOnlyText = RuleEmphasis
 } RPMode;
 
 typedef struct rule_performer
@@ -26,7 +21,7 @@ typedef struct rule_performer
         /* current pos in tokens */
         size_t cp;
     };
-    /* count of tokens in sequenсe */
+    /* count of tokens */
     size_t count;
     /* token sequenсe */
     Array(Token) tokens;
@@ -59,7 +54,7 @@ static inline size_t skip_spaces(size_t index, Array(Token) tokens)
 
 /* @param term set of tokens for search */
 /* @param token current token for check */
-/* @return true if term contains token or false if it doesn't*/
+/* @return true if term contains token or false if it doesn't */
 static inline bool is_token_in_term(Term term, TypeOfToken token)
 {
     int32_t left = 0, right = term.count - 1;

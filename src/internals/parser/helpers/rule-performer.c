@@ -1,8 +1,11 @@
 #include <internals/parser/helpers/rule-performer.h>
 #include <stdarg.h>
 
-#define PARSE_RULE_FAIL_CODE NULL
-#define MAX_RULES_FOR_TOKEN 5
+typedef enum
+{
+    ParseFailCode = 0,
+    MaxRulesPerToken = 5,
+} PerformerConstants;
 
 /******************************
  *                            *
@@ -14,11 +17,12 @@
 /* @param perf struct rule performer */
 /* @param node node to parse */
 /* @param end_pos limit for parsing */
-static inline void parse_text_to_node(RulePerformer* perf, TNode* node, size_t end_pos)
+static inline void parse_text_to_node(RulePerformer* perf, String* content, size_t end_pos)
 {
     for (; perf->cp < end_pos; ++perf->cp)
     {
-        node->content->concat(node->content, get_token_value(perf->tokens[perf->cp]));
+        String* value = perf->tokens[perf->cp].value;
+        content->concat(content, value->text(value));
     }
 }
 
@@ -68,11 +72,12 @@ static TNode* parse_span(RulePerformer* perf, size_t lim, ...)
     for (; perf->cp < lim && !perf->tokens[perf->cp].op; ++perf->cp)
     {
         is_token_in_term(WHITESPACE_TERM, perf->tokens[perf->cp].type) ? (++ws_count) : (ws_count = 0);
-        node->content->concat(node->content, get_token_value(perf->tokens[perf->cp]));
+        String* value = perf->tokens[perf->cp].value;
+        node->content->concat(node->content, value->text(value));
     }
     if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type))
     {
-        if (ws_count >= 2)
+        if (ws_count >= WhitespaceForBreakLineLowerLimit)
         {
             add_tnode(node, init_tnode(NodeBreakLine, create_string("<br>"), NULL, false));
             node->nesting = true;
@@ -90,12 +95,12 @@ static TNode* parse_span(RulePerformer* perf, size_t lim, ...)
 static TNode* parse_hr_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, HR_TERM, true);
-    if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count >= 3)
+    if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count >= HorizontalLineLowerLimit)
     {
         perf->cp = perf->count;
         return init_tnode(NodeHorizontalLine, create_string("<hr/>"), NULL, false);
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse line break */
@@ -123,18 +128,17 @@ static TNode* parse_header_underline_rule(RulePerformer* perf, size_t lim, ...)
 
     size_t backup = perf->cp;
     size_t t_count = get_sequence_length(perf, rule == RuleH1Underline ? H1U_TERM : H2U_TERM, false);
-    if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count > 1)
+    if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count >= HeaderUnderlineLowerLimit)
     {
         String* head = rule == RuleH1Underline ? create_string("<h1>") : create_string("<h2>");
         TNode* node = init_tnode(NodeHeadingUnderline, head, create_string(""), true);
-        for (size_t i = backup; i < perf->cp; ++i)
-        {
-            node->content->concat(node->content, get_token_value(perf->tokens[i]));
-        }
+        size_t end_pos = perf->cp;
+        perf->cp = backup;
+        parse_text_to_node(perf, node->content, end_pos);
         perf->cp = perf->count;
         return node;
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse block of code */
@@ -146,7 +150,7 @@ static TNode* parse_precode_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, CODE_TERM, false);
     perf->cp = skip_spaces(perf->cp, perf->tokens);
-    if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count > 2)
+    if (is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count >= CodeBlockLowerLimit)
     {
         TNode* parrent = init_tnode(NodePre, create_string("<pre>"), NULL, true);
         add_tnode(parrent, init_tnode(NodeCode, create_string("<code>"), NULL, true));
@@ -154,7 +158,7 @@ static TNode* parse_precode_rule(RulePerformer* perf, size_t lim, ...)
         perf->cp = perf->count;
         return parrent;
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse <ol> and <ul> */
@@ -183,7 +187,7 @@ static TNode* parse_list_rule(RulePerformer* perf, size_t lim, ...)
         add_tnode(parrent, init_tnode(NodeListItem, create_string("<li>"), NULL, true));
         return parrent;
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse blockquote */
@@ -194,7 +198,7 @@ static TNode* parse_list_rule(RulePerformer* perf, size_t lim, ...)
 static TNode* parse_blockquote_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, BLOCKQUOTE_TERM, true);
-    if (!is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count <= 15)
+    if (!is_token_in_term(BR_TERM, perf->tokens[perf->cp].type) && t_count <= BlockquoteUpperLimit)
     {
         TNode* parrent = init_tnode(NodeBlockquote, create_string("<blockquote>"), NULL, true);
         TNode* tmp = parrent;
@@ -205,7 +209,7 @@ static TNode* parse_blockquote_rule(RulePerformer* perf, size_t lim, ...)
         }
         return parrent;
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse inline header */
@@ -218,15 +222,16 @@ static TNode* parse_hinline_rule(RulePerformer* perf, size_t lim, ...)
     size_t t_count = get_sequence_length(perf, HI_TERM, false);
     if (is_token_in_term(WHITESPACE_TERM, perf->tokens[perf->cp].type))
     {
-        if (t_count > 0 && t_count < 7)
+        if (t_count >= HeaderInlineLowerLimit && t_count <= HeaderInlineUpperLimit)
         {
             String* head = create_string("<h");
             head->append(head, (char)(t_count + '0'));
             head->append(head, '>');
+            ++perf->cp;
             return init_tnode(NodeHeadingInline, head, NULL, true);
         }
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse inline code */
@@ -242,12 +247,12 @@ static TNode* parse_code_rule(RulePerformer* perf, size_t lim, ...)
     {
         TNode* parrent = init_tnode(NodeInlineCode, create_string("<code>"), NULL, true);
         TNode* text = init_tnode(NodeSpan, create_string("<span>"), create_string(""), false);
-        parse_text_to_node(perf, text, end_pos - t_count + 1);
+        parse_text_to_node(perf, text->content, end_pos - t_count + 1);
         add_tnode(parrent, text);
         perf->cp = end_pos + 1;
         return parrent;
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse automatic links */
@@ -263,12 +268,12 @@ static TNode* parse_alink_rule(RulePerformer* perf, size_t lim, ...)
     {
         TNode* parrent = init_tnode(NodeLink, create_string("<a>"), NULL, true);
         TNode* src = init_tnode(NodeSrc, create_string("<src>"), create_string(""), false);
-        parse_text_to_node(perf, src, end_pos);
+        parse_text_to_node(perf, src->content, end_pos);
         add_tnode(parrent, src);
         perf->cp = end_pos + 1;
         return parrent;
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse default links */
@@ -291,21 +296,21 @@ static TNode* parse_link_rule(RulePerformer* perf, size_t lim, ...)
                 TNode* parrent = init_tnode(NodeLink, create_string("<a>"), NULL, true);
                 TNode* alt = init_tnode(NodeAlt, create_string("<alt>"), NULL, false);
                 TNode* src = init_tnode(NodeSrc, create_string("<src>"), create_string(""), false);
-                add_tnode(parrent, alt);
                 add_tnode(parrent, src);
+                add_tnode(parrent, alt);
                 perf->cp = backup + 1;
                 while (perf->cp < end_sq_pos)
                 {
                     add_tnode(alt, perf->invoke(perf, end_sq_pos));
                 }
                 perf->cp = end_sq_pos + 2;
-                parse_text_to_node(perf, src, end_df_pos);
+                parse_text_to_node(perf, src->content, end_df_pos);
                 perf->cp = end_df_pos + 1;
                 return parrent;
             }
         }
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse images */
@@ -325,7 +330,7 @@ static TNode* parse_img_rule(RulePerformer* perf, size_t lim, ...)
             return img;
         }
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /* for parse <em> and <strong> */
@@ -361,7 +366,7 @@ static TNode* parse_empasis_rule(RulePerformer* perf, size_t lim, ...)
         perf->cp = end_pos + 1;
         return parrent;
     }
-    return PARSE_RULE_FAIL_CODE;
+    return ParseFailCode;
 }
 
 /******************************
@@ -381,7 +386,7 @@ typedef struct
     TNode* (*parse_rule)(RulePerformer* perf, size_t lim, ...);
 } RuleFunc;
 
-static const TypeOfRule RULE_TABLE[][MAX_RULES_FOR_TOKEN] = {
+static const TypeOfRule RULE_TABLE[][MaxRulesPerToken] = {
     [TokenLineBreak] = {RuleLineBreak, RuleUnknown},
     [TokenUnderscore] = {RuleHorizontalLine, RuleEmphasis, RuleUnknown},
     [TokenAsterisk] = {RuleHorizontalLine, RuleUOList, RuleEmphasis, RuleUnknown},
@@ -420,17 +425,17 @@ static RPMode change_mode(TypeOfRule rule)
 {
     if (rule < RuleOList)
     {
-        return ModeAFL;
+        return ModeAvaliableFromList;
     }
     else if (rule < RuleBlockquote)
     {
-        return ModeAFB;
+        return ModeAvaliableFromBlockquote;
     }
     else if (rule < RuleHeadingInline)
     {
-        return ModeAFH;
+        return ModeAvaliableFromHeader;
     }
-    return ModeAFE;
+    return ModeAvaliableOnlyText;
 }
 
 /* @param t current token type */
@@ -449,7 +454,7 @@ static TNode* execute(RulePerformer* perf, size_t lim)
 {
     if (!perf->tokens[perf->cp].op)
     {
-        perf->mode = ModeAFE;
+        perf->mode = ModeAvaliableOnlyText;
         return PARSE_TABLE[RuleUnknown].parse_rule(perf, lim);
     }
     TNode* node = NULL;
@@ -476,7 +481,7 @@ static TNode* execute(RulePerformer* perf, size_t lim)
 
 void init_performer(RulePerformer* perf, Array(Token) tokens, size_t pos)
 {
-    perf->mode = tokens[pos].op ? ModeAAL : ModeAFE;
+    perf->mode = tokens[pos].op ? ModeAvaliableAll : ModeAvaliableOnlyText;
     perf->tokens = tokens;
     perf->cp = pos;
     perf->count = get_array_length(tokens);

@@ -1,6 +1,5 @@
 #include <ctest.h>
 #include <internals/parser/ast/ast.h>
-#include <stdio.h>
 
 CTEST(ast, node_operations)
 {
@@ -37,32 +36,29 @@ CTEST(ast, tree_build)
     free_tnode(root);
 }
 
-CTEST(ast, tree_print)
+CTEST(ast, remove_node)
 {
     TNode* root = init_tnode(NodeBody, create_string("<body>"), NULL, false);
-    add_tnode(root, init_tnode(NodeSection, create_string("<section>"), NULL, false));
-    for (size_t i = 2, j = 0; i < 6; i++)
-    {
-        if (i % 4 == 0)
-        {
-            add_tnode(root, init_tnode(NodeSection, create_string("<section>"), NULL, false));
-            j++;
-        }
-        if (i % 2 == 0)
-        {
-            add_tnode(root->children[j], init_tnode(NodeHeadingInline, create_string("<h1>"), NULL, false));
-            add_tnode(root->children[j]->children[0],
-                      init_tnode(NodeHeadingInline, create_string("<span>"), create_string(""), false));
-        }
-        else
-        {
-            add_tnode(root->children[j],
-                      init_tnode(NodeHeadingInline, create_string("<span>"), create_string(""), false));
-        }
-    }
-    FILE* out = fopen("tree.txt", "w");
-    print_tnode(root, out);
+    remove_tnode(root, 0);
+    add_tnode(root, init_tnode(NodeSection, NULL, NULL, true));
+    free_tnode(root->children[0]);
+    remove_tnode(root, 0);
+    ASSERT_EQUAL(0, get_array_length(root->children));
+    add_tnode(root, init_tnode(NodeParagraph, NULL, NULL, true));
+    ASSERT_EQUAL(NodeParagraph, root->children[0]->type);
     free_tnode(root);
-    fclose(out);
-    remove("tree.txt");
+}
+
+CTEST(ast, get_last_node_child)
+{
+    TNode* root = init_tnode(NodeBody, create_string("<body>"), NULL, false);
+    ASSERT_NULL(get_tnode_last_child(root));
+    add_tnode(root, init_tnode(NodeSection, NULL, NULL, true));
+    ASSERT_EQUAL(NodeSection, get_tnode_last_child(root)->type);
+    for (size_t i = 2; i < 8; ++i)
+    {
+        add_tnode(root, init_tnode((TypeOfTNode)i, NULL, NULL, true));
+    }
+    ASSERT_EQUAL(NodeHeadingInline, get_tnode_last_child(root)->type);
+    free_tnode(root);
 }

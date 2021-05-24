@@ -1,4 +1,5 @@
 #include <ctest.h>
+#include <internals/parser/helpers/tbuilder.h>
 #include <internals/parser/main/parser.h>
 
 static TNode* setup_builder_for_test(TBuilder* builder)
@@ -40,7 +41,7 @@ CTEST(tbuilder, spans_to_paragraph)
     builder.build_tree(&builder, &span);
 
     ASSERT_EQUAL(1, get_array_length(root->children[0]->children));
-    ASSERT_NOT_EQUAL(NodeParagraph, get_last_child(root->children[0])->type);
+    ASSERT_NOT_EQUAL(NodeParagraph, get_tnode_last_child(root->children[0])->type);
 
     for (size_t i = 0; i < 10; ++i)
     {
@@ -48,8 +49,8 @@ CTEST(tbuilder, spans_to_paragraph)
         builder.build_tree(&builder, &tmp);
     }
 
-    ASSERT_EQUAL(NodeParagraph, get_last_child(root->children[0])->type);
-    ASSERT_EQUAL(11, get_array_length(get_last_child(root->children[0])->children));
+    ASSERT_EQUAL(NodeParagraph, get_tnode_last_child(root->children[0])->type);
+    ASSERT_EQUAL(11, get_array_length(get_tnode_last_child(root->children[0])->children));
 
     free_builder(&builder);
     free_tnode(root);
@@ -63,8 +64,9 @@ CTEST(tbuilder, header_underline_single)
 
     builder.build_tree(&builder, &hu);
 
-    ASSERT_EQUAL(NodeSpan, get_last_child(root->children[0])->type);
-    ASSERT_STR("===", get_last_child(root->children[0])->content->text(get_last_child(root->children[0])->content));
+    ASSERT_EQUAL(NodeSpan, get_tnode_last_child(root->children[0])->type);
+    String* backup_text = get_tnode_last_child(root->children[0])->content;
+    ASSERT_STR("===", backup_text->text(backup_text));
 
     free_builder(&builder);
     free_tnode(root);
@@ -79,11 +81,11 @@ CTEST(tbuilder, header_underline_correct)
 
     builder.build_tree(&builder, &span);
 
-    ASSERT_EQUAL(NodeSpan, get_last_child(root->children[0])->type);
+    ASSERT_EQUAL(NodeSpan, get_tnode_last_child(root->children[0])->type);
 
     builder.build_tree(&builder, &hu);
 
-    ASSERT_EQUAL(NodeHeadingUnderline, get_last_child(root->children[0])->type);
+    ASSERT_EQUAL(NodeHeadingInline, get_tnode_last_child(root->children[0])->type);
     ASSERT_EQUAL(1, get_array_length(hu->children));
 
     free_builder(&builder);
@@ -101,12 +103,12 @@ CTEST(tbuilder, header_underline_with_paragraph)
         builder.build_tree(&builder, &tmp);
     }
 
-    ASSERT_EQUAL(NodeParagraph, get_last_child(root->children[0])->type);
-    ASSERT_EQUAL(2, get_array_length(get_last_child(root->children[0])->children));
+    ASSERT_EQUAL(NodeParagraph, get_tnode_last_child(root->children[0])->type);
+    ASSERT_EQUAL(2, get_array_length(get_tnode_last_child(root->children[0])->children));
 
-    for (size_t i = 0; i < get_array_length(get_last_child(root->children[0])->children); ++i)
+    for (size_t i = 0; i < get_array_length(get_tnode_last_child(root->children[0])->children); ++i)
     {
-        ASSERT_EQUAL(NodeSpan, get_last_child(root->children[0])->children[i]->type);
+        ASSERT_EQUAL(NodeSpan, get_tnode_last_child(root->children[0])->children[i]->type);
     }
 
     free_builder(&builder);
@@ -161,7 +163,7 @@ CTEST(tbuilder, switch_list_to_blockquote)
     {
         tmp = tmp->children[0];
     }
-    tmp = tmp->children[1];
+    tmp = tmp->children[0];
 
     ASSERT_EQUAL(NodeBlockquote, tmp->type);
     ASSERT_EQUAL(NodeListItem, tmp->parrent->type);
@@ -187,7 +189,7 @@ CTEST(tbuilder, wrap_list_span_to_paragraph)
     {
         tmp = tmp->children[0];
     }
-    tmp = tmp->children[1];
+    tmp = tmp->children[0];
 
     ASSERT_EQUAL(NodeParagraph, tmp->type);
 
@@ -209,8 +211,8 @@ CTEST(tbuilder, concat_lists_with_same_ctx)
     for (size_t i = 0; i < get_array_length(ul->children); ++i)
     {
         TNode* li = ul->children[i];
-        ASSERT_EQUAL(NodeParagraph, li->children[1]->type);
-        TNode* p = li->children[1];
+        ASSERT_EQUAL(NodeParagraph, li->children[0]->type);
+        TNode* p = li->children[0];
         ASSERT_EQUAL(NodeSpan, p->children[0]->type);
         ASSERT_STR(items[i], p->children[0]->content->text(p->children[0]->content));
     }
@@ -223,11 +225,11 @@ CTEST(tbuilder, check_codeblock)
 {
     TypeOfTNode types[] = {NodeBody, NodeSection, NodePre, NodeCode, NodeSpan};
     const char* code_content = "1. >> ## *test* [test](test)\n";
-    const char* after_content = " header lvl 3";
+    const char* after_content = "header lvl 3";
     String* s = create_string("```\n");
     s->concat(s, code_content);
     s->concat(s, "```\n");
-    s->concat(s, "###");
+    s->concat(s, "### ");
     s->concat(s, after_content);
 
     TNode* root = parse_document(s);
@@ -306,18 +308,18 @@ CTEST(tbuilder, check_list_leveling_in_different_ctx)
     ASSERT_EQUAL(NodeListItem, tmp->children[0]->type);
 
     tmp = tmp->children[0];
-    ASSERT_EQUAL(NodeParagraph, tmp->children[1]->type);
-    ASSERT_EQUAL(NodeUOList, tmp->children[2]->type);
-    ASSERT_EQUAL(NodeOList, tmp->children[3]->type);
-    ASSERT_EQUAL(NodeUOList, tmp->children[4]->type);
+    ASSERT_EQUAL(NodeParagraph, tmp->children[0]->type);
+    ASSERT_EQUAL(NodeUOList, tmp->children[1]->type);
+    ASSERT_EQUAL(NodeOList, tmp->children[2]->type);
+    ASSERT_EQUAL(NodeUOList, tmp->children[3]->type);
 
-    tmp = tmp->children[3];
+    tmp = tmp->children[2];
     ASSERT_EQUAL(NodeListItem, tmp->children[0]->type);
     ASSERT_EQUAL(NodeListItem, tmp->children[1]->type);
-    ASSERT_EQUAL(NodeOList, tmp->children[1]->children[2]->type);
+    ASSERT_EQUAL(NodeOList, tmp->children[1]->children[1]->type);
 
     tmp = root->children[0]->children[0]->children[0];
-    ASSERT_EQUAL(NodeUOList, tmp->children[4]->type);
+    ASSERT_EQUAL(NodeUOList, tmp->children[3]->type);
 
     tmp = root->children[0]->children[0];
     ASSERT_EQUAL(2, get_array_length(tmp->children));

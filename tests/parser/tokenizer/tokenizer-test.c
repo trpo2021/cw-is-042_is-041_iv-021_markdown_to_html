@@ -1,5 +1,6 @@
 #include <ctest.h>
-#include <internals/parser/main/parser.h>
+#include <internals/parser/lexer/tokenizer.h>
+#include <stdio.h>
 #include <time.h>
 
 static String* convert_to_string(size_t num)
@@ -108,7 +109,7 @@ CTEST(tokenizer, check_all_single_tokens)
     Array(Token) arr = tokenize(str);
     for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        ASSERT_EQUAL(str->get(str, i), get_token_value(arr[i])[0]);
+        ASSERT_EQUAL(str->get(str, i), arr[i].value->get(arr[i].value, 0));
         ASSERT_EQUAL((TypeOfToken)i, arr[i].type);
         i < TokenSpace ? ASSERT_TRUE(arr[i].op) : ASSERT_FALSE(arr[i].op);
         arr[i].value->free(arr[i].value);

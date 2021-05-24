@@ -16,14 +16,12 @@ typedef enum
     TokenExclamationMark,
     TokenOPSquareBracket,
     TokenCLAngleBracket,
-
     TokenSpace,
     TokenCLSquareBracket,
     TokenOPBracket,
     TokenCLBracket,
     TokenNumber,
     TokenText
-
 } TypeOfToken;
 
 typedef struct
@@ -32,5 +30,3 @@ typedef struct
     String* value;
     bool op;
 } Token;
-
-#define get_token_value(token) token.value->text(token.value)

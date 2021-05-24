@@ -1,6 +1,12 @@
+#include <internals/parser/helpers/rule-performer.h>
+#include <internals/parser/helpers/tbuilder.h>
+#include <internals/parser/lexer/tokenizer.h>
 #include <internals/parser/main/parser.h>
 
-/* TODO: some refactorng */
+typedef enum
+{
+    OffsetMultiplier = 2
+} ParserConstants;
 
 /******************************
  *                            *
@@ -15,16 +21,19 @@
 static String* separate_line(const String* raw, size_t* index)
 {
     String* line = init_string(10);
-
     for (; *index < raw->length(raw); ++(*index))
     {
+        /* temp, cuz wsl \r\n */
+        if (raw->get(raw, *index) == '\r')
+        {
+            continue;
+        }
         line->append(line, raw->get(raw, *index));
-        if (raw->get(raw, *index) == '\n' || raw->get(raw, *index) == '\r')
+        if (raw->get(raw, *index) == '\n')
         {
             return line;
         }
     }
-
     line->append(line, '\n');
     return line;
 }
@@ -46,14 +55,14 @@ static TNode* wrap_node(TNode* parrent)
 /* move the pointer to the last nesting node */
 /* @param parrent root of line node */
 /* @param cur current anchor in parsing */
-static void balance_line_nodes(TNode* parrent, TNode** cur)
+static void balance_line(TNode* parrent, TNode** cur)
 {
     if (parrent->nesting)
     {
         *cur = parrent;
         if (parrent->children)
         {
-            return balance_line_nodes(parrent->children[0], cur);
+            return balance_line(parrent->children[0], cur);
         }
     }
 }
@@ -63,15 +72,12 @@ static void balance_line_nodes(TNode* parrent, TNode** cur)
 /* @param span node for connect */
 static void connect_spanes(TNode* pos_parrent, TNode* span)
 {
-    if (pos_parrent->children)
+    TNode* last_child = get_tnode_last_child(pos_parrent);
+    if (last_child && last_child->type == NodeSpan)
     {
-        TNode* t = get_last_child(pos_parrent);
-        if (t->type == NodeSpan)
-        {
-            t->content->concat(t->content, span->content->text(span->content));
-            free_tnode(span);
-            return;
-        }
+        last_child->content->concat(last_child->content, span->content->text(span->content));
+        free_tnode(span);
+        return;
     }
     if (pos_parrent->type == NodeSpan && !pos_parrent->children)
     {
@@ -102,21 +108,21 @@ static void connect_spanes(TNode* pos_parrent, TNode* span)
 static TNode* parse_line(RulePerformer* perf, Array(Token) tokens, size_t st_pos)
 {
     init_performer(perf, tokens, st_pos);
-
     TNode* parrent = wrap_node(perf->invoke(perf, perf->count));
     TNode* cur = parrent;
+    balance_line(parrent, &cur);
 
-    balance_line_nodes(parrent, &cur);
     while (perf->cp < perf->count - 1)
     {
-        if (perf->mode < ModeAFE)
+        if (perf->mode < ModeAvaliableOnlyText)
         {
             perf->cp = skip_spaces(perf->cp, perf->tokens);
         }
         TNode* child = perf->invoke(perf, perf->count);
-        balance_line_nodes(parrent, &cur);
+        balance_line(parrent, &cur);
         child->type == NodeSpan ? connect_spanes(cur, child) : add_tnode(cur, child);
     }
+
     return parrent;
 }
 
@@ -125,7 +131,7 @@ static TNode* parse_line(RulePerformer* perf, Array(Token) tokens, size_t st_pos
 /* @return AST root */
 TNode* parse_document(const String* raw)
 {
-    RulePerformer performer;
+    RulePerformer performer = {0};
 
     TNode* root = init_tnode(NodeBody, create_string("<body>"), NULL, true);
     add_tnode(root, init_tnode(NodeSection, create_string("<section>"), NULL, true));
@@ -141,8 +147,8 @@ TNode* parse_document(const String* raw)
         st = skip_spaces(st, tokens);
         TNode* node = parse_line(&performer, tokens, st);
 
-        builder.raw = line;
-        node->offset = st >> 2;
+        builder.raw_text = line;
+        node->offset = st >> OffsetMultiplier;
         builder.build_tree(&builder, &node);
 
         for (size_t j = 0; j < get_array_length(tokens); ++j)
@@ -154,7 +160,6 @@ TNode* parse_document(const String* raw)
     }
 
     free_builder(&builder);
-
     return root;
 }
 

@@ -1,5 +1,5 @@
 #include <ctest.h>
-#include <internals/parser/main/parser.h>
+#include <internals/parser/helpers/tbuilder.h>
 
 CTEST(tbuilder, interface)
 {

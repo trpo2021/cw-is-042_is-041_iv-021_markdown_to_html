@@ -37,12 +37,24 @@ void free_tnode(TNode* node)
     }
 }
 
+TNode* get_tnode_last_child(TNode* parrent)
+{
+    return parrent->children ? parrent->children[get_array_length(parrent->children) - 1] : NULL;
+}
+
 void add_tnode(TNode* parrent, TNode* child)
 {
-    assert(child);
-    assert(parrent);
     child->parrent = parrent;
     add_array_item(parrent->children, child);
+}
+
+void remove_tnode(TNode* parrent, size_t index)
+{
+    if (index < get_array_length(parrent->children))
+    {
+        parrent->children[index] = NULL;
+        set_array_length(parrent->children, get_array_length(parrent->children) - 1);
+    }
 }
 
 bool is_root_tnode(TNode* node)

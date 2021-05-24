@@ -18,9 +18,9 @@ CTEST(parse_link_rule, correct)
 
     ASSERT_EQUAL(NodeLink, real->type);
     ASSERT_STR("<a>", real->head->text(real->head));
-    const char* alt_text = real->children[0]->children[0]->content->text(real->children[0]->children[0]->content);
+    ASSERT_STR(link_src, real->children[0]->content->text(real->children[0]->content));
+    const char* alt_text = real->children[1]->children[0]->content->text(real->children[1]->children[0]->content);
     ASSERT_STR(link_alt, alt_text);
-    ASSERT_STR(link_src, real->children[1]->content->text(real->children[1]->content));
 
     str->free(str);
     free_test_data(arr);
@@ -42,7 +42,7 @@ CTEST(parse_link_rule, correct_empty)
     ASSERT_EQUAL(NodeLink, real->type);
     ASSERT_STR("<a>", real->head->text(real->head));
     ASSERT_NULL(real->children[0]->children);
-    ASSERT_STR("", real->children[1]->content->text(real->children[1]->content));
+    ASSERT_STR("", real->children[0]->content->text(real->children[0]->content));
 
     str->free(str);
     free_test_data(arr);

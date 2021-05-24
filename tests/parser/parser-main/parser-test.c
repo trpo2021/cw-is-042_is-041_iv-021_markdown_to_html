@@ -2,7 +2,7 @@
 #include <internals/parser/main/parser.h>
 
 /* TODO: add tests for parser */
-CTEST(parser, tmp)
+/*CTEST(parser, tmp)
 {
     // fix \t
     String* s = create_string("* lvl 0\n"
@@ -17,4 +17,4 @@ CTEST(parser, tmp)
     ASSERT_NOT_NULL(root);
     free_tnode(root);
     s->free(s);
-}
+}*/

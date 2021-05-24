@@ -1,3 +1,5 @@
+#include <internals/parser/helpers/rule-performer.h>
+#include <internals/parser/lexer/tokenizer.h>
 #include <internals/parser/main/parser.h>
 #include <time.h>
 

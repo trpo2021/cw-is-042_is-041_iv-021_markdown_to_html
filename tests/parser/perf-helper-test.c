@@ -1,5 +1,6 @@
 #include <ctest.h>
-#include <internals/parser/main/parser.h>
+#include <internals/parser/helpers/rule-performer.h>
+#include <internals/parser/lexer/tokenizer.h>
 
 CTEST(rp_help, skip_spaces_skip_case)
 {

@@ -1,6 +1,9 @@
-#include <internals/parser/main/parser.h>
+#include <internals/parser/lexer/tokenizer.h>
 
-#define NOT_FOUND_CODE -1
+typedef enum
+{
+    NOT_FOUND_CODE = -1
+} LexerConstants;
 
 static const char tokens[] = "\n_*`=-+<#![> ]()";
 
@@ -17,7 +20,6 @@ typedef enum
  *                            *
  ******************************/
 
-/* if single tokens contains symbol */
 /* @param c symbol for check */
 /* @return index in array of tokens or NOT_FOUND_CODE */
 static int8_t is_match(char c)
@@ -32,7 +34,6 @@ static int8_t is_match(char c)
     return NOT_FOUND_CODE;
 }
 
-/* validate text to numer, valid: 123. or something like this */
 /* @param value token content */
 /* @return TokenNumber if valid, else TokenText */
 static TypeOfToken validate_number(const String* value)
@@ -82,6 +83,7 @@ Array(Token) tokenize(const String* line)
     Array(Token) arr = NULL;
     LState state = get_lstate(line, 0);
     String* value = init_string(10);
+
     for (size_t i = 0; i < line->length(line); ++i)
     {
         char c = line->get(line, i);
@@ -138,6 +140,7 @@ Array(Token) tokenize(const String* line)
         break;
         }
     }
+
     value->free(value);
     return arr;
 }
