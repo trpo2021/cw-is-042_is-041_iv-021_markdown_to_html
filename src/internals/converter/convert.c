@@ -23,3 +23,22 @@ string close_tag(string head)
         return create("");
     }
 }
+
+void spec_symblos(string content)
+{
+    TagList spec_list = {
+        .tags[0] = {"'", "&apos"},
+        .tags[1] = {"\"", "&quot"},
+        .tags[2] = {"&", "&amp"},
+        .tags[3] = {"<", "&lt"},
+        .tags[4] = {">", "&gt"},
+    };
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (content->Contains(content, spec_list.tags[i].key))
+        {
+            content->Replace(content, spec_list.tags[i].value, spec_list.tags[i].key);
+        }
+    }
+}

@@ -32,3 +32,11 @@ CTEST(close_tag_func, empty_line)
     s->Free(s);
     tmp_s->Free(tmp_s);
 }
+
+CTEST(replace_func, test_1)
+{
+    string s = create("'");
+    spec_symblos(s);
+    ASSERT_STR("&apos", s->Text(s));
+    s->Free(s);
+}
