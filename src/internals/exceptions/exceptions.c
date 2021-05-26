@@ -4,10 +4,12 @@
 
 typedef enum
 {
-    ExceptionCount = 6
+    ExceptionCount = 7,
+    ExceptionInfoCount = 2
+
 } ExceptionsConstants;
 
-static const char* EXCEPTION_INFO[][ExceptionCount] = {
+static const char* EXCEPTION_INFO[ExceptionCount][ExceptionInfoCount] = {
     [ExceptionFileNotFound] = {"FileNotFound", "Could not open file -"},
     [ExceptionNullPointer] = {"NullPointer", "Pointer was NULL -"},
     [ExceptionIndexOutOfRange] = {"IndexOutOfRange", "Index was out of range -"},
