@@ -1,9 +1,9 @@
-#include <assert.h>
+#include <internals/memext/memext.h>
 #include <internals/parser/ast/ast.h>
 
 TNode* init_tnode(TypeOfTNode type, String* head, String* content, bool nesting)
 {
-    TNode* node = malloc(sizeof(TNode));
+    TNode* node = mem_alloc(sizeof(TNode));
     node->type = type;
     node->head = head;
     node->content = content;

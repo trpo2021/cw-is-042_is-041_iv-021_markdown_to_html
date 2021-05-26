@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdlib.h>
+#include <internals/memext/memext.h>
 
 #define ARRAY_DATA_ST 2
 #define ARRAY_LENGTH_P -1
@@ -23,22 +23,16 @@
         size_t new_cap = ((count) * sizeof(*(source)) + (sizeof(size_t) * 2));                                         \
         if (source)                                                                                                    \
         {                                                                                                              \
-            size_t* tmp = realloc(&((size_t*)(source))[ARRAY_CAP_P], new_cap);                                         \
-            if (tmp)                                                                                                   \
-            {                                                                                                          \
-                (source) = (void*)(&tmp[ARRAY_DATA_ST]);                                                               \
-                set_array_capacity((source), (count));                                                                 \
-            }                                                                                                          \
+            size_t* tmp = mem_realloc(&((size_t*)(source))[ARRAY_CAP_P], new_cap);                                     \
+            (source) = (void*)(&tmp[ARRAY_DATA_ST]);                                                                   \
+            set_array_capacity((source), (count));                                                                     \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            size_t* tmp = malloc(new_cap);                                                                             \
-            if (tmp)                                                                                                   \
-            {                                                                                                          \
-                (source) = (void*)(&tmp[ARRAY_DATA_ST]);                                                               \
-                set_array_length((source), 0);                                                                         \
-                set_array_capacity((source), (count));                                                                 \
-            }                                                                                                          \
+            size_t* tmp = mem_alloc(new_cap);                                                                          \
+            (source) = (void*)(&tmp[ARRAY_DATA_ST]);                                                                   \
+            set_array_length((source), 0);                                                                             \
+            set_array_capacity((source), (count));                                                                     \
         }                                                                                                              \
     }
 
@@ -74,10 +68,8 @@
 
 #define free_array(source)                                                                                             \
     {                                                                                                                  \
-        source ? free(&((size_t*)(source))[ARRAY_CAP_P]) : 0;                                                          \
+        (source) ? (free(&((size_t*)(source))[ARRAY_CAP_P])) : 0;                                                      \
     }
-
-/* getters */
 
 #define get_array_capacity(source) ((source) ? ((size_t*)(source))[ARRAY_CAP_P] : (size_t)0)
 

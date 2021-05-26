@@ -40,7 +40,7 @@ CTEST(parse_list_rule, ol_correct)
 {
     srand(time(NULL));
     size_t len = rand() % 100 + 1;
-    char* num = malloc(len + 1);
+    char* num = mem_alloc(len + 1);
     for (size_t i = 0; i < len; i++)
     {
         num[i] = (char)((rand() % 9 + 1) + '0');
@@ -125,7 +125,7 @@ CTEST(parse_list_rule, incorrect_many_tokens)
     free_tnode(real);
 
     // ol
-    raw_data = malloc(13);
+    raw_data = mem_alloc(13);
     for (size_t i = 0; i < 12; i += 2)
     {
         raw_data[i] = (char)((rand() % 9 + 1) + '0');

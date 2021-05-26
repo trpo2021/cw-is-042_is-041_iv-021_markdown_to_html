@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <internals/memext/memext.h>
 #include <internals/parser/helpers/tbuilder.h>
 
 typedef enum
@@ -21,10 +21,10 @@ typedef struct _pstate_stack
 
 static PStateStack* create_stack(size_t capacity)
 {
-    PStateStack* stack = malloc(sizeof(PStateStack));
+    PStateStack* stack = mem_alloc(sizeof(PStateStack));
     stack->cap = capacity;
     stack->cp = -1;
-    stack->anchors = malloc(stack->cap * sizeof(TNode*));
+    stack->anchors = mem_alloc(stack->cap * sizeof(TNode*));
     return stack;
 }
 
@@ -33,9 +33,7 @@ static void add_anchor(TBuilder* builder, TNode** anchor)
     if (builder->states->cap - 1 <= builder->states->cp)
     {
         builder->states->cap = ((builder->states->cap + 1) * 2);
-        TNode** tmp = realloc(builder->states->anchors, sizeof(TNode**) * builder->states->cap);
-        assert(tmp);
-        builder->states->anchors = tmp;
+        builder->states->anchors = mem_realloc(builder->states->anchors, sizeof(TNode**) * builder->states->cap);
     }
     builder->states->anchors[++builder->states->cp] = *anchor;
 }

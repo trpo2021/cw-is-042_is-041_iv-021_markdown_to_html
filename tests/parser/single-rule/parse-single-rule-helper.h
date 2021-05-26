@@ -1,3 +1,4 @@
+#include <internals/memext/memext.h>
 #include <internals/parser/helpers/rule-performer.h>
 #include <internals/parser/lexer/tokenizer.h>
 #include <internals/parser/main/parser.h>
@@ -25,7 +26,7 @@ __attribute__((unused)) static void free_test_data(Array(Token) data)
 __attribute__((unused)) static char* generate_sequence_of_terms(const char raw_tokens[], size_t count_of_tokens,
                                                                 size_t lim)
 {
-    char* raw_data = malloc(lim + 1);
+    char* raw_data = mem_alloc(lim + 1);
     for (size_t i = 0; i < lim; ++i)
     {
         raw_data[i] = raw_tokens[rand() % count_of_tokens];

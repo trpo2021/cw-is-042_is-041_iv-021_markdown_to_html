@@ -73,7 +73,7 @@ CTEST(parse_hr_rule, incorrect_with_others_token)
 
     size_t count = rand() % 100 + 3;
     char* invalid_data = generate_sequence_of_terms(tokens, sizeof(tokens), count);
-    char* raw_data = malloc(count + 2);
+    char* raw_data = mem_alloc(count + 2);
     raw_data[0] = (rand() % 2) ? '*' : '_';
     memmove(&raw_data[1], invalid_data, count);
     raw_data[count + 1] = 0;

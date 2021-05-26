@@ -33,7 +33,6 @@ typedef struct _tnode
     {
         TypeOfTNode type;
         String* head;
-        /* may be NULL */
         String* content;
         bool nesting;
         size_t offset;

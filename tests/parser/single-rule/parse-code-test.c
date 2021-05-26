@@ -43,7 +43,7 @@ CTEST(parse_code_rule, contains_other_tokens_in_code)
     char* raw_data = generate_sequence_of_terms((char[]){'`'}, 1, count);
 
     String* str = create_string(raw_data);
-    char* contained = malloc(count);
+    char* contained = mem_alloc(count);
     for (size_t i = 0; i < count - 1; ++i)
     {
         contained[i] = '`';

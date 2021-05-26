@@ -4,19 +4,20 @@
 
 typedef enum
 {
-    ExceptionCount = 4
+    ExceptionCount = 6
 } ExceptionsConstants;
 
 static const char* EXCEPTION_INFO[][ExceptionCount] = {
     [ExceptionFileNotFound] = {"FileNotFound", "Could not open file -"},
     [ExceptionNullPointer] = {"NullPointer", "Pointer was NULL -"},
     [ExceptionIndexOutOfRange] = {"IndexOutOfRange", "Index was out of range -"},
-    [ExceptionOutOfMemory] = {"OutOfMemory", "Could not allocate enough memory -"}};
+    [ExceptionOutOfMemory] = {"OutOfMemory", "Could not allocate enough memory -"},
+    [ExceptionStdinCharacterLimit] = {"StdinCharacterLimit", "You have reached stdin character limit."},
+    [ExceptionUnknownArg] = {"UnknownArgument", "You entered an unknown argument."}};
 
-void throw_exception(TypeOfException ex, const char* file_name, const int line, const char* msg)
+void throw_exception(TypeOfException ex, const char* msg)
 {
-    fprintf(stderr, "\033[31mException\033[0m: %s.\n", EXCEPTION_INFO[ex][0]);
-    fprintf(stderr, "\033[31mLocation\033[0m: In file - %s. At line - %d.\n", file_name, line);
+    fprintf(stderr, "\n\033[31mException\033[0m: %s.\n", EXCEPTION_INFO[ex][0]);
     fprintf(stderr, "%s: ", "\033[31mAddition information\033[0m");
     if (msg)
     {

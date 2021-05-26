@@ -1,4 +1,5 @@
 #include <ctest.h>
+#include <internals/memext/memext.h>
 #include <internals/strings/strings.h>
 #include <stdio.h>
 
