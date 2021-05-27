@@ -20,8 +20,6 @@ typedef enum
  *                            *
  ******************************/
 
-/* @param c symbol for check */
-/* @return index in array of tokens or NOT_FOUND_CODE */
 static int8_t is_match(char c)
 {
     for (int8_t i = 0; i < sizeof(tokens); ++i)
@@ -34,8 +32,6 @@ static int8_t is_match(char c)
     return NOT_FOUND_CODE;
 }
 
-/* @param value token content */
-/* @return TokenNumber if valid, else TokenText */
 static TypeOfToken validate_number(const String* value)
 {
     const char* text = value->text(value);

@@ -13,10 +13,6 @@ typedef enum
  *                            *
  ******************************/
 
-/* parse subset of tokens as text */
-/* @param perf struct rule performer */
-/* @param node node to parse */
-/* @param end_pos limit for parsing */
 static inline void parse_text_to_node(RulePerformer* perf, String* content, size_t end_pos)
 {
     for (; perf->cp < end_pos; ++perf->cp)
@@ -26,11 +22,6 @@ static inline void parse_text_to_node(RulePerformer* perf, String* content, size
     }
 }
 
-/* counting special tokens in the sequence */
-/* @param perf struct rule performer */
-/* @param term set of tokens */
-/* @param ignore_spaces if the rule allows spaces */
-/* @return length of token sequence */
 static inline size_t get_sequence_length(RulePerformer* perf, Term term, bool ignore_spaces)
 {
     size_t t_count = 0;
@@ -60,11 +51,6 @@ static inline size_t get_sequence_length(RulePerformer* perf, Term term, bool ig
  *                            *
  ******************************/
 
-/* for parse text with whitespaces */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_span(RulePerformer* perf, size_t lim, ...)
 {
     TNode* node = init_tnode(NodeSpan, create_string("<span>"), create_string(""), false);
@@ -87,11 +73,6 @@ static TNode* parse_span(RulePerformer* perf, size_t lim, ...)
     return node;
 }
 
-/* for parse horizontal rule */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_hr_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, HR_TERM, true);
@@ -103,22 +84,12 @@ static TNode* parse_hr_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse line break */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_br_rule(RulePerformer* perf, size_t lim, ...)
 {
     perf->cp = perf->count;
     return init_tnode(NodeBreakLine, create_string("<br>"), NULL, false);
 }
 
-/* for parse underline headers */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_header_underline_rule(RulePerformer* perf, size_t lim, ...)
 {
     va_list args;
@@ -141,11 +112,6 @@ static TNode* parse_header_underline_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse block of code */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_precode_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, CODE_TERM, false);
@@ -161,11 +127,6 @@ static TNode* parse_precode_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse <ol> and <ul> */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_list_rule(RulePerformer* perf, size_t lim, ...)
 {
     va_list args;
@@ -190,11 +151,6 @@ static TNode* parse_list_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse blockquote */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_blockquote_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, BLOCKQUOTE_TERM, true);
@@ -212,11 +168,6 @@ static TNode* parse_blockquote_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse inline header */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_hinline_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, HI_TERM, false);
@@ -234,11 +185,6 @@ static TNode* parse_hinline_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse inline code */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_code_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, CODE_TERM, true);
@@ -255,11 +201,6 @@ static TNode* parse_code_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse automatic links */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_alink_rule(RulePerformer* perf, size_t lim, ...)
 {
     ++perf->cp;
@@ -276,11 +217,6 @@ static TNode* parse_alink_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse default links */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_link_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t backup = perf->cp;
@@ -313,11 +249,6 @@ static TNode* parse_link_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse images */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_img_rule(RulePerformer* perf, size_t lim, ...)
 {
     if (perf->tokens[++perf->cp].type == TokenOPSquareBracket)
@@ -333,11 +264,6 @@ static TNode* parse_img_rule(RulePerformer* perf, size_t lim, ...)
     return ParseFailCode;
 }
 
-/* for parse <em> and <strong> */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @param ... TypeOfRule using if function can parse set of rules with same algorithm */
-/* @return node from parsed rule or NULL if parse failed */
 static TNode* parse_empasis_rule(RulePerformer* perf, size_t lim, ...)
 {
     size_t t_count = get_sequence_length(perf, EMPHASIS_TERM, false);
@@ -418,9 +344,6 @@ static const RuleFunc PARSE_TABLE[] = {[RuleHorizontalLine] = {parse_hr_rule},
                                        [RuleAutoLink] = {parse_alink_rule},
                                        [RuleUnknown] = {parse_span}};
 
-/* change rp mode by current rule */
-/* @param rule parsed rule */
-/* @return mode depending on the rule */
 static RPMode change_mode(TypeOfRule rule)
 {
     if (rule < RuleOList)
@@ -438,18 +361,11 @@ static RPMode change_mode(TypeOfRule rule)
     return ModeAvaliableOnlyText;
 }
 
-/* @param t current token type */
-/* @param attempt attempt number aka index in SelectionTable */
-/* @return rule depending on the token and attempt */
 static TypeOfRule try_get_rule(TypeOfToken t, int32_t attempt)
 {
     return RULE_TABLE[t][attempt];
 }
 
-/* dispatcher */
-/* @param perf struct rule performer */
-/* @param lim limit for parse */
-/* @return node from block of tokens, can't be NULL */
 static TNode* execute(RulePerformer* perf, size_t lim)
 {
     if (!perf->tokens[perf->cp].op)

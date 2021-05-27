@@ -66,8 +66,6 @@ static void stack_free(PStateStack* stack)
  *                            *
  ******************************/
 
-/* in case, when we can't wrap span in header */
-/* @param header node to convert to span node */
 static inline void nullify_header_underline(TNode* header)
 {
     header->type = NodeSpan;
@@ -76,18 +74,12 @@ static inline void nullify_header_underline(TNode* header)
     header->nesting = false;
 }
 
-/* connect node to current anchor */
-/* @param builder tree builder */
-/* @param node node to connect */
 static inline void connect_to_anchor(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder);
     add_tnode(anchor, *node);
 }
 
-/* remove anchor and try on another */
-/* @param builder tree builder */
-/* @param node node to connect to the tree */
 static inline void return_back(TBuilder* builder, TNode** node)
 {
     remove_anchor(builder);
@@ -99,19 +91,14 @@ static inline void write_content_to_node(TNode* node, String* content)
     node->content->concat(node->content, content->text(content));
 }
 
-/* jump to section, close it and open another */
-/* @param builder tree builder */
-/* @param node hr node will be connect to body node */
 static void close_section(TBuilder* builder, TNode** node)
 {
-    /* jmp to section */
     while (builder->states->cp > 0)
     {
         remove_anchor(builder);
     }
 
     TNode* anchor = get_anchor(builder);
-
     TNode* new_sec = init_tnode(NodeSection, create_string("<section>"), NULL, true);
     add_tnode(anchor->parrent, *node);
     add_tnode(anchor->parrent, new_sec);
@@ -120,9 +107,6 @@ static void close_section(TBuilder* builder, TNode** node)
     add_anchor(builder, &new_sec);
 }
 
-/* in case when we got > 2 spans in row, we wrap them */
-/* @param builder tree builder */
-/* @param node paragraph's child */
 static inline void wrap_to_paragraph(TNode** parrent, TNode** child)
 {
     TNode* p = init_tnode(NodeParagraph, create_string("<p>"), NULL, true);
@@ -173,9 +157,6 @@ static void process_br_node(TBuilder* builder, TNode** node)
     free_tnode(*node);
 }
 
-/* change state from current to blockquote and after to paragraph */
-/* @param builder tree builder */
-/* @param node blockquote */
 static void switch_to_blockquote(TBuilder* builder, TNode** node)
 {
     connect_to_anchor(builder, node);
@@ -191,9 +172,6 @@ static void switch_to_blockquote(TBuilder* builder, TNode** node)
     add_anchor(builder, &after_bq);
 }
 
-/* change state from current to list and after to paragraph */
-/* @param builder tree builder */
-/* @param node list item */
 static void switch_to_list(TBuilder* builder, TNode** node)
 {
     add_anchor(builder, node);
@@ -209,18 +187,12 @@ static void switch_to_list(TBuilder* builder, TNode** node)
     add_anchor(builder, &child);
 }
 
-/* grow down in current list item */
-/* @param builder tree builder */
-/* @param node list item */
 static inline void add_li_lvl(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder)->parrent;
     add_tnode(anchor->children[get_array_length(anchor->children) - 1], *node);
 }
 
-/* in case when we have list with same context */
-/* @param builder tree builder */
-/* @param node list header */
 static inline void combine_lists(TBuilder* builder, TNode** list)
 {
     TNode* anchor = get_anchor(builder)->parrent;
@@ -433,7 +405,6 @@ static const void (*HANDLE_TABLE[])(TBuilder*, TNode**) = {
     [StateList] = handle_list,       [StateBlockquote] = handle_blockquote,
 };
 
-/* attach node to tree depending on the anchor */
 static void build_tree(TBuilder* builder, TNode** node)
 {
     HANDLE_TABLE[STATE_TABLE[get_anchor(builder)->type]](builder, node);

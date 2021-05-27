@@ -14,16 +14,11 @@ typedef enum
  *                            *
  ******************************/
 
-/* split string line by line */
-/* @param raw text from document */
-/* @param index current index in raw */
-/* @return piece of raw splited by \\n */
 static String* separate_line(const String* raw, size_t* index)
 {
     String* line = init_string(10);
     for (; *index < raw->length(raw); ++(*index))
     {
-        /* temp, cuz wsl \r\n */
         if (raw->get(raw, *index) == '\r')
         {
             continue;
@@ -38,9 +33,6 @@ static String* separate_line(const String* raw, size_t* index)
     return line;
 }
 
-/* wrap node to span node */
-/* @param parrent root of line node */
-/* @return node wrapped with span node \n */
 static TNode* wrap_node(TNode* parrent)
 {
     if (parrent->type >= NodeInlineCode && parrent->type <= NodeLink)
@@ -52,9 +44,6 @@ static TNode* wrap_node(TNode* parrent)
     return parrent;
 }
 
-/* move the pointer to the last nesting node */
-/* @param parrent root of line node */
-/* @param cur current anchor in parsing */
 static void balance_line(TNode* parrent, TNode** cur)
 {
     if (parrent->nesting)
@@ -67,9 +56,6 @@ static void balance_line(TNode* parrent, TNode** cur)
     }
 }
 
-/* concat span nodes if they go in a row */
-/* @param pos_parrent possible span parrent */
-/* @param span node for connect */
 static void connect_spanes(TNode* pos_parrent, TNode* span)
 {
     TNode* last_child = get_tnode_last_child(pos_parrent);
@@ -100,11 +86,6 @@ static void connect_spanes(TNode* pos_parrent, TNode* span)
  *                            *
  ******************************/
 
-/* parse current line to AST node */
-/* @param perf rule performer without init */
-/* @param tokens set of tokens */
-/* @param st_pos start position after skip whitespaces */
-/* @return node of AST for current line */
 static TNode* parse_line(RulePerformer* perf, Array(Token) tokens, size_t st_pos)
 {
     init_performer(perf, tokens, st_pos);
@@ -126,9 +107,6 @@ static TNode* parse_line(RulePerformer* perf, Array(Token) tokens, size_t st_pos
     return parrent;
 }
 
-/* main parser function */
-/* @param raw text from document */
-/* @return AST root */
 TNode* parse_document(const String* raw)
 {
     RulePerformer performer = {0};
