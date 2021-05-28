@@ -69,8 +69,8 @@ static void stack_free(PStateStack* stack)
 static inline void nullify_header_underline(TNode* header)
 {
     header->type = NodeSpan;
-    header->head->clear(header->head);
-    header->head->concat(header->head, "<span>");
+    sclear(header->head);
+    sconcat(header->head, "<span>");
     header->nesting = false;
 }
 
@@ -88,7 +88,7 @@ static inline void return_back(TBuilder* builder, TNode** node)
 
 static inline void write_content_to_node(TNode* node, String* content)
 {
-    node->content->concat(node->content, content->text(content));
+    sconcat(node->content, sraw(content));
 }
 
 static void close_section(TBuilder* builder, TNode** node)
@@ -99,7 +99,7 @@ static void close_section(TBuilder* builder, TNode** node)
     }
 
     TNode* anchor = get_anchor(builder);
-    TNode* new_sec = init_tnode(NodeSection, create_string("<section>"), NULL, true);
+    TNode* new_sec = init_tnode(NodeSection, screate("<section>"), NULL, true);
     add_tnode(anchor->parrent, *node);
     add_tnode(anchor->parrent, new_sec);
 
@@ -109,7 +109,7 @@ static void close_section(TBuilder* builder, TNode** node)
 
 static inline void wrap_to_paragraph(TNode** parrent, TNode** child)
 {
-    TNode* p = init_tnode(NodeParagraph, create_string("<p>"), NULL, true);
+    TNode* p = init_tnode(NodeParagraph, screate("<p>"), NULL, true);
     add_tnode(p, *child);
     remove_tnode(*parrent, get_array_length((*parrent)->children) - 1);
     add_tnode(*parrent, p);
@@ -218,7 +218,7 @@ static void add_node_to_list(TBuilder* builder, TNode** node)
         add_anchor(builder, node);
         break;
     default:
-        add_tnode(get_anchor(builder), init_tnode(NodeParagraph, create_string("<p>"), NULL, true));
+        add_tnode(get_anchor(builder), init_tnode(NodeParagraph, screate("<p>"), NULL, true));
         add_anchor(builder, &(get_anchor(builder)->children[get_array_length(get_anchor(builder)->children) - 1]));
         builder->build_tree(builder, node);
         break;
@@ -305,7 +305,7 @@ void handle_blockquote(TBuilder* builder, TNode** node)
         }
         if (old_nesting == new_nesting)
         {
-            add_tnode(get_anchor(builder), init_tnode(NodeParagraph, create_string("<p>"), NULL, true));
+            add_tnode(get_anchor(builder), init_tnode(NodeParagraph, screate("<p>"), NULL, true));
             TNode* p = get_tnode_last_child(get_anchor(builder));
             add_tnode(p, new_bq->children[0]);
             new_bq->children[0] = NULL;

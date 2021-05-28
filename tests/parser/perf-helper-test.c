@@ -4,37 +4,37 @@
 
 CTEST(rp_help, skip_spaces_skip_case)
 {
-    String* str = create_string("   start from 3\n");
+    String* str = screate("   start from 3\n");
     Array(Token) arr = tokenize(str);
 
     ASSERT_EQUAL(3, skip_spaces(0, arr));
 
     for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        arr[i].value->free(arr[i].value);
+        sfree(arr[i].value);
     }
     free_array(arr);
-    str->free(str);
+    sfree(str);
 }
 
 CTEST(rp_help, skip_spaces_wo_spaces_case)
 {
-    String* str = create_string("start from zero\n");
+    String* str = screate("start from zero\n");
     Array(Token) arr = tokenize(str);
 
     ASSERT_EQUAL(0, skip_spaces(0, arr));
 
     for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        arr[i].value->free(arr[i].value);
+        sfree(arr[i].value);
     }
     free_array(arr);
-    str->free(str);
+    sfree(str);
 }
 
 CTEST(rp_help, find_end_pos_default)
 {
-    String* str = create_string("**some bold text**\n");
+    String* str = screate("**some bold text**\n");
     Array(Token) arr = tokenize(str);
 
     RulePerformer perf = {.tokens = arr, .count = get_array_length(arr), .cp = 2};
@@ -43,15 +43,15 @@ CTEST(rp_help, find_end_pos_default)
 
     for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        arr[i].value->free(arr[i].value);
+        sfree(arr[i].value);
     }
     free_array(arr);
-    str->free(str);
+    sfree(str);
 }
 
 CTEST(rp_help, find_end_pos_wo_spaces)
 {
-    String* str = create_string("****\n");
+    String* str = screate("****\n");
     Array(Token) arr = tokenize(str);
 
     RulePerformer perf = {.tokens = arr, .count = get_array_length(arr), .cp = 2};
@@ -60,15 +60,15 @@ CTEST(rp_help, find_end_pos_wo_spaces)
 
     for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        arr[i].value->free(arr[i].value);
+        sfree(arr[i].value);
     }
     free_array(arr);
-    str->free(str);
+    sfree(str);
 }
 
 CTEST(rp_help, find_end_pos_fail)
 {
-    String* str = create_string("without emphasis\n");
+    String* str = screate("without emphasis\n");
     Array(Token) arr = tokenize(str);
 
     RulePerformer perf = {.tokens = arr, .count = get_array_length(arr), .cp = 0};
@@ -77,10 +77,10 @@ CTEST(rp_help, find_end_pos_fail)
 
     for (size_t i = 0; i < get_array_length(arr); ++i)
     {
-        arr[i].value->free(arr[i].value);
+        sfree(arr[i].value);
     }
     free_array(arr);
-    str->free(str);
+    sfree(str);
 }
 
 CTEST(rp_help, token_belongs_hr_term)

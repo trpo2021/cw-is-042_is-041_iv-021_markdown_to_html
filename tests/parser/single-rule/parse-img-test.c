@@ -3,7 +3,7 @@
 
 CTEST(parse_img_rule, default_usage)
 {
-    String* str = create_string("![]()");
+    String* str = screate("![]()");
 
     Array(Token) arr = tokenize(str);
 
@@ -13,9 +13,9 @@ CTEST(parse_img_rule, default_usage)
     TNode* real = perf.invoke(&perf, perf.count);
 
     ASSERT_EQUAL(NodeImage, real->type);
-    ASSERT_STR("<img>", real->head->text(real->head));
+    ASSERT_STR("<img>", sraw(real->head));
 
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(real);
 }

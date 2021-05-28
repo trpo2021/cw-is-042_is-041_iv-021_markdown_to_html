@@ -11,11 +11,11 @@ void print_tnode(TNode* node, FILE* out)
         }
         if (node->head)
         {
-            fprintf(out, "%s", node->head->text(node->head));
+            fprintf(out, "%s", sraw(node->head));
         }
         if (node->content)
         {
-            fprintf(out, "%s", node->content->text(node->content));
+            fprintf(out, "%s", sraw(node->content));
         }
         fprintf(out, "%s", "\n");
         for (size_t i = 0; i < get_array_length(node->children); i++)

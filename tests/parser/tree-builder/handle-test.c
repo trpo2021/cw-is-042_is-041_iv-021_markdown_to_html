@@ -60,13 +60,13 @@ CTEST(tbuilder, header_underline_single)
 {
     TBuilder builder = {0};
     TNode* root = setup_builder_for_test(&builder);
-    TNode* hu = init_tnode(NodeHeadingUnderline, create_string("<h1>"), create_string("==="), true);
+    TNode* hu = init_tnode(NodeHeadingUnderline, screate("<h1>"), screate("==="), true);
 
     builder.build_tree(&builder, &hu);
 
     ASSERT_EQUAL(NodeSpan, get_tnode_last_child(root->children[0])->type);
     String* backup_text = get_tnode_last_child(root->children[0])->content;
-    ASSERT_STR("===", backup_text->text(backup_text));
+    ASSERT_STR("===", sraw(backup_text));
 
     free_builder(&builder);
     free_tnode(root);
@@ -77,7 +77,7 @@ CTEST(tbuilder, header_underline_correct)
     TBuilder builder = {0};
     TNode* root = setup_builder_for_test(&builder);
     TNode* span = init_tnode(NodeSpan, NULL, NULL, false);
-    TNode* hu = init_tnode(NodeHeadingUnderline, create_string("<h1>"), create_string("==="), true);
+    TNode* hu = init_tnode(NodeHeadingUnderline, screate("<h1>"), screate("==="), true);
 
     builder.build_tree(&builder, &span);
 
@@ -200,9 +200,9 @@ CTEST(tbuilder, wrap_list_span_to_paragraph)
 CTEST(tbuilder, concat_lists_with_same_ctx)
 {
     const char* items[] = {"item 1", "item 2", "item 3"};
-    String* s = create_string("* item 1\n"
-                              "+ item 2\n"
-                              "- item 3\n");
+    String* s = screate("* item 1\n"
+                        "+ item 2\n"
+                        "- item 3\n");
 
     TNode* root = parse_document(s);
     TNode* ul = root->children[0]->children[0];
@@ -214,11 +214,11 @@ CTEST(tbuilder, concat_lists_with_same_ctx)
         ASSERT_EQUAL(NodeParagraph, li->children[0]->type);
         TNode* p = li->children[0];
         ASSERT_EQUAL(NodeSpan, p->children[0]->type);
-        ASSERT_STR(items[i], p->children[0]->content->text(p->children[0]->content));
+        ASSERT_STR(items[i], sraw(p->children[0]->content));
     }
 
     free_tnode(root);
-    s->free(s);
+    sfree(s);
 }
 
 CTEST(tbuilder, check_codeblock)
@@ -226,11 +226,11 @@ CTEST(tbuilder, check_codeblock)
     TypeOfTNode types[] = {NodeBody, NodeSection, NodePre, NodeCode, NodeSpan};
     const char* code_content = "1. >> ## *test* [test](test)\n";
     const char* after_content = "header lvl 3";
-    String* s = create_string("```\n");
-    s->concat(s, code_content);
-    s->concat(s, "```\n");
-    s->concat(s, "### ");
-    s->concat(s, after_content);
+    String* s = screate("```\n");
+    sconcat(s, code_content);
+    sconcat(s, "```\n");
+    sconcat(s, "### ");
+    sconcat(s, after_content);
 
     TNode* root = parse_document(s);
     TNode* tmp = root;
@@ -239,25 +239,25 @@ CTEST(tbuilder, check_codeblock)
         ASSERT_EQUAL(types[i], tmp->type);
         tmp = tmp->children[0];
     }
-    ASSERT_STR(code_content, tmp->content->text(tmp->content));
+    ASSERT_STR(code_content, sraw(tmp->content));
 
     TNode* h3 = root->children[0]->children[1];
     ASSERT_EQUAL(NodeHeadingInline, h3->type);
     ASSERT_EQUAL(NodeSpan, h3->children[0]->type);
-    ASSERT_STR(after_content, h3->children[0]->content->text(h3->children[0]->content));
+    ASSERT_STR(after_content, sraw(h3->children[0]->content));
 
     free_tnode(root);
-    s->free(s);
+    sfree(s);
 }
 
 CTEST(tbuilder, check_bq_leveling)
 {
-    String* s = create_string("> bq lvl 0\n"
-                              ">> bq lvl 1\n"
-                              "> > bq lvl 1\n"
-                              ">>> bq lvl 3\n"
-                              "> bq lvl 1\n"
-                              "another text to bq");
+    String* s = screate("> bq lvl 0\n"
+                        ">> bq lvl 1\n"
+                        "> > bq lvl 1\n"
+                        ">>> bq lvl 3\n"
+                        "> bq lvl 1\n"
+                        "another text to bq");
     TNode* root = parse_document(s);
     TNode* bq = root->children[0]->children[0];
 
@@ -268,38 +268,38 @@ CTEST(tbuilder, check_bq_leveling)
 
     TNode* tmp = bq->children[0];
     ASSERT_EQUAL(NodeSpan, tmp->children[0]->type);
-    ASSERT_STR("bq lvl 0", tmp->children[0]->content->text(tmp->children[0]->content));
+    ASSERT_STR("bq lvl 0", sraw(tmp->children[0]->content));
 
     tmp = bq->children[1];
     for (size_t i = 0; i < get_array_length(tmp->children) - 1; ++i)
     {
         ASSERT_EQUAL(NodeParagraph, tmp->children[i]->type);
         ASSERT_EQUAL(NodeSpan, tmp->children[i]->children[0]->type);
-        ASSERT_STR("bq lvl 1", tmp->children[i]->children[0]->content->text(tmp->children[i]->children[0]->content));
+        ASSERT_STR("bq lvl 1", sraw(tmp->children[i]->children[0]->content));
     }
     ASSERT_EQUAL(NodeBlockquote, tmp->children[get_array_length(tmp->children) - 1]->type);
     ASSERT_EQUAL(NodeParagraph, tmp->children[get_array_length(tmp->children) - 1]->children[0]->type);
 
     tmp = bq->children[2];
-    ASSERT_STR("bq lvl 1", tmp->children[0]->content->text(tmp->children[0]->content));
-    ASSERT_STR("another text to bq", tmp->children[1]->content->text(tmp->children[1]->content));
+    ASSERT_STR("bq lvl 1", sraw(tmp->children[0]->content));
+    ASSERT_STR("another text to bq", sraw(tmp->children[1]->content));
 
     free_tnode(root);
-    s->free(s);
+    sfree(s);
 }
 
 CTEST(tbuilder, check_list_leveling_in_different_ctx)
 {
-    String* s = create_string("* 1) ul lvl 0\n"
-                              "    + 1) ul lvl 1\n"
-                              "    1. 1) ol lvl 1\n"
-                              "    2. 1) ol lvl 1\n"
-                              "        1. 1) ol lvl 2\n"
-                              "    - 1) ul lvl 1\n"
-                              "+ 1) ul lvl 0\n"
-                              "\n"
-                              "\n"
-                              "+ 2) another ul lvl 0\n");
+    String* s = screate("* 1) ul lvl 0\n"
+                        "    + 1) ul lvl 1\n"
+                        "    1. 1) ol lvl 1\n"
+                        "    2. 1) ol lvl 1\n"
+                        "        1. 1) ol lvl 2\n"
+                        "    - 1) ul lvl 1\n"
+                        "+ 1) ul lvl 0\n"
+                        "\n"
+                        "\n"
+                        "+ 2) another ul lvl 0\n");
 
     TNode* root = parse_document(s);
 
@@ -332,5 +332,5 @@ CTEST(tbuilder, check_list_leveling_in_different_ctx)
     ASSERT_EQUAL(NodeUOList, tmp->type);
 
     free_tnode(root);
-    s->free(s);
+    sfree(s);
 }

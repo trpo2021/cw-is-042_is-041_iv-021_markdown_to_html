@@ -6,11 +6,11 @@ CTEST(parse_list_rule, ul_correct)
 {
     srand(time(NULL));
     char* raw_data = generate_sequence_of_terms((char[]){'*', '+', '-'}, 3, 1);
-    String* str = create_string(raw_data);
-    str->concat(str, " \n");
+    String* str = screate(raw_data);
+    sconcat(str, " \n");
 
-    TNode* exp = init_tnode(NodeUOList, create_string("<ul>"), NULL, true);
-    TNode* exp_chd_lvl1 = init_tnode(NodeListItem, create_string("<li>"), NULL, true);
+    TNode* exp = init_tnode(NodeUOList, screate("<ul>"), NULL, true);
+    TNode* exp_chd_lvl1 = init_tnode(NodeListItem, screate("<li>"), NULL, true);
     add_tnode(exp, exp_chd_lvl1);
 
     Array(Token) arr = tokenize(str);
@@ -22,14 +22,14 @@ CTEST(parse_list_rule, ul_correct)
 
     // ul
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
 
     // li
     ASSERT_EQUAL(exp_chd_lvl1->type, real->children[0]->type);
-    ASSERT_STR(exp_chd_lvl1->head->text(exp_chd_lvl1->head), real->children[0]->head->text(real->children[0]->head));
+    ASSERT_STR(sraw(exp_chd_lvl1->head), sraw(real->children[0]->head));
 
     free(raw_data);
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(exp);
     free_tnode(real);
@@ -46,11 +46,11 @@ CTEST(parse_list_rule, ol_correct)
         num[i] = (char)((rand() % 9 + 1) + '0');
     }
     num[len] = 0;
-    String* str = create_string(num);
-    str->concat(str, ". \n");
+    String* str = screate(num);
+    sconcat(str, ". \n");
 
-    TNode* exp = init_tnode(NodeOList, create_string("<ol>"), NULL, true);
-    TNode* exp_chd_lvl1 = init_tnode(NodeListItem, create_string("<li>"), NULL, true);
+    TNode* exp = init_tnode(NodeOList, screate("<ol>"), NULL, true);
+    TNode* exp_chd_lvl1 = init_tnode(NodeListItem, screate("<li>"), NULL, true);
     add_tnode(exp, exp_chd_lvl1);
 
     Array(Token) arr = tokenize(str);
@@ -62,14 +62,14 @@ CTEST(parse_list_rule, ol_correct)
 
     // ol
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
 
     // li
     ASSERT_EQUAL(exp_chd_lvl1->type, real->children[0]->type);
-    ASSERT_STR(exp_chd_lvl1->head->text(exp_chd_lvl1->head), real->children[0]->head->text(real->children[0]->head));
+    ASSERT_STR(sraw(exp_chd_lvl1->head), sraw(real->children[0]->head));
 
     free(num);
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(exp);
     free_tnode(real);
@@ -78,10 +78,10 @@ CTEST(parse_list_rule, ol_correct)
 /* in case when we have ol started from 0 */
 CTEST(parse_list_rule, ol_incorrect_start_from_zero)
 {
-    String* str = create_string("0123456789. \n");
+    String* str = screate("0123456789. \n");
 
-    TNode* exp = init_tnode(NodeOList, create_string("<ol>"), NULL, true);
-    TNode* exp_chd_lvl1 = init_tnode(NodeListItem, create_string("<li>"), NULL, true);
+    TNode* exp = init_tnode(NodeOList, screate("<ol>"), NULL, true);
+    TNode* exp_chd_lvl1 = init_tnode(NodeListItem, screate("<li>"), NULL, true);
     add_tnode(exp, exp_chd_lvl1);
 
     Array(Token) arr = tokenize(str);
@@ -93,9 +93,9 @@ CTEST(parse_list_rule, ol_incorrect_start_from_zero)
 
     ASSERT_NOT_EQUAL(exp->type, real->type);
     ASSERT_EQUAL(NodeSpan, real->type);
-    ASSERT_STR("0123456789. ", real->content->text(real->content));
+    ASSERT_STR("0123456789. ", sraw(real->content));
 
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(exp);
     free_tnode(real);
@@ -107,8 +107,8 @@ CTEST(parse_list_rule, incorrect_many_tokens)
     srand(time(NULL));
     // ul
     char* raw_data = generate_sequence_of_terms((char[]){'*', '+', '-'}, 3, rand() % 100 + 2);
-    String* str = create_string(raw_data);
-    str->concat(str, " \n");
+    String* str = screate(raw_data);
+    sconcat(str, " \n");
 
     Array(Token) arr = tokenize(str);
 
@@ -120,7 +120,7 @@ CTEST(parse_list_rule, incorrect_many_tokens)
     ASSERT_NOT_EQUAL(NodeUOList, real->type);
 
     free(raw_data);
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(real);
 

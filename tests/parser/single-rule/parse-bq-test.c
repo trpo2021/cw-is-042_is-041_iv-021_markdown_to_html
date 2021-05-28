@@ -3,8 +3,8 @@
 
 static TNode* create_bq_from_test_data(char* data, const char* content_after)
 {
-    String* str = create_string(data);
-    str->concat(str, content_after);
+    String* str = screate(data);
+    sconcat(str, content_after);
 
     Array(Token) arr = tokenize(str);
 
@@ -14,7 +14,7 @@ static TNode* create_bq_from_test_data(char* data, const char* content_after)
     TNode* result = perf.invoke(&perf, perf.count);
 
     free(data);
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
 
     return result;

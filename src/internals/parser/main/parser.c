@@ -16,20 +16,20 @@ typedef enum
 
 static String* separate_line(const String* raw, size_t* index)
 {
-    String* line = init_string(10);
-    for (; *index < raw->length(raw); ++(*index))
+    String* line = sinit(10);
+    for (; *index < slength(raw); ++(*index))
     {
-        if (raw->get(raw, *index) == '\r')
+        if (sget(raw, *index) == '\r')
         {
             continue;
         }
-        line->append(line, raw->get(raw, *index));
-        if (raw->get(raw, *index) == '\n')
+        sappend(line, sget(raw, *index));
+        if (sget(raw, *index) == '\n')
         {
             return line;
         }
     }
-    line->append(line, '\n');
+    sappend(line, '\n');
     return line;
 }
 
@@ -37,7 +37,7 @@ static TNode* wrap_node(TNode* parrent)
 {
     if (parrent->type >= NodeInlineCode && parrent->type <= NodeLink)
     {
-        TNode* wrapper = init_tnode(NodeSpan, create_string("<span>"), init_string(10), false);
+        TNode* wrapper = init_tnode(NodeSpan, screate("<span>"), sinit(10), false);
         add_tnode(wrapper, parrent);
         return wrapper;
     }
@@ -61,13 +61,13 @@ static void connect_spanes(TNode* pos_parrent, TNode* span)
     TNode* last_child = get_tnode_last_child(pos_parrent);
     if (last_child && last_child->type == NodeSpan)
     {
-        last_child->content->concat(last_child->content, span->content->text(span->content));
+        sconcat(last_child->content, sraw(span->content));
         free_tnode(span);
         return;
     }
     if (pos_parrent->type == NodeSpan && !pos_parrent->children)
     {
-        pos_parrent->content->concat(pos_parrent->content, span->content->text(span->content));
+        sconcat(pos_parrent->content, sraw(span->content));
         free_tnode(span);
         return;
     }
@@ -111,13 +111,13 @@ TNode* parse_document(const String* raw)
 {
     RulePerformer performer = {0};
 
-    TNode* root = init_tnode(NodeBody, create_string("<body>"), NULL, true);
-    add_tnode(root, init_tnode(NodeSection, create_string("<section>"), NULL, true));
+    TNode* root = init_tnode(NodeBody, screate("<body>"), NULL, true);
+    add_tnode(root, init_tnode(NodeSection, screate("<section>"), NULL, true));
 
     TBuilder builder = {0};
     init_builder(&builder, &root->children[0]);
 
-    for (size_t i = 0, st = 0; i < raw->length(raw); ++i, st = 0)
+    for (size_t i = 0, st = 0; i < slength(raw); ++i, st = 0)
     {
         String* line = separate_line(raw, &i);
         Array(Token) tokens = tokenize(line);
@@ -131,10 +131,10 @@ TNode* parse_document(const String* raw)
 
         for (size_t j = 0; j < get_array_length(tokens); ++j)
         {
-            tokens[j].value->free(tokens[j].value);
+            sfree(tokens[j].value);
         }
         free_array(tokens);
-        line->free(line);
+        sfree(line);
     }
 
     free_builder(&builder);

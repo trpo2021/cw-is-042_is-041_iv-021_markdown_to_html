@@ -19,11 +19,11 @@ void free_tnode(TNode* node)
     {
         if (node->head)
         {
-            node->head->free(node->head);
+            sfree(node->head);
         }
         if (node->content)
         {
-            node->content->free(node->content);
+            sfree(node->content);
         }
         if (node->children)
         {

@@ -7,32 +7,41 @@
 typedef struct _string
 {
     void* internals;
-
-    size_t (*length)(const struct _string* str);
-    size_t (*capacity)(const struct _string* str);
-    const char* (*text)(const struct _string* str);
-
-    void (*set)(const struct _string* str, size_t index, char item);
-    char (*get)(const struct _string* str, size_t index);
-
-    void (*free)(struct _string* str);
-    void (*clear)(const struct _string* str);
-
-    void (*append)(const struct _string* str, char item);
-    void (*concat)(const struct _string* str, const char* item);
-    void (*insert)(const struct _string* str, const char* item, size_t index);
-
-    bool (*contains)(const struct _string* str, const char* item);
-    bool (*compare)(const struct _string* str, const char* item);
-
-    struct _string* (*copy)(const struct _string* str);
-    struct _string* (*replace)(const struct _string* str, const char* new, const char* old);
-    struct _string** (*split)(const struct _string* str, const char* pattern, size_t* length);
 } String;
 
-String* init_string(size_t initial_capacity);
+String* sinit(size_t initial_capacity);
 
-String* create_string(const char* source);
+String* screate(const char* source);
+
+size_t slength(const String* str);
+
+size_t scapacity(const String* str);
+
+const char* sraw(const String* str);
+
+void sset(const String* str, size_t index, char item);
+
+char sget(const String* str, size_t index);
+
+void sfree(String* str);
+
+void sclear(const String* str);
+
+void sappend(const String* str, char item);
+
+void sconcat(const String* str, const char* item);
+
+void sinsert(const String* str, const char* item, size_t index);
+
+bool scontains(const String* str, const char* item);
+
+bool scompare(const String* str, const char* item);
+
+String* scopy(const String* str);
+
+String* sreplace(const String* str, const char* new, const char* old);
+
+String** ssplit(const String* str, const char* pattern, size_t* length);
 
 #define convert_to_char_array(buf, data, format, length)                                                               \
     length = snprintf(NULL, 0, format, data);                                                                          \

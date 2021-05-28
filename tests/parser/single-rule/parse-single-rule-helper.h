@@ -6,11 +6,11 @@
 
 __attribute__((unused)) static Array(Token) create_test_data(char* raw)
 {
-    String* str = create_string(raw);
+    String* str = screate(raw);
     free(raw);
-    str->append(str, '\n');
+    sappend(str, '\n');
     Array(Token) arr = tokenize(str);
-    str->free(str);
+    sfree(str);
     return arr;
 }
 
@@ -18,7 +18,7 @@ __attribute__((unused)) static void free_test_data(Array(Token) data)
 {
     for (size_t i = 0; i < get_array_length(data); ++i)
     {
-        data[i].value->free(data[i].value);
+        sfree(data[i].value);
     }
     free_array(data);
 }
