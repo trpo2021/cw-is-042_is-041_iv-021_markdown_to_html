@@ -18,12 +18,12 @@ static TNode* create_header_from_test_data(char* raw_data)
 CTEST(parse_header_underline_rule, h1_correct)
 {
     char* raw_data = generate_sequence_of_terms((char[]){'='}, 1, rand() % 100 + 2);
-    TNode* exp = init_tnode(NodeHeadingUnderline, create_string("<h1>"), create_string(raw_data), true);
+    TNode* exp = init_tnode(NodeHeadingUnderline, screate("<h1>"), screate(raw_data), true);
     TNode* real = create_header_from_test_data(raw_data);
 
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
-    ASSERT_STR(exp->content->text(exp->content), real->content->text(real->content));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
+    ASSERT_STR(sraw(exp->content), sraw(real->content));
 
     free_tnode(exp);
     free_tnode(real);
@@ -33,12 +33,12 @@ CTEST(parse_header_underline_rule, h1_correct)
 CTEST(parse_header_underline_rule, h2_correct)
 {
     char* raw_data = generate_sequence_of_terms((char[]){'-'}, 1, rand() % 100 + 2);
-    TNode* exp = init_tnode(NodeHeadingUnderline, create_string("<h2>"), create_string(raw_data), true);
+    TNode* exp = init_tnode(NodeHeadingUnderline, screate("<h2>"), screate(raw_data), true);
     TNode* real = create_header_from_test_data(raw_data);
 
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
-    ASSERT_STR(exp->content->text(exp->content), real->content->text(real->content));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
+    ASSERT_STR(sraw(exp->content), sraw(real->content));
 
     free_tnode(exp);
     free_tnode(real);

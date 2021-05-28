@@ -3,8 +3,8 @@
 
 static TNode* create_header_from_test_data(char* raw_data, const char* content_after, size_t count)
 {
-    String* str = create_string(raw_data);
-    str->concat(str, content_after);
+    String* str = screate(raw_data);
+    sconcat(str, content_after);
 
     Array(Token) arr = tokenize(str);
 
@@ -14,7 +14,7 @@ static TNode* create_header_from_test_data(char* raw_data, const char* content_a
     TNode* result = perf.invoke(&perf, perf.count);
 
     free(raw_data);
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
 
     return result;
@@ -25,18 +25,18 @@ CTEST(parse_header_inline_rule, correct)
 {
     size_t count = rand() % 6 + 1;
 
-    String* exp_head = create_string("<h");
-    exp_head->append(exp_head, (char)(count + '0'));
-    exp_head->append(exp_head, '>');
+    String* exp_head = screate("<h");
+    sappend(exp_head, (char)(count + '0'));
+    sappend(exp_head, '>');
 
     char* raw_data = generate_sequence_of_terms((char[]){'#'}, 1, count);
 
     TNode* real = create_header_from_test_data(raw_data, " test\n", count);
 
     ASSERT_EQUAL(NodeHeadingInline, real->type);
-    ASSERT_STR(exp_head->text(exp_head), real->head->text(real->head));
+    ASSERT_STR(sraw(exp_head), sraw(real->head));
 
-    exp_head->free(exp_head);
+    sfree(exp_head);
     free_tnode(real);
 }
 

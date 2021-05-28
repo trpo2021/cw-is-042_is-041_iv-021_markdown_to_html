@@ -6,6 +6,8 @@ typedef enum
     ExceptionNullPointer,
     ExceptionIndexOutOfRange,
     ExceptionOutOfMemory,
+    ExceptionStdinCharacterLimit,
+    ExceptionUnknownArg
 } TypeOfException;
 
-void throw_exception(TypeOfException ex, const char* file_name, const int line, const char* msg);
+void throw_exception(TypeOfException ex, const char* msg);

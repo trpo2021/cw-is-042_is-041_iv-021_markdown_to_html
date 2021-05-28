@@ -18,12 +18,12 @@ static TNode* create_hr_from_test_data(char* raw_data)
 /* in case when we have correct rule ( 3 <= x ('*' | '_')) */
 CTEST(parse_hr_rule, correct)
 {
-    TNode* exp = init_tnode(NodeHorizontalLine, create_string("<hr/>"), NULL, false);
+    TNode* exp = init_tnode(NodeHorizontalLine, screate("<hr/>"), NULL, false);
 
     TNode* real = create_hr_from_test_data(generate_sequence_of_terms((char[]){'*', '_'}, 2, rand() % 100 + 3));
 
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
     ASSERT_FALSE(real->nesting);
 
     free_tnode(exp);
@@ -33,9 +33,9 @@ CTEST(parse_hr_rule, correct)
 /* in case when we have spaces between tokens */
 CTEST(parse_hr_rule, correct_with_spaces)
 {
-    String* str = create_string("   _   *   _ ***   ____    ___________ ***** ***\n");
+    String* str = screate("   _   *   _ ***   ____    ___________ ***** ***\n");
     Array(Token) arr = tokenize(str);
-    TNode* exp = init_tnode(NodeHorizontalLine, create_string("<hr/>"), NULL, false);
+    TNode* exp = init_tnode(NodeHorizontalLine, screate("<hr/>"), NULL, false);
 
     RulePerformer perf = {0};
     init_performer(&perf, arr, skip_spaces(0, arr));
@@ -43,10 +43,10 @@ CTEST(parse_hr_rule, correct_with_spaces)
     TNode* real = perf.invoke(&perf, perf.count);
 
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
     ASSERT_FALSE(real->nesting);
 
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(exp);
     free_tnode(real);
@@ -55,7 +55,7 @@ CTEST(parse_hr_rule, correct_with_spaces)
 /* in case when we have fewer tokens than allowed */
 CTEST(parse_hr_rule, incorrect_count_less)
 {
-    TNode* exp = init_tnode(NodeHorizontalLine, create_string("<hr/>"), NULL, false);
+    TNode* exp = init_tnode(NodeHorizontalLine, screate("<hr/>"), NULL, false);
 
     TNode* real = create_hr_from_test_data(generate_sequence_of_terms((char[]){'*', '_', ' '}, 3, rand() % 2 + 1));
 
@@ -69,11 +69,11 @@ CTEST(parse_hr_rule, incorrect_count_less)
 CTEST(parse_hr_rule, incorrect_with_others_token)
 {
     const char tokens[] = "`=-+<#![>]()";
-    TNode* exp = init_tnode(NodeHorizontalLine, create_string("<hr/>"), NULL, false);
+    TNode* exp = init_tnode(NodeHorizontalLine, screate("<hr/>"), NULL, false);
 
     size_t count = rand() % 100 + 3;
     char* invalid_data = generate_sequence_of_terms(tokens, sizeof(tokens), count);
-    char* raw_data = malloc(count + 2);
+    char* raw_data = mem_alloc(count + 2);
     raw_data[0] = (rand() % 2) ? '*' : '_';
     memmove(&raw_data[1], invalid_data, count);
     raw_data[count + 1] = 0;

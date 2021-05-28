@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-CTEST(io_file, create_file)
+CTEST(io_file, create)
 {
     write_file("test.html", "test");
     FILE* fp = fopen("test.html", "r");
@@ -13,7 +13,7 @@ CTEST(io_file, create_file)
     remove("test.html");
 }
 
-CTEST(io_file, read_file)
+CTEST(io_file, read)
 {
     const char* expected = "test";
     write_file("test.md", expected);

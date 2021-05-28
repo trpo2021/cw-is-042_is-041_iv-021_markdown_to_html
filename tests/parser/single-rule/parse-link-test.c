@@ -7,7 +7,7 @@ CTEST(parse_link_rule, correct)
     const char* link_alt = "alt text";
     const char* link_src = "https://abc.com/";
 
-    String* str = create_string("[alt text](https://abc.com/)");
+    String* str = screate("[alt text](https://abc.com/)");
 
     Array(Token) arr = tokenize(str);
 
@@ -17,12 +17,12 @@ CTEST(parse_link_rule, correct)
     TNode* real = perf.invoke(&perf, perf.count);
 
     ASSERT_EQUAL(NodeLink, real->type);
-    ASSERT_STR("<a>", real->head->text(real->head));
-    const char* alt_text = real->children[0]->children[0]->content->text(real->children[0]->children[0]->content);
+    ASSERT_STR("<a>", sraw(real->head));
+    ASSERT_STR(link_src, sraw(real->children[0]->content));
+    const char* alt_text = sraw(real->children[1]->children[0]->content);
     ASSERT_STR(link_alt, alt_text);
-    ASSERT_STR(link_src, real->children[1]->content->text(real->children[1]->content));
 
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(real);
 }
@@ -30,7 +30,7 @@ CTEST(parse_link_rule, correct)
 /* in case when we have empty alt and src, but it's correct link */
 CTEST(parse_link_rule, correct_empty)
 {
-    String* str = create_string("[]()");
+    String* str = screate("[]()");
 
     Array(Token) arr = tokenize(str);
 
@@ -40,11 +40,11 @@ CTEST(parse_link_rule, correct_empty)
     TNode* real = perf.invoke(&perf, perf.count);
 
     ASSERT_EQUAL(NodeLink, real->type);
-    ASSERT_STR("<a>", real->head->text(real->head));
+    ASSERT_STR("<a>", sraw(real->head));
     ASSERT_NULL(real->children[0]->children);
-    ASSERT_STR("", real->children[1]->content->text(real->children[1]->content));
+    ASSERT_STR("", sraw(real->children[0]->content));
 
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(real);
 }
@@ -56,7 +56,7 @@ CTEST(parse_link_rule, without_any_tag)
 
     for (size_t i = 0; i < 4; ++i)
     {
-        String* str = create_string(test_data[i]);
+        String* str = screate(test_data[i]);
         Array(Token) arr = tokenize(str);
 
         RulePerformer perf = {0};
@@ -64,10 +64,10 @@ CTEST(parse_link_rule, without_any_tag)
         TNode* real = perf.invoke(&perf, perf.count);
 
         ASSERT_NOT_EQUAL(NodeLink, real->type);
-        ASSERT_STR("<span>", real->head->text(real->head));
-        ASSERT_STR(test_data[i], real->content->text(real->content));
+        ASSERT_STR("<span>", sraw(real->head));
+        ASSERT_STR(test_data[i], sraw(real->content));
 
-        str->free(str);
+        sfree(str);
         free_test_data(arr);
         free_tnode(real);
     }
@@ -77,10 +77,10 @@ CTEST(parse_link_rule, without_any_tag)
 CTEST(parse_link_rule, with_anything_between_alt_and_src)
 {
     srand(time(NULL));
-    String* str = create_string("[]");
+    String* str = screate("[]");
     const char tokens[] = "\n_*`=-+<#![>";
-    str->append(str, tokens[rand() % (sizeof(tokens) - 1)]);
-    str->concat(str, "()");
+    sappend(str, tokens[rand() % (sizeof(tokens) - 1)]);
+    sconcat(str, "()");
     Array(Token) arr = tokenize(str);
 
     RulePerformer perf = {0};
@@ -88,10 +88,10 @@ CTEST(parse_link_rule, with_anything_between_alt_and_src)
     TNode* real = perf.invoke(&perf, perf.count);
 
     ASSERT_NOT_EQUAL(NodeLink, real->type);
-    ASSERT_STR("<span>", real->head->text(real->head));
-    ASSERT_STR("[]", real->content->text(real->content));
+    ASSERT_STR("<span>", sraw(real->head));
+    ASSERT_STR("[]", sraw(real->content));
 
-    str->free(str);
+    sfree(str);
     free_test_data(arr);
     free_tnode(real);
 }

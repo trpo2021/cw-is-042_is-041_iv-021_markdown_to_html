@@ -1,47 +1,35 @@
+#include <internals/exceptions/exceptions.h>
 #include <internals/io/std/reader.h>
+#include <internals/memext/memext.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-void print_error_stdin_read(int code)
+typedef enum
 {
-    switch (code)
-    {
-    case STDIN_LIMIT_RECHEAD_CODE:
-        puts("\n\tYou have reached character limit.");
-        puts("\n\tTo convert more than 1000 characters, you can use file.");
-        puts("\n\tRun './converter --help' for more information.\n");
-        return;
-    default:
-        return;
-    }
-}
+    StdinCharacterLimit = 1000
+} StdReaderConstants;
 
-// end of input
-static const char* const BREAK_LINE = "-quit\n";
-
-int stdin_read(char* buf)
+char* read_stdin()
 {
+    char* stdin_data = mem_calloc(StdinCharacterLimit + 1, sizeof(char));
     for (;;)
     {
-        char* line = malloc(STDIN_LIMIT);
-        fgets(line, STDIN_LIMIT, stdin);
-        // if this string equals "-quit", close input
-        if (strcmp(line, BREAK_LINE) == 0)
+        char* line = mem_alloc(StdinCharacterLimit + 1);
+        fgets(line, StdinCharacterLimit, stdin);
+        if (strcmp(line, "-quit\n") == 0)
         {
-            free(line);
-            return STDIN_EXIT_CODE;
+            mem_free(line);
+            return stdin_data;
         }
-        // if line fits into result, concat it
-        else if (strlen(buf) + strlen(line) < STDIN_LIMIT)
+        if (strlen(stdin_data) + strlen(line) < StdinCharacterLimit)
         {
-            strcat(buf, line);
-            free(line);
+            strcat(stdin_data, line);
+            mem_free(line);
+            continue;
         }
-        else
-        {
-            free(line);
-            return STDIN_LIMIT_RECHEAD_CODE;
-        }
+        mem_free(line);
+        break;
     }
+    mem_free(stdin_data);
+    return NULL;
 }

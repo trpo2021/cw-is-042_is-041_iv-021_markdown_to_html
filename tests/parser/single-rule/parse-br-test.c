@@ -5,7 +5,7 @@
 CTEST(parse_br_rule, correct)
 {
     Array(Token) arr = create_test_data(generate_sequence_of_terms(NULL, 0, 0));
-    TNode* exp = init_tnode(NodeBreakLine, create_string("<br>"), NULL, false);
+    TNode* exp = init_tnode(NodeBreakLine, screate("<br>"), NULL, false);
 
     RulePerformer perf = {0};
     init_performer(&perf, arr, 0);
@@ -13,7 +13,7 @@ CTEST(parse_br_rule, correct)
     TNode* real = perf.invoke(&perf, perf.count);
 
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
     ASSERT_FALSE(real->nesting);
 
     free_test_data(arr);
@@ -25,7 +25,7 @@ CTEST(parse_br_rule, correct)
 CTEST(parse_br_rule, correct_with_spaces_from_start)
 {
     Array(Token) arr = create_test_data(generate_sequence_of_terms((char[]){' '}, 1, rand() % 100 + 1));
-    TNode* exp = init_tnode(NodeBreakLine, create_string("<br>"), NULL, false);
+    TNode* exp = init_tnode(NodeBreakLine, screate("<br>"), NULL, false);
 
     RulePerformer perf = {0};
     init_performer(&perf, arr, skip_spaces(0, arr));
@@ -33,7 +33,7 @@ CTEST(parse_br_rule, correct_with_spaces_from_start)
     TNode* real = perf.invoke(&perf, perf.count);
 
     ASSERT_EQUAL(exp->type, real->type);
-    ASSERT_STR(exp->head->text(exp->head), real->head->text(real->head));
+    ASSERT_STR(sraw(exp->head), sraw(real->head));
     ASSERT_FALSE(real->nesting);
 
     free_test_data(arr);

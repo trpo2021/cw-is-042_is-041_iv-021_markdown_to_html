@@ -2,7 +2,10 @@
 
 #include <internals/parser/grammar/token.h>
 
-#define MAX_TOKENS_IN_TERM 5
+typedef enum
+{
+    MaxTokensInTerm = 5,
+} GrammarConstants;
 
 typedef enum
 {
@@ -23,10 +26,21 @@ typedef enum
     RuleUnknown
 } TypeOfRule;
 
+typedef enum
+{
+    HorizontalLineLowerLimit = 3,
+    HeaderUnderlineLowerLimit = 2,
+    CodeBlockLowerLimit = 3,
+    BlockquoteUpperLimit = 15,
+    HeaderInlineLowerLimit = 1,
+    HeaderInlineUpperLimit = 6,
+    WhitespaceForBreakLineLowerLimit = 2,
+} RuleLimits;
+
 typedef struct
 {
-    TypeOfToken tokens[MAX_TOKENS_IN_TERM];
-    uint8_t count;
+    TypeOfToken tokens[MaxTokensInTerm];
+    unsigned count;
 } Term;
 
 static const Term HR_TERM = {{TokenUnderscore, TokenAsterisk}, 2};
