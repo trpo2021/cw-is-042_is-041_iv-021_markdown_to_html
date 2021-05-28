@@ -1,5 +1,7 @@
+#include <internals/collection/collection.h>
 #include <internals/memext/memext.h>
 #include <internals/parser/helpers/tbuilder.h>
+#include <inttypes.h>
 
 typedef enum
 {

@@ -1,4 +1,6 @@
+#include <internals/collection/collection.h>
 #include <internals/parser/lexer/tokenizer.h>
+#include <inttypes.h>
 
 typedef enum
 {
@@ -74,9 +76,9 @@ static LState get_lstate(const String* line, size_t index)
  *                            *
  ******************************/
 
-Array(Token) tokenize(const String* line)
+Token* tokenize(const String* line)
 {
-    Array(Token) arr = NULL;
+    Token* arr = NULL;
     LState state = get_lstate(line, 0);
     String* value = sinit(10);
 

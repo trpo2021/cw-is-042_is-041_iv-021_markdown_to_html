@@ -1,4 +1,5 @@
 #include <ctest.h>
+#include <internals/collection/collection.h>
 #include <internals/parser/lexer/tokenizer.h>
 #include <stdio.h>
 #include <time.h>

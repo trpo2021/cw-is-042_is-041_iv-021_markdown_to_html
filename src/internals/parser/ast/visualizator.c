@@ -1,3 +1,4 @@
+#include <internals/collection/collection.h>
 #include <internals/parser/ast/visualizator.h>
 
 void print_tnode(TNode* node, FILE* out)

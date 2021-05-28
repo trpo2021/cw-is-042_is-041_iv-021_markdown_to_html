@@ -1,3 +1,4 @@
+#include <internals/collection/collection.h>
 #include <internals/memext/memext.h>
 #include <internals/parser/ast/ast.h>
 

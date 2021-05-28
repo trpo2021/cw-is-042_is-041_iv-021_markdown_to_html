@@ -1,6 +1,5 @@
 #pragma once
 
-#include <internals/collection/collection.h>
 #include <internals/strings/strings.h>
 
 typedef enum
@@ -38,7 +37,7 @@ typedef struct _tnode
         size_t offset;
     };
     struct _tnode* parrent;
-    Array(struct _tnode*) children;
+    struct _tnode** children;
 } TNode;
 
 TNode* init_tnode(TypeOfTNode type, String* head, String* content, bool nesting);

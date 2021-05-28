@@ -35,13 +35,12 @@ typedef enum
     HeaderInlineLowerLimit = 1,
     HeaderInlineUpperLimit = 6,
     WhitespaceForBreakLineLowerLimit = 2,
-
 } RuleLimits;
 
 typedef struct
 {
     TypeOfToken tokens[MaxTokensInTerm];
-    uint8_t count;
+    unsigned count;
 } Term;
 
 static const Term HR_TERM = {{TokenUnderscore, TokenAsterisk}, 2};

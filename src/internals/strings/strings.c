@@ -1,6 +1,5 @@
 #include <internals/memext/memext.h>
 #include <internals/strings/strings.h>
-#include <stdio.h>
 #include <string.h>
 
 typedef struct

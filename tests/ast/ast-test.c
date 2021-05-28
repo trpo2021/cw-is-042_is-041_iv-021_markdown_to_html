@@ -1,4 +1,5 @@
 #include <ctest.h>
+#include <internals/collection/collection.h>
 #include <internals/parser/ast/ast.h>
 
 CTEST(ast, node_operations)

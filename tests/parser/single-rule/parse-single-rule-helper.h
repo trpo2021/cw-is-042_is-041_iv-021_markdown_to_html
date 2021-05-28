@@ -1,3 +1,4 @@
+#include <internals/collection/collection.h>
 #include <internals/memext/memext.h>
 #include <internals/parser/helpers/rule-performer.h>
 #include <internals/parser/lexer/tokenizer.h>

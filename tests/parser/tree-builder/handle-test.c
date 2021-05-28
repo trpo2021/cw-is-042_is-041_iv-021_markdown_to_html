@@ -1,4 +1,5 @@
 #include <ctest.h>
+#include <internals/collection/collection.h>
 #include <internals/parser/helpers/tbuilder.h>
 #include <internals/parser/main/parser.h>
 
