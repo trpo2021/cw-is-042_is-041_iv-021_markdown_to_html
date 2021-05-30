@@ -19,3 +19,17 @@ CTEST(renderer, render_empty)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_hr)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                " </section>\n"
+                " <hr/>\n"
+                " <section>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("______");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
