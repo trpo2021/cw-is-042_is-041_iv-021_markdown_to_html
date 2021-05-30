@@ -27,13 +27,14 @@ static inline void add_next_line(String* doc)
     sconcat(doc, "\n");
 }
 
-static inline String* replace_keywords(String* source)
+static inline void replace_keywords(String* html, String* source)
 {
     String* replaced = sreplace(source, "&lt;", "<");
     String* temp = replaced;
     replaced = sreplace(replaced, "&gt;", ">");
     sfree(temp);
-    return replaced;
+    sconcat(html, sraw(replaced));
+    sfree(replaced);
 }
 
 static inline void render_horizontal_line(Renderer* renderer, TNode* node)
@@ -59,9 +60,7 @@ static inline void render_text(Renderer* renderer, TNode* node)
 {
     if (scontains(node->content, "<") || scontains(node->content, ">"))
     {
-        String* replaced = replace_keywords(node->content);
-        sconcat(renderer->html, sraw(replaced));
-        sfree(replaced);
+        replace_keywords(renderer->html, node->content);
     }
     else
     {
@@ -133,7 +132,14 @@ static void render_codeblock(Renderer* renderer, TNode* node)
     for (size_t i = 0; i < length; ++i)
     {
         format_doc(renderer->html, node->children[0]);
-        sconcat(renderer->html, sraw(lines[i]));
+        if (scontains(lines[i], "<") || scontains(lines[i], ">"))
+        {
+            replace_keywords(renderer->html, lines[i]);
+        }
+        else
+        {
+            sconcat(renderer->html, sraw(lines[i]));
+        }
         add_next_line(renderer->html);
         sfree(lines[i]);
     }
@@ -146,7 +152,10 @@ static void render_codeblock(Renderer* renderer, TNode* node)
 static inline void render_src_link(Renderer* renderer, TNode* node)
 {
     String* head = scopy(node->head);
-    sinsert(head, " ", slength(head) - 1);
+    if (slength(node->children[0]->content) > 0)
+    {
+        sinsert(head, " ", slength(head) - 1);
+    }
     sinsert(head, sraw(node->children[0]->content), slength(head) - 1);
     sconcat(renderer->html, sraw(head));
     sfree(head);
@@ -172,9 +181,15 @@ static void render_img(Renderer* renderer, TNode* node)
 {
     String* head = scopy(node->head);
     String* link_src = sreplace(node->children[0]->children[0]->content, "src", "href");
-    sinsert(head, " ", slength(head) - 1);
+    if (slength(link_src) > 0)
+    {
+        sinsert(head, " ", slength(head) - 1);
+    }
     sinsert(head, sraw(link_src), slength(head) - 1);
-    sinsert(head, " alt=\"\"", slength(head) - 1);
+    if (slength(node->children[0]->children[1]->content) > 0)
+    {
+        sinsert(head, " alt=\"\"", slength(head) - 1);
+    }
     sinsert(head, sraw(node->children[0]->children[1]->content), slength(head) - 2);
     sconcat(renderer->html, sraw(head));
     sfree(head);
@@ -219,6 +234,7 @@ static void choose_strategy(Renderer* renderer, TNode* ast_node)
 
 String* render_html(const String* markdown)
 {
+    sconcat(markdown, "\n\n");
     Renderer renderer = {.html = sinit(scapacity(markdown)), .render_ast = choose_strategy};
     TNode* root = parse_document(markdown);
     renderer.render_ast(&renderer, root);
