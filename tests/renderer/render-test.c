@@ -306,3 +306,39 @@ CTEST(renderer, render_code_inline)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_bold)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><strong>test</strong></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("**test**\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_italic)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><em>test</em></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("*test*\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_bold_italic)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><strong><em>test</em></strong></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("***test***\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
