@@ -88,3 +88,67 @@ CTEST(renderer, render_paragraph_multiline_with_breakline)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_inline_header_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <h1>test</h1>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("# test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_inline_header_incorrect)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>#test</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("#test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_underline_header_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <h2>test</h2>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("test\n---");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_underline_header_incorrect)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>---</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("---\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_underline_header_after_paragraph)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>\n"
+                "   test\n"
+                "   test 2\n"
+                "   ---\n"
+                "  </p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("test\ntest 2\n---\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
