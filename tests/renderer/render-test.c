@@ -190,3 +190,73 @@ CTEST(renderer, render_blockquote_incorrect_more_than_allowed)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_ul)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <ul>\n"
+                "   <li>\n"
+                "    <p>test</p>\n"
+                "   </li>\n"
+                "  </ul>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("+ test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+    html = create_test_data("* test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+    html = create_test_data("- test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_ol)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <ol>\n"
+                "   <li>\n"
+                "    <p>test</p>\n"
+                "   </li>\n"
+                "  </ol>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("1. test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_combined_lists)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <ol>\n"
+                "   <li>\n"
+                "    <p>test</p>\n"
+                "   </li>\n"
+                "   <li>\n"
+                "    <p>test 2</p>\n"
+                "    <ul>\n"
+                "     <li>\n"
+                "      <p>test 3</p>\n"
+                "     </li>\n"
+                "    </ul>\n"
+                "   </li>\n"
+                "  </ol>\n"
+                "  <ul>\n"
+                "   <li>\n"
+                "    <p>test 4</p>\n"
+                "   </li>\n"
+                "  </ul>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("1. test\n"
+                                    "2. test 2\n"
+                                    "    * test 3\n"
+                                    "+ test 4\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
