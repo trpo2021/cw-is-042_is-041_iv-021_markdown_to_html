@@ -33,3 +33,58 @@ CTEST(renderer, render_hr)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_paragraph_single)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>test</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_paragraph_multiline)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>\n"
+                "   test\n"
+                "   test 2\n"
+                "  </p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("test\ntest 2\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_paragraph_single_with_breakline)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>test  <br></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("test  \n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_paragraph_multiline_with_breakline)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>\n"
+                "   test  \n"
+                "    <br>\n"
+                "   test 2\n"
+                "  </p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("test  \ntest 2\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
