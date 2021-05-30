@@ -27,6 +27,15 @@ static inline void add_next_line(String* doc)
     sconcat(doc, "\n");
 }
 
+static inline String* replace_keywords(String* source)
+{
+    String* replaced = sreplace(source, "&lt;", "<");
+    String* temp = replaced;
+    replaced = sreplace(replaced, "&gt;", ">");
+    sfree(temp);
+    return replaced;
+}
+
 static inline void render_horizontal_line(Renderer* renderer, TNode* node)
 {
     format_doc(renderer->html, node);
@@ -48,7 +57,16 @@ static inline void render_break_line(Renderer* renderer, TNode* node)
 
 static inline void render_text(Renderer* renderer, TNode* node)
 {
-    sconcat(renderer->html, sraw(node->content));
+    if (scontains(node->content, "<") || scontains(node->content, ">"))
+    {
+        String* replaced = replace_keywords(node->content);
+        sconcat(renderer->html, sraw(replaced));
+        sfree(replaced);
+    }
+    else
+    {
+        sconcat(renderer->html, sraw(node->content));
+    }
     for (size_t i = 0; i < get_array_length(node->children); ++i)
     {
         renderer->render_ast(renderer, node->children[i]);
