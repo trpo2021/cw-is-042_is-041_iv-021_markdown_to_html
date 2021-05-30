@@ -342,3 +342,99 @@ CTEST(renderer, render_bold_italic)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_autolink_email_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"mailto:azbuka@gmail.com\">azbuka@gmail.com</a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("<azbuka@gmail.com>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_autolink_email_incorrect)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>&lt;azbukagmail.com&gt;</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("<azbukagmail.com>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_autolink_local_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"/about/index.html\">/about/index.html</a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("</about/index.html>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_autolink_local_incorrect)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>&lt;about/index.html&gt;</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("<about/index.html>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_autolink_url_short_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"http://www.youtube.com\">www.youtube.com</a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("<www.youtube.com>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_autolink_url_short_incorrect)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>&lt;ww.youtube.com&gt;</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("<ww.youtube.com>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_autolink_url_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"https://www.youtube.com\">https://www.youtube.com</a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("<https://www.youtube.com>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_autolink_url_incorrect)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>&lt;https//www.youtube.com&gt;</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("<https//www.youtube.com>\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
