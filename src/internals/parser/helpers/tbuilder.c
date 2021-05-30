@@ -148,7 +148,7 @@ static void process_span_node(TBuilder* builder, TNode** node)
     add_tnode(anchor, *node);
 }
 
-static void process_br_node(TBuilder* builder, TNode** node)
+static void close_single_span(TBuilder* builder, TNode** node)
 {
     TNode* anchor = get_anchor(builder);
     TNode* last_child = get_tnode_last_child(anchor);
@@ -156,7 +156,6 @@ static void process_br_node(TBuilder* builder, TNode** node)
     {
         wrap_to_paragraph(&anchor, &last_child);
     }
-    free_tnode(*node);
 }
 
 static void switch_to_blockquote(TBuilder* builder, TNode** node)
@@ -244,12 +243,14 @@ void handle_default(TBuilder* builder, TNode** node)
     switch ((*node)->type)
     {
     case NodeHorizontalLine:
+        close_single_span(builder, node);
         close_section(builder, node);
         break;
     case NodeHeadingUnderline:
         process_hunderline_node(builder, node);
         break;
     case NodePre:
+        close_single_span(builder, node);
         connect_to_anchor(builder, node);
         add_anchor(builder, node);
         break;
@@ -257,14 +258,17 @@ void handle_default(TBuilder* builder, TNode** node)
         process_span_node(builder, node);
         break;
     case NodeBlockquote:
+        close_single_span(builder, node);
         switch_to_blockquote(builder, node);
         break;
     case NodeBreakLine:
-        process_br_node(builder, node);
+        close_single_span(builder, node);
+        free_tnode(*node);
         break;
     case NodeUOList:
     case NodeOList:
         (*node)->offset = 0;
+        close_single_span(builder, node);
         connect_to_anchor(builder, node);
         switch_to_list(builder, &(*node)->children[0]);
         break;
