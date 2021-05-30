@@ -438,3 +438,100 @@ CTEST(renderer, render_autolink_url_incorrect)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_link_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"https://www.youtube.com\">alt text</a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("[alt text](https://www.youtube.com)\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_link_empty_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a></a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("[]()\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_link_alt_with_empty_src)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a>alt text</a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("[alt text]()\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_link_alt_bold)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"https://www.youtube.com\"><strong>alt text</strong></a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("[**alt text**](https://www.youtube.com)\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_link_alt_italic)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"https://www.youtube.com\"><em>alt text</em></a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("[*alt text*](https://www.youtube.com)\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_link_alt_bold_italic)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"https://www.youtube.com\"><strong><em>alt text</em></strong></a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("[***alt text***](https://www.youtube.com)\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_link_alt_code)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><a href=\"https://www.youtube.com\"><code>alt text</code></a></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("[`alt text`](https://www.youtube.com)\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_link_alt_another_link)
+{
+    char* raw =
+        "<body>\n"
+        " <section>\n"
+        "  <p><a href=\"https://www.youtube.com\"><a href=\"mailto:example@gmail.com\">example@gmail.com</a></a></p>\n"
+        " </section>\n"
+        "</body>\n";
+    String* html = create_test_data("[<example@gmail.com>](https://www.youtube.com)\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
