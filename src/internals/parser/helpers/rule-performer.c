@@ -1,5 +1,6 @@
 #include <internals/collection/collection.h>
 #include <internals/parser/helpers/rule-performer.h>
+#include <internals/utils/validation.h>
 #include <inttypes.h>
 #include <stdarg.h>
 
@@ -78,6 +79,41 @@ static inline size_t get_sequence_length(RulePerformer* perf, Term term, bool ig
     }
     --perf->cp;
     return t_count;
+}
+
+static bool parse_link_borders(RulePerformer* perf, size_t lim, size_t* first_border, size_t* last_border)
+{
+    size_t backup = perf->cp;
+    *first_border = find_end_pos(perf, lim, LINK_END_FIRST_TERM, 1);
+    if (*first_border > perf->cp)
+    {
+        if (perf->tokens[(*first_border) + 1].type == TokenOPBracket)
+        {
+            perf->cp = (*first_border) + 1;
+            *last_border = find_end_pos(perf, lim, LINK_END_LAST_TERM, 1);
+            if (*last_border > perf->cp)
+            {
+                perf->cp = backup + 1;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+static TNode* parse_link_alt(RulePerformer* perf, size_t lim)
+{
+    TNode* alt = init_tnode(NodeAlt, screate("<alt>"), NULL, false);
+    while (perf->cp < lim)
+    {
+        add_tnode(alt, perf->invoke(perf, lim));
+    }
+    return alt;
+}
+
+static bool is_invalid_src(TNode* src)
+{
+    return slength(src->content) > 0 && !validate_email(src->content) && !validate_url(src->content);
 }
 
 /******************************
@@ -249,8 +285,14 @@ static TNode* parse_autolink(RulePerformer* perf, size_t lim, ...)
     {
         TNode* parrent = init_tnode(NodeLink, screate("<a>"), NULL, true);
         TNode* src = init_tnode(NodeSrc, screate("<src>"), screate(""), false);
-        parse_sequence_as_text(perf, src->content, end_pos);
         add_tnode(parrent, src);
+        parse_sequence_as_text(perf, src->content, end_pos);
+        parrent->content = scopy(src->content);
+        if (!validate_email(src->content) && !validate_url(src->content))
+        {
+            free_tnode(parrent);
+            return ParseFailCode;
+        }
         perf->cp = end_pos + 1;
         return parrent;
     }
@@ -259,47 +301,48 @@ static TNode* parse_autolink(RulePerformer* perf, size_t lim, ...)
 
 static TNode* parse_link(RulePerformer* perf, size_t lim, ...)
 {
-    size_t backup = perf->cp;
-    size_t end_sq_pos = find_end_pos(perf, lim, LINK_END_FIRST_TERM, 1);
-    if (end_sq_pos > perf->cp)
+    size_t end_sq_pos = 0, end_df_pos = 0;
+    if (parse_link_borders(perf, lim, &end_sq_pos, &end_df_pos))
     {
-        if (perf->tokens[end_sq_pos + 1].type == TokenOPBracket)
+        TNode* parrent = init_tnode(NodeLink, screate("<a>"), NULL, true);
+        TNode* alt = parse_link_alt(perf, end_sq_pos);
+        perf->cp = end_sq_pos + 2;
+        TNode* src = init_tnode(NodeSrc, screate("<src>"), screate(""), false);
+        add_tnode(parrent, src);
+        add_tnode(parrent, alt);
+        parse_sequence_as_text(perf, src->content, end_df_pos);
+        if (is_invalid_src(src))
         {
-            perf->cp = end_sq_pos + 1;
-            size_t end_df_pos = find_end_pos(perf, lim, LINK_END_LAST_TERM, 1);
-            if (end_df_pos > perf->cp)
-            {
-                TNode* parrent = init_tnode(NodeLink, screate("<a>"), NULL, true);
-                TNode* alt = init_tnode(NodeAlt, screate("<alt>"), NULL, false);
-                TNode* src = init_tnode(NodeSrc, screate("<src>"), screate(""), false);
-                add_tnode(parrent, src);
-                add_tnode(parrent, alt);
-                perf->cp = backup + 1;
-                while (perf->cp < end_sq_pos)
-                {
-                    add_tnode(alt, perf->invoke(perf, end_sq_pos));
-                }
-                perf->cp = end_sq_pos + 2;
-                parse_sequence_as_text(perf, src->content, end_df_pos);
-                perf->cp = end_df_pos + 1;
-                return parrent;
-            }
+            free_tnode(parrent);
+            return ParseFailCode;
         }
+        perf->cp = end_df_pos + 1;
+        return parrent;
     }
     return ParseFailCode;
 }
 
 static TNode* parse_image(RulePerformer* perf, size_t lim, ...)
 {
-    if (perf->tokens[++perf->cp].type == TokenOPSquareBracket)
+    ++perf->cp;
+    size_t end_sq_pos = 0, end_df_pos = 0;
+    if (parse_link_borders(perf, lim, &end_sq_pos, &end_df_pos))
     {
-        TNode* link = parse_link(perf, lim);
-        if (link)
+        TNode* img = init_tnode(NodeImage, screate("<img>"), NULL, true);
+        TNode* link = init_tnode(NodeLink, screate("<a>"), NULL, true);
+        add_tnode(img, link);
+        add_tnode(link, init_tnode(NodeSrc, screate("<src>"), screate(""), false));
+        add_tnode(link, init_tnode(NodeAlt, screate("<alt>"), screate(""), false));
+        parse_sequence_as_text(perf, link->children[1]->content, end_sq_pos);
+        perf->cp = end_sq_pos + 2;
+        parse_sequence_as_text(perf, link->children[0]->content, end_df_pos);
+        if (is_invalid_src(link->children[0]))
         {
-            TNode* img = init_tnode(NodeImage, screate("<img>"), NULL, false);
-            add_tnode(img, link);
-            return img;
+            free_tnode(img);
+            return ParseFailCode;
         }
+        perf->cp = end_df_pos + 1;
+        return img;
     }
     return ParseFailCode;
 }

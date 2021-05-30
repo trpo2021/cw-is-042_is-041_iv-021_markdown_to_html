@@ -5,7 +5,6 @@
 CTEST(parse_link_rule, correct)
 {
     const char* link_alt = "alt text";
-    const char* link_src = "https://abc.com/";
 
     String* str = screate("[alt text](https://abc.com/)");
 
@@ -18,7 +17,7 @@ CTEST(parse_link_rule, correct)
 
     ASSERT_EQUAL(NodeLink, real->type);
     ASSERT_STR("<a>", sraw(real->head));
-    ASSERT_STR(link_src, sraw(real->children[0]->content));
+    ASSERT_STR("href=\"https://abc.com/\"", sraw(real->children[0]->content));
     const char* alt_text = sraw(real->children[1]->children[0]->content);
     ASSERT_STR(link_alt, alt_text);
 
