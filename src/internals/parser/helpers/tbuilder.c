@@ -5,8 +5,8 @@
 
 typedef enum
 {
-    InitialStackCapacity = 10
-} TBuilderConstants;
+    InitialValueStackCapacity = 10
+} StackInitialValue;
 
 typedef struct _pstate_stack
 {
@@ -280,7 +280,6 @@ void handle_default(TBuilder* builder, TNode** node)
 
 void handle_codeblock(TBuilder* builder, TNode** node)
 {
-    // TODO: prefetch
     if ((*node)->type == NodePre)
     {
         remove_anchor(builder);
@@ -418,7 +417,7 @@ static void build_tree(TBuilder* builder, TNode** node)
 
 void init_builder(TBuilder* builder, TNode** st_anchor)
 {
-    builder->states = create_stack(InitialStackCapacity);
+    builder->states = create_stack(InitialValueStackCapacity);
     builder->build_tree = build_tree;
     add_anchor(builder, st_anchor);
 }

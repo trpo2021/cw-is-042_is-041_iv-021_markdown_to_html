@@ -4,7 +4,7 @@
 
 typedef enum
 {
-    ExceptionCount = 7,
+    ExceptionCount = 6,
     ExceptionInfoCount = 2
 
 } ExceptionsConstants;

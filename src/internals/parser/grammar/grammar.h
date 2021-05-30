@@ -4,8 +4,8 @@
 
 typedef enum
 {
-    MaxTokensInTerm = 5,
-} GrammarConstants;
+    InitialValueTermCapacity = 5,
+} GrammarInitialValue;
 
 typedef enum
 {
@@ -28,18 +28,18 @@ typedef enum
 
 typedef enum
 {
-    HorizontalLineLowerLimit = 3,
-    HeaderUnderlineLowerLimit = 2,
-    CodeBlockLowerLimit = 3,
-    BlockquoteUpperLimit = 15,
-    HeaderInlineLowerLimit = 1,
-    HeaderInlineUpperLimit = 6,
-    WhitespaceForBreakLineLowerLimit = 2,
-} RuleLimits;
+    LimitLowerHorizontalLine = 3,
+    LimitLowerHeaderUnderline = 2,
+    LimitLowerCodeBlock = 3,
+    LimitUpperBlockquote = 15,
+    LimitLowerHeaderInline = 1,
+    LimitUpperHeaderInline = 6,
+    LimitLowerWhitespaceForBreakLine = 2,
+} RuleLimit;
 
 typedef struct
 {
-    TypeOfToken tokens[MaxTokensInTerm];
+    TypeOfToken tokens[InitialValueTermCapacity];
     unsigned count;
 } Term;
 

@@ -6,8 +6,8 @@
 
 typedef enum
 {
-    OffsetMultiplier = 2
-} ParserConstants;
+    OffsetForWhitespace = 2
+} LineOffset;
 
 /******************************
  *                            *
@@ -127,7 +127,7 @@ TNode* parse_document(const String* raw)
         TNode* node = parse_line(&performer, tokens, st);
 
         builder.raw_text = line;
-        node->offset = st >> OffsetMultiplier;
+        node->offset = st >> OffsetForWhitespace;
         builder.build_tree(&builder, &node);
 
         for (size_t j = 0; j < get_array_length(tokens); ++j)

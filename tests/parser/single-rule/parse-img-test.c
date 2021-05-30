@@ -3,7 +3,7 @@
 
 CTEST(parse_img_rule, default_usage)
 {
-    String* str = screate("![*lolol not italic*](/assert/image.jpg)");
+    String* str = screate("![*lolol not italic*](/assets/image.jpg)");
 
     Array(Token) arr = tokenize(str);
 
@@ -25,7 +25,7 @@ CTEST(parse_img_rule, default_usage)
     ASSERT_STR("<alt>", sraw(link->children[1]->head));
 
     ASSERT_STR("*lolol not italic*", sraw(link->children[1]->content));
-    ASSERT_STR("href=\"/assert/image.jpg\"", sraw(link->children[0]->content));
+    ASSERT_STR("href=\"/assets/image.jpg\"", sraw(link->children[0]->content));
 
     sfree(str);
     free_test_data(arr);
