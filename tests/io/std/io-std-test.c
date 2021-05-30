@@ -30,7 +30,7 @@ CTEST(io_std, read_more_than_limit)
     fclose(fp);
 
     fp = freopen("stdin-test.txt", "r", stdin);
-    read_stdin();
+    ASSERT_NULL(read_stdin());
     fclose(fp);
     remove("stdin-test.txt");
 }
