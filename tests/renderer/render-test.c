@@ -260,3 +260,49 @@ CTEST(renderer, render_combined_lists)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_codeblock)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <pre>\n"
+                "   <code>\n"
+                "    &lt;test with replace&gt;\n"
+                "   </code>\n"
+                "  </pre>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("```\n"
+                                    "<test with replace>\n"
+                                    "```\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_codeblock_empty)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <pre>\n"
+                "   <code>\n"
+                "   </code>\n"
+                "  </pre>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("```\n"
+                                    "```\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_code_inline)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><code>&lt;test&gt;</code></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("`<test>`\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
