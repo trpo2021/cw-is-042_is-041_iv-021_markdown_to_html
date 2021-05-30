@@ -535,3 +535,27 @@ CTEST(renderer, render_link_alt_another_link)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_image)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><img src=\"/assets/player.png\" alt=\"<im@not.linkbtw>\"></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("![<im@not.linkbtw>](/assets/player.png)\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_image_empty)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p><img></p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("![]()\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
