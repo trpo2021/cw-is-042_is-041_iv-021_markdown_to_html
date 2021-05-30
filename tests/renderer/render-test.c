@@ -152,3 +152,41 @@ CTEST(renderer, render_underline_header_after_paragraph)
     ASSERT_STR(raw, sraw(html));
     sfree(html);
 }
+
+CTEST(renderer, render_blockquote_correct)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <blockquote>\n"
+                "   <p>test</p>\n"
+                "  </blockquote>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("> test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_blockquote_incorrect_with_replace)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>&gt;test</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data("\\>test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
+
+CTEST(renderer, render_blockquote_incorrect_more_than_allowed)
+{
+    char* raw = "<body>\n"
+                " <section>\n"
+                "  <p>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;test</p>\n"
+                " </section>\n"
+                "</body>\n";
+    String* html = create_test_data(">>>>>>>>>>>>>>>>test\n");
+    ASSERT_STR(raw, sraw(html));
+    sfree(html);
+}
