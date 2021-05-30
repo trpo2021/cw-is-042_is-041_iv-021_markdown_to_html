@@ -2,7 +2,7 @@
 
 typedef enum
 {
-    ExceptionFileNotFound = 1,
+    ExceptionFileNotFound,
     ExceptionNullPointer,
     ExceptionIndexOutOfRange,
     ExceptionOutOfMemory,

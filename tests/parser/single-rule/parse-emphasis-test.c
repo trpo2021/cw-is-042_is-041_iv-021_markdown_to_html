@@ -92,7 +92,3 @@ CTEST(parse_emphasis_rule, with_random_count)
 
     free_tnode(real);
 }
-
-CTEST(parse_emphasis_rule, quantity_doesnt_match)
-{
-}

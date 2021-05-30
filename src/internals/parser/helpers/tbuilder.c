@@ -280,7 +280,6 @@ void handle_default(TBuilder* builder, TNode** node)
 
 void handle_codeblock(TBuilder* builder, TNode** node)
 {
-    // TODO: prefetch
     if ((*node)->type == NodePre)
     {
         remove_anchor(builder);
