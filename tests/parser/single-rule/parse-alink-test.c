@@ -28,7 +28,7 @@ CTEST(parse_alink_rule, default_usage)
 
     ASSERT_EQUAL(NodeLink, real->type);
     ASSERT_STR("<a>", sraw(real->head));
-    ASSERT_STR(link_src, sraw(real->children[0]->content));
+    ASSERT_STR("href=\"https://abc.com/\"", sraw(real->children[0]->content));
 
     free_tnode(real);
 }
