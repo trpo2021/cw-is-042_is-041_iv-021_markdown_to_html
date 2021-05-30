@@ -85,7 +85,7 @@ bool scompare(const String* str, const char* item)
     return false;
 }
 
-String* sreplace(const String* str, const char* old, const char* new)
+String* sreplace(const String* str, const char* new, const char* old)
 {
     if (!str || !old || !new)
     {

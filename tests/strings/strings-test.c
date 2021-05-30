@@ -275,7 +275,7 @@ CTEST(strings, compare_empty_false)
 CTEST(strings, replace)
 {
     String* s = screate("test test  test  spaces!");
-    String* replaced = sreplace(s, " ", "");
+    String* replaced = sreplace(s, "", " ");
     sfree(s);
     ASSERT_STR("testtesttestspaces!", sraw(replaced));
     sfree(replaced);
@@ -310,7 +310,7 @@ CTEST(strings, replace_empty_source)
 CTEST(strings, replace_empty_new)
 {
     String* s = screate("test test  test  spaces!");
-    String* replaced = sreplace(s, "test", "");
+    String* replaced = sreplace(s, "", "test");
     ASSERT_STR("     spaces!", sraw(replaced));
     sfree(s);
     sfree(replaced);
@@ -328,7 +328,7 @@ CTEST(strings, empty_string_replace)
 CTEST(strings, replace_large_substr_len)
 {
     String* s = screate("test");
-    String* replaced = sreplace(s, "t", "wwww");
+    String* replaced = sreplace(s, "wwww", "t");
     ASSERT_STR("wwwweswwww", sraw(replaced));
     sfree(s);
     sfree(replaced);
@@ -337,7 +337,7 @@ CTEST(strings, replace_large_substr_len)
 CTEST(strings, replace_tabs_with_spaces)
 {
     String* s = screate("\t\ttest ");
-    String* replaced = sreplace(s, "\t", "    ");
+    String* replaced = sreplace(s, "    ", "\t");
     ASSERT_STR("        test ", sraw(replaced));
     sfree(s);
     sfree(replaced);
