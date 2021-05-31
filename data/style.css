@@ -1,0 +1,29 @@
+html {
+	font-family: 'SmallCaps', sans-serif;
+}
+h1 {
+	font-size: 2em;
+	font-weight: bold;
+}
+code, kbd, pre, samp {
+	font-family: monospace, monospace;
+}
+code, kbd {
+	font-size: 1em;
+}
+code, kbd {
+	padding: 2px 4px;
+}
+code {
+	color: #c7254e;
+	background-color: #f9f2f4;
+	border-radius: 4px;
+}
+pre {
+	background-color: #f9f2f4;
+}
+blockquote {
+	border-left: solid 5px slategrey;
+	padding-left: 5px;
+	background-color: #dadada;
+}

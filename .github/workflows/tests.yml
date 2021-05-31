@@ -1,0 +1,16 @@
+name: ATests
+
+on: 
+  push:
+  schedule:
+    - cron: '*/20 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Tests
+        run: make DEBUG=1 test && time seq 100 | xargs -I{} -n 1 -P 1 ./converter-test

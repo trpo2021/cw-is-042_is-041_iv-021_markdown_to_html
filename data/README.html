@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+ <section>
+  <h1>Markdown to HTML converter</h1>
+  <h2>Примечание.</h2>
+  <p>
+   Данный документ может быть использован для демонстрации работоспособности. Описание примерной работы программы приведено в wiki.
+   Поддержка редко используемых правил вроде отделения <code>&lt;pre&gt;&lt;code&gt;</code> табуляцией - не реализована.
+  </p>
+  <h2>Реализована поддержка следующих правил Markdown:</h2>
+  <ul>
+   <li>
+    <p><code>&lt;hr&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;br&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;h1&gt; - &lt;h6&gt; (inline)</code></p>
+   </li>
+   <li>
+    <p><code>&lt;h1&gt; - &lt;h2&gt; (underline)</code></p>
+   </li>
+   <li>
+    <p><code>&lt;pre&gt;&lt;code&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;ul&gt;&lt;li&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;ol&gt;&lt;li&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;blockqoute&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;strong&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;em&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;code&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;img&gt;</code></p>
+   </li>
+   <li>
+    <p><code>&lt;a&gt; (auto/default)</code></p>
+   </li>
+   <li>
+    <p><code>&lt;p&gt;</code></p>
+   </li>
+  </ul>
+  <h1>Horizontal rule (<code>&lt;hr&gt;</code>)</h1>
+  <p>
+   Горизонтальная черта.  
+    <br>
+   Использование: на новой строке.  
+    <br>
+   Синтаксис: <code>_</code>|<code>*</code> в количестве &gt; 2. Допускается использование пробелов или табуляций.
+  </p>
+  <p>Пример:</p>
+ </section>
+ <hr/>
+ <section>
+  <h1>Break line rule (<code>&lt;br&gt;</code>)</h1>
+  <p>
+   Сбросить строку.  
+    <br>
+   Необходимо поставить 2 или больше пробелов перед переходом на новую строку.
+  </p>
+  <p>
+   Пример:  
+    <br>
+   Lorem ipsum dolor sit amet,  
+    <br>
+   consectetur adipiscing elit
+  </p>
+  <h1>Heading rule (<code>&lt;h1&gt;</code> - <code>&lt;h6&gt;</code>)</h1>
+  <p>
+   Заголовок.  
+    <br>
+   Возможно применение в двух случаях.  
+    <br>
+  </p>
+  <ol>
+   <li>
+    <p>
+     Использован символ <code>#</code> от 1 до 6 раз подряд и после них что-то есть. Этот подход можно применять в списках, цитатах и т.д.  
+     Для одной строки доступно только одно применение.
+    </p>
+   </li>
+   <li>
+    <p>Поставить на новой строке 2 или больше <code>=</code> для <code>&lt;h1&gt;</code> и <code>-</code> для <code>&lt;h2&gt;</code> соотвественно. Не работает для параграфа.</p>
+   </li>
+  </ol>
+Пример inline:  
+   <br>  <h1>I'm inline header level 1</h1>
+  <h2>I'm inline header level 2</h2>
+  <h3>I'm inline header level 3</h3>
+  <h4>I'm inline header level 4</h4>
+  <h5>I'm inline header level 5</h5>
+  <h6>I'm inline header level 6</h6>
+  <p>####### I'm not header</p>
+  <p>Пример underline:  <br></p>
+  <h1>I'm underline header level 1</h1>
+  <h2>I'm underline header level 2</h2>
+  <h1>Code block rule (<code>&lt;pre&gt;&lt;code&gt;</code>)</h1>
+  <p>
+   Блок кода.  
+    <br>
+   Использование: на новой строке.  
+    <br>
+   Синтаксис: ` в количестве &gt; 3. Для закрытия использование аналогично.
+  </p>
+  <p>Пример:</p>
+  <pre>
+   <code>
+    #include &lt;stdio.h&gt;
+    int main(void) {
+        char *s = "abc";
+        printf("%s\n", s);
+        return 0;
+    }
+   </code>
+  </pre>
+  <h1>Unordered list (<code>&lt;ul&gt;&lt;li&gt;</code>)</h1>
+  <p>
+   Ненумерованный список.  
+    <br>
+   Использование: в начале строки. 4 пробела или 1 табуляция может выделять следующий уровень.  
+    <br>
+   Синтаксис: <code>*</code>|<code>+</code>|<code>-</code> перед текстом. В список также могут входить цитаты или заголовки.
+  </p>
+  <p>Пример:</p>
+  <ul>
+   <li>
+    <p>list item level 0</p>
+    <ul>
+     <li>
+      <p>list item level 1</p>
+      <ul>
+       <li>
+        <p>list item level 2</p>
+       </li>
+      </ul>
+     </li>
+     <li>
+      <p>list item level 1</p>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>list item level 0</p>
+   </li>
+   <li>
+    <p><h1>header in list</h1></p>
+    <ul>
+     <li>
+      <blockquote>
+       <p>blockquote in list</p>
+      </blockquote>
+      <ul>
+       <li>
+        <blockquote>
+         <p><h1>blockquote and header in list</h1></p>
+        </blockquote>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ul>
+  <h1>Ordered list (<code>&lt;ol&gt;&lt;li&gt;</code>)</h1>
+  <p>
+   Нумерованный список.  
+    <br>
+   Использование: в начале строки. 4 пробела или 1 табуляция может выделять следующий уровень.  
+    <br>
+   Синтаксис: <code>число.</code> перед текстом. В список также могут входить цитаты или заголовки.
+  </p>
+  <p>Пример:</p>
+  <ol>
+   <li>
+    <p>list item level 0</p>
+    <ol>
+     <li>
+      <p>list item level 1</p>
+      <ol>
+       <li>
+        <p>list item level 2</p>
+       </li>
+      </ol>
+     </li>
+     <li>
+      <p>list item level 1</p>
+     </li>
+    </ol>
+   </li>
+   <li>
+    <p>list item level 0</p>
+   </li>
+  </ol>
+  <h1>Blockqoute (<code>&lt;blockqoute&gt;</code>)</h1>
+  <p>
+   Цитата.  
+    <br>
+   Использование: в начале строки, либо в списке. Цитаты могут быть вложенными.  
+    <br>
+   Синтаксис: <code>&gt; </code>. В цитате может быть заголовок. Поддержка списков не реализована.
+  </p>
+  <p>Пример:</p>
+  <blockquote>
+   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+   <blockquote>
+    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+   </blockquote>
+   <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </blockquote>
+  <h1>Bold (<code>&lt;strong&gt;</code>)</h1>
+  <p>
+   Жирный текст.  
+    <br>
+   Использование: в любом месте документа.  
+    <br>
+   Синтаксис: символами <code>*</code>|<code>_</code> с обеих сторон в любом порядке или сочетании в количестве 2. Может включать в себя другие теги.
+  </p>
+  <p>
+   Пример:  
+    <br>
+   I'm <strong>bold</strong> text!
+  </p>
+  <h1>Italic (<code>&lt;em&gt;</code>)</h1>
+  <p>
+   Курсивный текст.  
+    <br>
+   Использование: в любом месте документа.  
+    <br>
+   Синтаксис: символами <code>*</code>|<code>_</code> с обеих сторон в любом порядке или сочетании в количестве 1. Может включать в себя другие теги.
+  </p>
+  <p>
+   Пример:  
+    <br>
+   I'm <em>italic</em> text!
+  </p>
+  <p>
+   Пример комбинации:  
+    <br>
+   <strong>bold</strong> и <em>italic</em> -&gt; <strong><em>bold italic</em></strong>
+  </p>
+  <h1>Code (<code>&lt;code&gt;</code>)</h1>
+  <p>
+   Строка кода.  
+    <br>
+   Использование: в любом месте документа.  
+    <br>
+   Синтаксис: символ ` с обеих сторон в количестве 1. Чтобы в код поместить N-ое количество символов ` достаточно обрамлять N+1.
+  </p>
+  <p>
+   Пример: 
+   <code>some ` code</code> обрамляется 2-мя `.
+  </p>
+  <h1>Image (<code>&lt;img&gt;</code>)</h1>
+  <p>
+   Картинка.  
+    <br>
+   Использование: в любом месте документа.  
+    <br>
+   Синтаксис: <code>![...](...)</code>. В квадратных скобках альтернативный текст, в круглых ссылка на картинку/путь к ней.
+  </p>
+  <p>
+   Пример:   
+    <br>
+   <img src="http://nikulux.ru/wp-content/uploads/2017/09/git_logo.png" alt="alt text">
+  </p>
+  <h1>Link (<code>&lt;a&gt;</code>)</h1>
+  <p>
+   Ссылка.  
+    <br>
+   Использование: в любом месте документа.  
+    <br>
+   Синтаксис: <code>[...](...)</code>. В квадратных скобках альтернативный текст, в круглых ссылка.  
+     <br>
+   Title не реализован. Форматирование не реализовано.
+  </p>
+  <p>
+   Пример:  
+    <br>
+   <a href="https://github.com/trpo2021/cw-is-042_is-041_iv-021_markdown_to_html">our repo</a>   
+     <br>
+   <a href="/about/index.html">local path</a>
+  </p>
+  <h1>Autolink (<code>&lt;a&gt;</code>)</h1>
+  <p>
+   Ссылка.  
+    <br>
+   Использование: в любом месте документа.  
+    <br>
+   Синтаксис: <code>&lt;...&gt;</code>. В скобках ссылка. Валидация email/url предусмотрена, но требует доработки.
+  </p>
+  <p>Пример:</p>
+  <p><a href="mailto:example@gmail.com">example@gmail.com</a> - email</p>
+  <p><a href="http://www.youtube.com">www.youtube.com</a> - валидная ссылка</p>
+  <p>&lt;qwerty&gt; - уже не ссылка</p>
+  <h1>Paragraphs (<code>&lt;p&gt;</code>)</h1>
+  <p>
+   Параграф текста.  
+    <br>
+   Используется неявно. Групирует текст.  
+    <br>
+   Может быть сброшен некоторыми правилами: <code>&lt;hr&gt;</code>|<code>&lt;br&gt;</code> на новой строке.
+  </p>
+  <p>
+   Пример:  
+    <br>
+   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  </p>
+  <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"</p>
+ </section>
+</body>
+</html>
