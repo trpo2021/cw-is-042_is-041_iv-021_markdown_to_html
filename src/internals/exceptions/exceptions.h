@@ -3,7 +3,7 @@
 typedef enum
 {
     ExceptionFileNotFound,
-    ExceptionNullPointer,
+    ExceptionParsingFailed,
     ExceptionIndexOutOfRange,
     ExceptionOutOfMemory,
     ExceptionStdinCharacterLimit,

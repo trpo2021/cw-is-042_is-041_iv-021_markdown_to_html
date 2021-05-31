@@ -4,18 +4,17 @@
 const char* create_template_top()
 {
     static char HTML_TEMPLATE_TOP[] = "<!doctype html>\n"
+                                      "<html>\n"
                                       "<head>\n"
-                                      "\t<meta charset=\"utf-8\"/>\n"
-                                      "\t<link rel=\"stylesheet\" href\"template.css\">\n"
-                                      "</head>\n"
-                                      "<body>\n";
+                                      "<meta charset=\"utf-8\"/>\n"
+                                      "<link rel=\"stylesheet\" href=\"template.css\">\n"
+                                      "</head>\n";
     return HTML_TEMPLATE_TOP;
 }
 
 const char* create_template_bot()
 {
-    static char HTML_TEMPLATE_BOTTOM[] = "</body>\n"
-                                         "</html>\n";
+    static char HTML_TEMPLATE_BOTTOM[] = "</html>\n";
     return HTML_TEMPLATE_BOTTOM;
 }
 

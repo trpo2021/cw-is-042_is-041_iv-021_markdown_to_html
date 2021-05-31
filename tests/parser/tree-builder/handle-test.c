@@ -215,7 +215,7 @@ CTEST(tbuilder, concat_lists_with_same_ctx)
         ASSERT_EQUAL(NodeParagraph, li->children[0]->type);
         TNode* p = li->children[0];
         ASSERT_EQUAL(NodeSpan, p->children[0]->type);
-        ASSERT_STR(items[i], sraw(p->children[0]->content));
+        ASSERT_STR(items[i], sraw(p->children[0]->children[0]->content));
     }
 
     free_tnode(root);
@@ -245,11 +245,13 @@ CTEST(tbuilder, check_codeblock)
     TNode* h3 = root->children[0]->children[1];
     ASSERT_EQUAL(NodeHeadingInline, h3->type);
     ASSERT_EQUAL(NodeSpan, h3->children[0]->type);
-    ASSERT_STR(after_content, sraw(h3->children[0]->content));
+    ASSERT_STR(after_content, sraw(h3->children[0]->children[0]->content));
 
     free_tnode(root);
     sfree(s);
 }
+
+#include <internals/parser/ast/visualizator.h>
 
 CTEST(tbuilder, check_bq_leveling)
 {
@@ -257,7 +259,7 @@ CTEST(tbuilder, check_bq_leveling)
                         ">> bq lvl 1\n"
                         "> > bq lvl 1\n"
                         ">>> bq lvl 3\n"
-                        "> bq lvl 1\n"
+                        "> bq lvl 0\n"
                         "another text to bq");
     TNode* root = parse_document(s);
     TNode* bq = root->children[0]->children[0];
@@ -266,25 +268,8 @@ CTEST(tbuilder, check_bq_leveling)
     ASSERT_EQUAL(NodeParagraph, bq->children[0]->type);
     ASSERT_EQUAL(NodeBlockquote, bq->children[1]->type);
     ASSERT_EQUAL(NodeParagraph, bq->children[2]->type);
-
-    TNode* tmp = bq->children[0];
-    ASSERT_EQUAL(NodeSpan, tmp->children[0]->type);
-    ASSERT_STR("bq lvl 0", sraw(tmp->children[0]->content));
-
-    tmp = bq->children[1];
-    for (size_t i = 0; i < get_array_length(tmp->children) - 1; ++i)
-    {
-        ASSERT_EQUAL(NodeParagraph, tmp->children[i]->type);
-        ASSERT_EQUAL(NodeSpan, tmp->children[i]->children[0]->type);
-        ASSERT_STR("bq lvl 1", sraw(tmp->children[i]->children[0]->content));
-    }
-    ASSERT_EQUAL(NodeBlockquote, tmp->children[get_array_length(tmp->children) - 1]->type);
-    ASSERT_EQUAL(NodeParagraph, tmp->children[get_array_length(tmp->children) - 1]->children[0]->type);
-
-    tmp = bq->children[2];
-    ASSERT_STR("bq lvl 1", sraw(tmp->children[0]->content));
-    ASSERT_STR("another text to bq", sraw(tmp->children[1]->content));
-
+    ASSERT_STR("bq lvl 0", sraw(bq->children[2]->children[0]->content));
+    ASSERT_STR("another text to bq", sraw(bq->children[2]->children[1]->content));
     free_tnode(root);
     sfree(s);
 }

@@ -122,6 +122,24 @@ static void render_wrapper(Renderer* renderer, TNode* node)
     add_next_line(renderer->html);
 }
 
+static void render_header(Renderer* renderer, TNode* node)
+{
+    if (node->parrent->type != NodeSpan)
+    {
+        format_doc(renderer->html, node);
+    }
+    sconcat(renderer->html, sraw(node->head));
+    for (size_t i = 0; i < get_array_length(node->children); ++i)
+    {
+        renderer->render_ast(renderer, node->children[i]);
+    }
+    close_tag(renderer->html, node->head);
+    if (node->parrent->type != NodeSpan)
+    {
+        add_next_line(renderer->html);
+    }
+}
+
 static void render_codeblock(Renderer* renderer, TNode* node)
 {
     format_doc(renderer->html, node);
@@ -201,6 +219,8 @@ static void choose_strategy(Renderer* renderer, TNode* ast_node)
     switch (ast_node->type)
     {
     case NodeHeadingInline:
+        render_header(renderer, ast_node);
+        break;
     case NodeParagraph:
         render_wrapper(renderer, ast_node);
         break;
@@ -234,10 +254,12 @@ static void choose_strategy(Renderer* renderer, TNode* ast_node)
 
 String* render_html(const String* markdown)
 {
-    sconcat(markdown, "\n\n");
-    Renderer renderer = {.html = sinit(scapacity(markdown)), .render_ast = choose_strategy};
-    TNode* root = parse_document(markdown);
+    String* replaced = sreplace(markdown, "    ", "\t");
+    sconcat(replaced, "\n\n");
+    Renderer renderer = {.html = sinit(scapacity(replaced)), .render_ast = choose_strategy};
+    TNode* root = parse_document(replaced);
     renderer.render_ast(&renderer, root);
     free_tnode(root);
+    sfree(replaced);
     return renderer.html;
 }
