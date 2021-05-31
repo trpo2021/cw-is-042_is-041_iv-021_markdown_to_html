@@ -13,7 +13,7 @@ jobs:
         run: git ls-files *.{c,h} | xargs clang-format -i && git diff --exit-code
 
       - name: Tests
-        run: make test && time seq 100 | xargs -I{} -n 1 -P 1 ./converter-test
+        run: make DEBUG=1 test && time seq 100 | xargs -I{} -n 1 -P 1 ./converter-test
 
       - name: Build application
-        run: make
+        run: make DEBUG=1

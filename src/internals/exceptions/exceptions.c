@@ -11,9 +11,9 @@ typedef enum
 
 static const char* EXCEPTION_INFO[ExceptionCount][ExceptionInfoCount] = {
     [ExceptionFileNotFound] = {"FileNotFound", "Could not open file -"},
-    [ExceptionNullPointer] = {"NullPointer", "Pointer was NULL -"},
-    [ExceptionIndexOutOfRange] = {"IndexOutOfRange", "Index was out of range -"},
-    [ExceptionOutOfMemory] = {"OutOfMemory", "Could not allocate enough memory -"},
+    [ExceptionParsingFailed] = {"ParsingFailed", "Can't convert this document."},
+    [ExceptionIndexOutOfRange] = {"IndexOutOfRange", "Index was out of range in -"},
+    [ExceptionOutOfMemory] = {"OutOfMemory", "Could not allocate enough memory via -"},
     [ExceptionStdinCharacterLimit] = {"StdinCharacterLimit", "You have reached stdin character limit."},
     [ExceptionUnknownArg] = {"UnknownArgument", "You entered an unknown argument."}};
 

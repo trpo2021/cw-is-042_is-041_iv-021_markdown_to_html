@@ -1,4 +1,5 @@
 #include <internals/collection/collection.h>
+#include <internals/exceptions/exceptions.h>
 #include <internals/memext/memext.h>
 #include <internals/parser/helpers/tbuilder.h>
 #include <inttypes.h>
@@ -158,6 +159,23 @@ static void close_single_span(TBuilder* builder, TNode** node)
     }
 }
 
+static TNode* wrap_all_children(TNode** node)
+{
+    TNode* wrapper = init_tnode(NodeSpan, screate("<span>"), screate(""), true);
+    for (size_t i = 0; i < get_array_length((*node)->children); ++i)
+    {
+        add_tnode(wrapper, (*node)->children[i]);
+        (*node)->children[i] = NULL;
+    }
+    set_array_length((*node)->children, 0);
+    return wrapper;
+}
+
+static inline void process_inline_header(TNode** node)
+{
+    add_tnode(*node, wrap_all_children(node));
+}
+
 static void switch_to_blockquote(TBuilder* builder, TNode** node)
 {
     connect_to_anchor(builder, node);
@@ -166,11 +184,11 @@ static void switch_to_blockquote(TBuilder* builder, TNode** node)
     {
         last_bq = last_bq->children[0];
     }
-    TNode* after_bq = last_bq->children[0];
-    wrap_to_paragraph(&last_bq, &after_bq);
     add_anchor(builder, &last_bq);
-    after_bq = last_bq->children[0];
-    add_anchor(builder, &after_bq);
+    TNode* p = init_tnode(NodeParagraph, screate("<p>"), NULL, true);
+    add_tnode(p, wrap_all_children(&last_bq));
+    add_tnode(last_bq, p);
+    add_anchor(builder, &p);
 }
 
 static void switch_to_list(TBuilder* builder, TNode** node)
@@ -183,9 +201,10 @@ static void switch_to_list(TBuilder* builder, TNode** node)
         switch_to_blockquote(builder, &child);
         return;
     }
-    wrap_to_paragraph(node, &child);
-    child = (*node)->children[0];
-    add_anchor(builder, &child);
+    TNode* p = init_tnode(NodeParagraph, screate("<p>"), NULL, true);
+    add_tnode(p, wrap_all_children(node));
+    add_tnode(*node, p);
+    add_anchor(builder, &p);
 }
 
 static inline void add_li_lvl(TBuilder* builder, TNode** node)
@@ -272,6 +291,8 @@ void handle_default(TBuilder* builder, TNode** node)
         connect_to_anchor(builder, node);
         switch_to_list(builder, &(*node)->children[0]);
         break;
+    case NodeHeadingInline:
+        process_inline_header(node);
     default:
         connect_to_anchor(builder, node);
         break;
@@ -412,6 +433,11 @@ static const void (*HANDLE_TABLE[])(TBuilder*, TNode**) = {
 
 static void build_tree(TBuilder* builder, TNode** node)
 {
+    TNode* anchor = get_anchor(builder);
+    if (anchor->type == NodeSpan)
+    {
+        throw_exception(ExceptionParsingFailed, "This functionality not implemented. Please, try another document");
+    }
     HANDLE_TABLE[STATE_TABLE[get_anchor(builder)->type]](builder, node);
 }
 

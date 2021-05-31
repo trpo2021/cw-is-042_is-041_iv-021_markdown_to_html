@@ -5,10 +5,9 @@ TEST_NAME = converter-test
 CFLAGS = -Wall -Werror
 CPPFLAGS = -I src -MP -MMD
 LDFLAGS =
-LDLIBS = -lm
 LSTFLAGS = 
 
-DEBUG ?= 1
+DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	CFLAGS:= -Wall -Werror -g3 -O0
     LSTFLAGS:= -fsanitize=address -fno-omit-frame-pointer
