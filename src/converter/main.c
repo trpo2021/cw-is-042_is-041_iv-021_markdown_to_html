@@ -4,6 +4,7 @@
 #include <internals/io/file/writer.h>
 #include <internals/io/std/reader.h>
 #include <internals/memext/memext.h>
+#include <internals/renderer/renderer.h>
 #include <internals/templates/config.h>
 #include <memory.h>
 #include <stdio.h>
@@ -63,22 +64,33 @@ int main(int argc, char** argv)
         throw_exception(ExceptionStdinCharacterLimit, "To convert more than 1000 characters, you can use file.\n"
                                                       "Run './converter --help' for more information");
     }
-    /* here convert markdown to html */
-    /* before it you need to free this */
+    String* markdown = screate(source_content);
     free(source_content);
-    /* here get template */
+    String* html = render_html(markdown);
+    sfree(markdown);
+    String* html_head = screate(create_template_top());
     if (args_options['t'])
     {
-        /* here replace path to css */
+        String* temp = html_head;
+        html_head = sreplace(html_head, args_options['t'], "style.css");
+        sfree(temp);
     }
-    /* here concat template to converted html */
+    else
+    {
+        create_css();
+    }
+    sinsert(html, sraw(html_head), 0);
+    sconcat(html, create_template_bot());
+    sfree(html_head);
     if (args_options['o'])
     {
-        /* here write html to file */
+        write_file(args_options['o'], sraw(html));
+        sfree(html);
         free(args_options);
         return EXIT_SUCCESS;
     }
-    /* here write html to stdout */
+    printf("%s", sraw(html));
+    sfree(html);
     free(args_options);
     return EXIT_SUCCESS;
 }

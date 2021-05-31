@@ -7,7 +7,7 @@ const char* create_template_top()
                                       "<html>\n"
                                       "<head>\n"
                                       "<meta charset=\"utf-8\"/>\n"
-                                      "<link rel=\"stylesheet\" href=\"template.css\">\n"
+                                      "<link rel=\"stylesheet\" href=\"style.css\">\n"
                                       "</head>\n";
     return HTML_TEMPLATE_TOP;
 }
@@ -20,16 +20,34 @@ const char* create_template_bot()
 
 void create_css()
 {
-    char CSS_TEMPLATE[] = "html{\n"
-                          "\tfont-family: 'arial'\n"
+    char CSS_TEMPLATE[] = "html {\n"
+                          "\tfont-family: 'SmallCaps', sans - serif;\n"
                           "}\n"
-                          "h1{\n"
-                          "\tfont-family: 'SmallCaps', sans-serif;\n"
+                          "h1 {\n"
                           "\tfont-size: 2em;\n"
                           "\tfont-weight: bold;\n"
                           "}\n"
-                          "li{\n"
-                          "\tfont-size: 12px;\n"
+                          "\tcode, kbd, pre, samp {\n"
+                          "\tfont-family: monospace, monospace;\n"
+                          "}\n"
+                          "\tcode, kbd {\n"
+                          "\tfont-size: 1em;\n"
+                          "}\n"
+                          "\tcode, kbd {\n"
+                          "\tpadding: 2px 4px;\n"
+                          "}\n"
+                          "code {\n"
+                          "\tcolor: #c7254e;\n"
+                          "\tbackground-color: #f9f2f4;\n"
+                          "\tborder-radius: 4px;\n"
+                          "}\n"
+                          "pre {\n"
+                          "\tbackground-color: #f9f2f4;\n"
+                          "}\n"
+                          "blockquote {\n"
+                          "\tborder-left: solid 5px slategrey;\n"
+                          "\tpadding-left: 5px;\n"
+                          "\tbackground-color: #dadada;\n"
                           "}\n";
     FILE* template_css = fopen("style.css", "w");
     fwrite(CSS_TEMPLATE, sizeof(char), sizeof(CSS_TEMPLATE) - 1, template_css);
