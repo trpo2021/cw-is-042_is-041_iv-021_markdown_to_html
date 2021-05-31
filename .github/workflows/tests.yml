@@ -13,4 +13,4 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Tests
-        run: make test && time seq 100 | xargs -I{} -n 1 -P 1 ./converter-test
+        run: make DEBUG=1 test && time seq 100 | xargs -I{} -n 1 -P 1 ./converter-test
